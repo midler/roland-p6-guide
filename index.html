@@ -131,7 +131,7 @@ kbd .fn{opacity:.7;font-weight:500}
 .lmeta{font-size:var(--fs-sm);color:var(--muted)}
 .lcount{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--muted);white-space:nowrap}
 .lbody{padding:0 16px 18px;display:grid;gap:14px;min-width:0}
-.goal{border-left:3px solid var(--accent);padding-left:12px}
+.goal{font-weight:600;color:var(--ink)}
 ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:s}
 ol.steps li{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;counter-increment:s}
 ol.steps input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--done);cursor:pointer}
@@ -142,7 +142,7 @@ ol.steps li.on label{color:var(--muted)}
 .box h4,.box h3{margin:0;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--f-mono)}
 .box.task h4{color:var(--accent)}
 .box.warn h4{color:var(--warn)}
-.levelhead{display:flex;align-items:baseline;gap:10px;margin-top:6px}
+.levelhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:6px}
 .levelhead span{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--muted)}
 /* challenges */
 .dice{display:grid;gap:12px}
@@ -473,7 +473,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 </section>
 
 </main>
-<footer class="wrap">Источник нажатий — официальное онлайн-руководство Roland P-6 (static.roland.com/manuals/p-6), версия системы 1.02. Если что-то на твоём приборе ведёт себя иначе, проверь версию прошивки на странице поддержки Roland.</footer>
+<footer class="wrap">Источник нажатий: <a href="https://static.roland.com/manuals/p-6/en-US/index.html" target="_blank" rel="noopener">официальное онлайн-руководство Roland P-6 <span aria-hidden="true">↗</span></a>, версия системы 1.02. Если что-то на твоём приборе ведёт себя иначе, проверь версию прошивки на странице поддержки Roland.</footer>
 
 <script>
 (function(){
@@ -1156,7 +1156,7 @@ function renderResume(){const r=resumePoint();const all=lessons.length,dl=lesson
  const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
  :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Один урок — одно-два занятия по 30 минут. Прибор держи под рукой.</p>`
  :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a><p>Пройдено уроков: ${dl} из ${all}.</p>`;
- ["resumeStart","resumeLessons"].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html})}
+ const s=document.getElementById("resumeStart");if(s)s.innerHTML=html;const l=document.getElementById("resumeLessons");if(l)l.innerHTML=html.replace(/<p>Пройдено уроков[^<]*<\/p>/,"")}
 function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const dn=ls.filter(l=>doneCnt(l)===act(l).length).length;
  const steps=ls.reduce((a,l)=>a+act(l).length,0),sd=ls.reduce((a,l)=>a+doneCnt(l),0);
