@@ -168,6 +168,7 @@ td:first-child{white-space:normal;min-width:190px}
 .cell .lvl{position:absolute;left:0;right:0;bottom:0;background:var(--accent)}
 .cell.lvlcell{background:var(--surface)}
 .cell .tag{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:.55rem;color:var(--accent-ink);font-weight:700}
+.cell.off{opacity:.18;cursor:default}
 .cell.now{outline:2px solid var(--lcd-ink);outline-offset:1px}
 .seq-note{font-size:.78rem;color:var(--muted)}
 .secdesc{color:var(--muted);font-size:.88rem;margin:-4px 0 4px}
@@ -896,8 +897,9 @@ function chordsHTML(list){return `<div class="box"><h4>Схемы аккордо
  return `<div class="chord"><b>${esc(c[0])}</b><div class="piano">${w}${b}</div><span class="notes">${c[1].map(n=>NOTE_N[n]).join(" – ")}${c[2]?" · "+esc(c[2]):""}</span><button type="button" class="btn" data-chord="${c[1].join(",")}">▶ Послушать</button></div>`}).join("")}</div></div>`}
 function gridHTML(g,id){
  const KN=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","O−","O+","TIE"];
- const nums=R(1,16).map(i=>`<span class="num${(i-1)%4===0?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.map(k=>`<span class="num kn">${k}</span>`).join("");
+ const bt=g.len===12?3:4;const nums=R(1,16).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.map(k=>`<span class="num kn">${k}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(1,16).map(i=>{
+   if(g.len&&i>g.len)return `<button type="button" class="cell off${(i-1)%4===0&&i>1?" q":""}" disabled aria-hidden="true"></button>`;
    const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>1?" q":"";
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
      return `<button type="button" class="cell${st?" on":hold?" hold":""}${q}" disabled aria-label="${esc(r.n)}, шаг ${i}">${st&&st[3]?`<span class="tag">${esc(st[3])}</span>`:""}</button>`}
@@ -914,16 +916,16 @@ function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorA
 function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
  if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;const g=gridState[id];const stepDur=60/g.bpm/4;let step=0,next=c.currentTime+.05,bars=0;
  document.querySelector(`[data-play="${id}"]`).textContent="■ Стоп";
- seqTimer=setInterval(()=>{while(next<c.currentTime+.12){const i=step+1;
+ seqTimer=setInterval(()=>{while(next<c.currentTime+.12){const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
   g.rows.forEach((r,ri)=>{
-   if(r.k==="tone"||r.k==="pad"){const bar=r.bars[bars%r.bars.length];bar.filter(x=>x[0]===i).forEach(x=>{if(x[4]&&Math.random()*100>x[4])return;(Array.isArray(x[2])?x[2]:[x[2]]).forEach(m=>tone(next,x[1]*stepDur,m,r.vol||1,r.k))});return}
+   if(r.k==="tone"||r.k==="pad"){const bar=r.bars[bars%r.bars.length];bar.filter(x=>x[0]===i).forEach(x=>{if(x[4]&&Math.random()*100>x[4])return;(Array.isArray(x[2])?x[2]:[x[2]]).forEach(m=>tone(tn,x[1]*stepDur,m,r.vol||1,r.k))});return}
    if(!r.s.includes(i))return;
-   if(r.k==="bass"){bassNote(next,stepDur,r.v?r.v[i]??1:1);return}
+   if(r.k==="bass"){bassNote(tn,stepDur,r.v?r.v[i]??1:1);return}
    if(r.p&&r.p[i]&&Math.random()*100>r.p[i])return;
-   const n=r.sub&&r.sub[i]||1,v=r.v&&r.v[i]!=null?r.v[i]:1;for(let k=0;k<n;k++)hit(r.k,next+k*stepDur/n,v)});
+   const n=r.sub&&r.sub[i]||1,v=r.v&&r.v[i]!=null?r.v[i]:1;for(let k=0;k<n;k++)hit(r.k,tn+k*stepDur/n,v)});
   const tt=(next-c.currentTime)*1000,el=document.getElementById(id);
   setTimeout(()=>{if(seqPlaying!==id||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
-  next+=stepDur;step=(step+1)%16;if(step===0&&++bars>=8){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
+  next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=8){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
 document.addEventListener("click",e=>{
  const ch=e.target.closest("[data-chord]");if(ch){const c=ac();if(c){if(c.state==="suspended")c.resume();ch.dataset.chord.split(",").map(Number).forEach(n=>tone(c.currentTime+.02,1.2,60+n,.8,"tone"))}return}
  const hb=e.target.closest("[data-hit]");if(hb){const c=ac();if(c){if(c.state==="suspended")c.resume();hit(hb.dataset.hit,c.currentTime+.02,1)}return}
@@ -1060,13 +1062,32 @@ const dice={
  "Эффект":["Scatter","DJFX Looper","Sync Delay с большим Feedback","Resonator","Stopper","Vinyl Sim","Cassette Sim","Super Filter","Crusher","Ring Mod","Без эффектов вообще"],
  "Темп":["70–80","85–95","100–110","120–125","130–140","160–175"]};
 let chFilter=store.get("p6chf","Все");let chDone=store.get("p6chd",{});
+
+const CH_GRIDS={
+ "Один звук — четыре роли":{t:"Бит из копий одного звука",bpm:92,note:"Все четыре ряда — копии одного сэмпла с разными настройками.",rows:[{n:"Лоу-фай",pad:"копия 4",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},{n:"Стаб",pad:"копия 3",k:"clap",s:[5,13]},{n:"Бочка",pad:"копия 1",k:"kick",s:[1,8,11]}]},
+ "Бит без барабанов":{t:"Ритм из тональных звуков",bpm:96,note:"Короткие ноты и аккорды вместо ударных: GATE включена, END короткий.",rows:[
+   {n:"Стаб",pad:"аккорд",k:"tone",vol:.7,bars:[[[1,1,[60,64,69],"Am"],[4,1,[60,64,69]],[7,1,[60,64,69]],[11,1,[60,65,69],"F"],[14,1,[60,65,69]]]]},
+   {n:"Бас",pad:"нота",k:"tone",vol:1,bars:[[[1,2,45,"A"],[9,2,41,"F"]]]}]},
+ "Нечётная петля":{t:"12 шагов в триолях",bpm:90,len:12,note:"Длина 12 шагов и размер шага 16t: в каждом счёте три шага вместо четырёх, бит «катится». Шаги 13–16 выключены.",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:R(1,12),v:{2:.4,3:.6,5:.4,6:.6,8:.4,9:.6,11:.4,12:.6}},{n:"Снейр",pad:"F-4",k:"snare",s:[4,10]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,7,9]}]},
+ "Никогда не повторяйся":{t:"Бит с вероятностями",bpm:94,note:"Бледные клетки звучат не каждый раз. Нажми «Слушать» несколько раз подряд.",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:R(1,16),p:{2:50,4:70,6:40,8:70,10:50,12:70,14:40,16:60}},{n:"Призрак",pad:"F-4",k:"snare",s:[8,15],v:{8:.35,15:.35},p:{8:30,15:50}},{n:"Снейр",pad:"F-4",k:"snare",s:[5,13]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,11],p:{11:60}}]},
+ "Бит из кухни":{t:"Кухонный бит",bpm:90,note:"Подставь свои звуки: что гулко — в бочку, что звонко — в хэт, что хлёстко — в снейр.",rows:[{n:"Ложка",pad:"пэд 3",k:"hat",s:R(1,15,2)},{n:"Пачка",pad:"пэд 2",k:"snare",s:[5,13]},{n:"Чашка",pad:"пэд 4",k:"clap",s:[8,16],v:{8:.6,16:.6}},{n:"Крышка",pad:"пэд 1",k:"kick",s:[1,7,9]}]},
+ "Голосовая драм-машина":{t:"Битбокс по шагам",bpm:88,note:"«Бум» — бочка, «к» — снейр, «ц» — хэт. Сначала отстучи ртом, потом набери.",rows:[{n:"«Ц»",pad:"пэд 3",k:"hat",s:[3,7,11,15]},{n:"«К»",pad:"пэд 2",k:"snare",s:[5,13]},{n:"«Бум»",pad:"пэд 1",k:"kick",s:[1,4,9,11]}]},
+ "Кассета":{t:"Лоу-фай со свингом",bpm:80,swing:.16,note:"Чётные шаги чуть запаздывают — так звучит SHUFFLE около 14.",rows:[{n:"Хэт",pad:"D-5",k:"hat",s:R(1,16),v:{2:.4,4:.5,6:.4,8:.5,10:.4,12:.5,14:.4,16:.5}},{n:"Снейр",pad:"C-6",k:"snare",s:[5,13]},{n:"Бочка",pad:"C-5",k:"kick",s:[1,8,10]}]},
+ "Хор одной ноты":{t:"Аккорды Am – F – C – G",bpm:80,note:"По аккорду на такт. На P-6: PoLy + KYBD, кнопки аккордов — из урока T2.",rows:[{n:"Хор",pad:"KYBD",k:"pad",vol:.9,bars:[[[1,16,[60,64,69],"Am"]],[[1,16,[60,65,69],"F"]],[[1,16,[60,64,67],"C"]],[[1,16,[62,67,71],"G"]]]}]},
+ "10 минут":{t:"Заготовка: дострой сам",bpm:95,note:"Здесь только бочка. Нажимай на клетки и добавь снейр и хэт — потом повтори на P-6.",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:[]},{n:"Снейр",pad:"F-4",k:"snare",s:[]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,9]}]},
+ "Супер-пила":{t:"Аккорды супер-пилы",bpm:100,note:"Те же аккорды, что в лоу-фае, только жирной пилой. На P-6 — три расстроенные копии пэда.",rows:[{n:"Пила",pad:"PoLy",k:"pad",vol:1,bars:[[[1,16,[57,60,64],"Am"]],[[1,16,[57,60,65],"F"]],[[1,16,[55,60,64],"C"]],[[1,16,[55,59,62],"G"]]]}]},
+ "Хаус с качем":{t:"Хаус: бочка, клэп, хэт и кач баса",bpm:124,note:"Бочка на каждый счёт, хэт между ними, а бас проседает под бочку (урок 17).",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:[3,7,11,15]},{n:"Клэп",pad:"F-4",k:"clap",s:[5,13]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,5,9,13]},{n:"Бас",pad:"LEVEL",k:"bass",s:R(1,16),v:{1:0,2:.28,3:1,4:1,5:0,6:.28,7:1,8:1,9:0,10:.28,11:1,12:1,13:0,14:.28,15:1,16:1},lvl:1}]},
+ "Кит в кармане":{t:"Бит с одного пэда",bpm:92,note:"Все ряды — один пэд, разные клавиши в KYBD: C — бочка, D — снейр, E — хэт.",rows:[{n:"E · хэт",pad:"пэд 1",k:"hat",s:R(1,15,2)},{n:"D · снейр",pad:"пэд 1",k:"snare",s:[5,13]},{n:"C · бочка",pad:"пэд 1",k:"kick",s:[1,4,9]}]},
+ "Синт из голоса":{t:"Басовая линия",bpm:90,note:"Ноты из ля минора. На P-6 впиши их по шагам: [●] → шаг → KYBD → клавиша.",rows:[{n:"Бас",pad:"голос",k:"tone",vol:1,bars:[[[1,2,45,"A"],[4,1,45],[7,2,48,"C"],[9,2,40,"E"],[12,1,43,"G"],[15,2,45,"A"]]]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,9]}]},
+ "Мой первый пак":{t:"Бит на твой пак",bpm:96,note:"Шесть звуков пака: бочка, снейр, два хэта, перкуссия, текстура.",rows:[{n:"Перкуссия",pad:"пэд 5",k:"clap",s:[8,16],v:{8:.6,16:.6}},{n:"Откр. хэт",pad:"пэд 4",k:"ohat",s:[15]},{n:"Хэт",pad:"пэд 3",k:"hat",s:[1,3,5,7,9,11,13]},{n:"Снейр",pad:"пэд 2",k:"snare",s:[5,13]},{n:"Бочка",pad:"пэд 1",k:"kick",s:[1,9,11]}]}
+};
 function renderChallenges(){
   const tags=["Все",...new Set(challenges.map(c=>c.tag))];
   const f=document.getElementById("chFilters");
   f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
   f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
-  document.getElementById("chList").innerHTML=list.map(c=>`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${c.need}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p><label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`).join("");
+  document.getElementById("chList").innerHTML=list.map(c=>`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${c.need}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`).join("");
   document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone)});
 }
 function roll(){
