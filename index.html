@@ -71,7 +71,7 @@ kbd .fn{opacity:.7;font-weight:500}
 .lcd.big{font-size:1.5rem;padding:.15em .5em;letter-spacing:.18em}
 .plus{color:var(--muted);font-weight:700;margin:0 .15em}
 /* start */
-.legend{display:grid;gap:10px}
+.legend{display:grid;gap:10px;align-content:start}
 .legend div{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
 .plan{display:grid;gap:10px;counter-reset:wk}
 .plan .wk{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
@@ -139,7 +139,7 @@ ol.steps label{cursor:pointer;min-width:0}
 ol.steps li.on label{color:var(--muted)}
 .box{background:var(--surface-2);border-radius:10px;padding:12px 14px;display:grid;gap:6px}
 .box .btn{padding:3px 9px;font-size:var(--fs-xs);margin:0 2px 4px 0}
-.box h4{margin:0;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--f-mono)}
+.box h4,.box h3{margin:0;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--f-mono)}
 .box.task h4{color:var(--accent)}
 .box.warn h4{color:var(--warn)}
 .levelhead{display:flex;align-items:baseline;gap:10px;margin-top:6px}
@@ -167,24 +167,26 @@ td:first-child{white-space:normal;min-width:190px}
 /* step grids */
 .seq{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0}
 .seq-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-.seq-head h4{margin:0;font-size:var(--fs-sm);font-family:var(--f-body)}
+.seq-head h4,.seq-head h3{margin:0;font-size:var(--fs-sm);font-family:var(--f-body)}
 .seq-head .ctl{display:flex;gap:6px;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
 .seq-wrap{overflow-x:auto}
 .seq-grid{display:grid;grid-template-columns:minmax(44px,auto) repeat(16,minmax(0,1fr));gap:3px;align-items:end}
-@media (max-width:520px){.seq-grid{gap:2px}.seq-grid .lbl{font-size:.66rem;padding-right:3px}.seq-grid .num{font-size:.55rem}.cell.q{margin-left:2px}.cell{height:24px;border-radius:3px}.seq{padding:10px}}
+@media (max-width:520px){.seq-grid{gap:2px}.seq-grid .lbl{padding-right:3px}.cell.q{margin-left:2px}.cell{height:24px;border-radius:3px}.seq{padding:10px}}
 .seq-grid .lbl{font-size:var(--fs-xs);line-height:1.15;color:var(--ink);padding-right:6px}
-.seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:.6875rem}
-.seq-grid .num{font-family:var(--f-mono);font-size:.6875rem;text-align:center;color:var(--muted)}
+.seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:var(--fs-xs)}
+.seq-grid .num{font-family:var(--f-mono);font-size:var(--fs-xs);text-align:center;color:var(--muted)}
 .seq-grid .num.beat{color:var(--accent);font-weight:700}
-.seq-grid .num.kn{font-size:.5625rem;opacity:.75;white-space:nowrap;overflow:visible;text-align:center;letter-spacing:-.03em}
+.seq-grid .num.kn{white-space:nowrap;overflow:visible;text-align:center;letter-spacing:-.06em}
 .seq-grid .num.kn:first-of-type{text-align:left}
+.seq-grid .num.kn.end{text-align:right}
 .cell{height:26px;border-radius:4px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;position:relative;overflow:hidden}
 .cell.q{margin-left:4px}
 .cell.on{background:var(--accent);border-color:var(--accent)}
-.cell.on.prob{opacity:.45}
 .cell .lvl{position:absolute;left:0;right:0;bottom:0;background:var(--accent)}
 .cell.lvlcell{background:var(--surface)}
-.cell .tag{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:.55rem;color:var(--accent-ink);font-weight:700}
+.cell .tag{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:var(--fs-xs);letter-spacing:-.06em;color:var(--accent-ink);font-weight:700}
+.cell.on.prob{background:var(--accent-soft);border-color:var(--accent)}.cell.on.prob .tag{color:var(--ink)}
+.cell.ro{cursor:default}
 .cell.off{opacity:.18;cursor:default}
 .cell.now{outline:2px solid var(--lcd-ink);outline-offset:1px}
 .seq-note{font-size:var(--fs-xs);color:var(--muted)}
@@ -192,12 +194,12 @@ td:first-child{white-space:normal;min-width:190px}
 ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4px;padding-top:10px;font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding-top:6px;grid-template-columns:none}
 .lrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 @media (max-width:560px){.lbody>.lrow{flex-direction:column;align-items:stretch}.lbody>.lrow .goal{flex:none!important}.lbody>.lrow .btn{align-self:flex-start}}
-.focusbar{display:none;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-radius:10px;padding:10px}
+.focusbar{display:none;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px;position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:3}
 .focusmode .focusbar{display:flex}
 .focusmode ol.steps li{display:none}
 .focusmode ol.steps li.cur{display:grid;font-size:var(--fs-md);line-height:1.5;padding:14px;border:2px solid var(--accent);border-radius:10px;background:var(--surface)}
 .focusmode ol.steps li.cur input{width:26px;height:26px}
-.focusmode .hideinfocus{display:none}
+.focusmode .hideinfocus{display:none!important}
 .focusbar .fpos{font-family:var(--f-mono);font-size:var(--fs-sm);color:var(--muted);margin-right:auto}
 .codebox{display:grid;gap:8px}
 .codebox textarea{width:100%;min-height:64px;font-family:var(--f-mono);font-size:var(--fs-xs);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
@@ -242,8 +244,8 @@ footer{padding-block:24px 40px;color:var(--muted);font-size:var(--fs-sm);border-
 @media (max-width:560px){.plan .wk{grid-template-columns:1fr;gap:2px}.lesson>summary{grid-template-columns:auto 1fr}.lcount{grid-column:2}}
 /* typography: readable measure, aligned labels, steady numbers */
 .goal,.secdesc,ol.steps label,.box p,.box li,.recipe>p,.hero .lede,.seq-note{max-width:68ch}
-.box h4,th,.levelhead span,.dice .slot b,.zone>span,.lmeta,.lcount,.meta{line-height:var(--lh-ui)}
-.box h4,th,.dice .slot b{letter-spacing:var(--track-label);font-weight:700}
+.box h4,.box h3,th,.levelhead span,.dice .slot b,.zone>span,.lmeta,.lcount,.meta{line-height:var(--lh-ui)}
+.box h4,.box h3,th,.dice .slot b{letter-spacing:var(--track-label);font-weight:700}
 .lcount,#ptext,.seq-head .ctl,.fpos,.lnum,td{font-variant-numeric:tabular-nums}
 ol.steps label{line-height:var(--lh-text)}
 kbd,.lcd{line-height:1.3;padding-block:.05em;vertical-align:.08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
@@ -303,6 +305,41 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
  .dice .slot{background:transparent;padding:6px 0;border-bottom:1px solid var(--line);min-height:0;border-radius:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* onboard / layout / clarify / adapt / distill pass */
+p,li,label{text-wrap:pretty}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.resume{display:grid;gap:6px;justify-items:start}
+.resume .btn{font-size:var(--fs-base);line-height:1.4;padding:12px 16px;min-height:48px;display:block;text-align:left;text-decoration:none;max-width:100%}
+.resume .btn small{margin-left:6px;white-space:nowrap}
+.resume .btn small{display:inline-block;font-family:var(--f-mono);font-size:var(--fs-xs);font-weight:700;letter-spacing:.02em;opacity:.9}
+.resume p{margin:0;font-size:var(--fs-sm);color:var(--muted)}
+ol.steps li.tip{color:var(--muted);font-size:var(--fs-sm)}
+ol.steps li.tip p{margin:0;line-height:var(--lh-text);max-width:68ch;overflow-wrap:anywhere}
+ol.steps li.tip .tipmark{display:grid;justify-items:center;padding-top:.15em}
+ol.steps li.flash{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
+.focusmode ol.steps li.curtip{display:grid;padding:0 14px}
+.focusmode .lbody>.lrow [data-focus]{display:none}
+.nextles{margin:0}
+.nextles .btn{text-decoration:none;display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+details.ptools>summary{cursor:pointer;font-size:var(--fs-sm);font-weight:700;color:var(--muted);padding:6px 0;list-style:none;display:inline-flex;gap:6px;align-items:center;min-height:44px}
+details.ptools>summary::-webkit-details-marker{display:none}
+details.ptools>summary::after{content:"";width:.45em;height:.45em;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px)}
+details.ptools[open]>summary::after{transform:rotate(225deg)}
+details.ptools>div{display:grid;gap:10px;padding-top:4px}
+.modes .more{border-style:dashed}
+body:not([data-view="start"]) .hero{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding-block:14px 12px}
+body:not([data-view="start"]) .hero .meta,body:not([data-view="start"]) .hero .lede{display:none}
+body:not([data-view="start"]) .hero h1{font-size:var(--fs-lg)}
+body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
+@media (max-width:560px){
+ #v-cheats table,#v-cheats tbody,#v-cheats tr,#v-cheats td{display:block}
+ #v-cheats thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ #v-cheats tr{padding:10px 0;border-bottom:1px solid var(--line)}
+ #v-cheats td{border:0;padding:2px 0;min-width:0}
+ #v-cheats td:first-child{min-width:0}
+ #v-cheats td:last-child{font-size:var(--fs-sm);color:var(--muted)}
+ #v-cheats td:last-child a::before{content:"Урок "}
+}
 </style>
 </head>
 <body>
@@ -314,19 +351,19 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 
 <nav class="tabs" aria-label="Разделы">
   <div class="wrap">
-    <a href="#start">Как пользоваться</a>
-    <a href="#panel">Панель</a>
+    <a href="#start">Старт</a>
     <a href="#lessons">Уроки</a>
-    <a href="#recipes">Жанры</a>
-    <a href="#challenges">Творческие задачи</a>
-    <a href="#cheats">Шпаргалка</a>
-    <a href="#videos">Видео и ссылки</a>
+    <a href="#panel">Панель</a>
+    <a href="#recipes">Рецепты</a>
+    <a href="#challenges">Задания</a>
+    <a href="#cheats">Справка</a>
   </div>
 </nav>
 
 <main class="wrap">
 
 <section class="view" id="v-start">
+  <div class="resume" id="resumeStart"></div>
   <div class="grid2">
     <div class="card legend">
       <h2>Как читать гайд</h2>
@@ -388,9 +425,13 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 </section>
 
 <section class="view" id="v-lessons" hidden>
-  <div class="card progress"><b class="small">Пройдено</b><div class="bar" role="progressbar" aria-label="Пройдено шагов" id="pbarWrap" aria-valuemin="0"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить</button></div>
+  <div class="resume" id="resumeLessons"></div>
+  <div class="card progress"><b class="small">Пройдено</b><div class="bar" role="progressbar" aria-label="Пройдено шагов" id="pbarWrap" aria-valuemin="0"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span></div>
+  <details class="ptools"><summary>Перенести прогресс на другое устройство</summary><div>
+  <div class="lrow"><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить прогресс</button></div>
   <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small muted" id="codeMsg"></span></div></div>
   <p class="small muted" id="resetConfirm" hidden>Точно стереть все галочки? <button class="btn" id="resetYes" type="button">Да, стереть</button> <button class="btn" id="resetNo" type="button">Нет</button></p>
+  </div></details>
   <div id="lessonList" style="display:grid;gap:10px"></div>
   <div id="forkBox"></div>
 </section>
@@ -418,6 +459,7 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 </section>
 
 <section class="view" id="v-cheats" hidden>
+  <div class="levelhead"><h2>Шпаргалка</h2></div>
   <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, метроном, chop…" aria-label="Поиск по шпаргалке">
   <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
 </section>
@@ -439,7 +481,7 @@ const M="https://static.roland.com/manuals/p-6/en-US/";
 /* text formatter: [KEY · FN] -> kbd, ⟨TXT⟩ -> lcd, + between -> plus */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 const PREFIX={beats:"Б",sound:"С",live:"Ж",comp:"К"};let _LBL=null;
-function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?id:PREFIX[sec.id]+(i+1)}))}return _LBL[n]||n}
+function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>{let t=0;sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?(id[0]==="T"?"T"+(++t):id):PREFIX[sec.id]+(i+1)})})}return _LBL[n]||n}
 function relabel(t){return t.replace(/([Уу]рок(?:а|у|е|ом|и|ов|ам|ах)?\s+)((?:\d\d|T\d)(?:\s*(?:[–-]|,|и)\s*(?:\d\d|T\d))*)/g,(m,pre,list)=>pre+list.replace(/\d\d|T\d/g,x=>lbl(x)))}
 function fmt(s){s=relabel(s);
   s=esc(s);
@@ -687,7 +729,7 @@ const lessons=[
  "Запиши сет с MIX OUT на телефон или по USB в DAW, без монтажа.",
  "Сравни с записью «Диджея на пресетах» из урока 01."],
  check:"Готова запись на 3–5 минут, сделанная от начала до конца на P-6.",
- task:"Выложи запись или покажи друзьям. Потом брось кубики в разделе «Творческие задачи» и сделай следующий номер."},
+ task:"Выложи запись или покажи друзьям. Потом брось кубики в разделе «Задания» и сделай следующий номер."},
 {n:"16",tc:[["OgHoQyyOL1o", "08:30", "Огибающая и фильтр сэмпла (Roland)"], ["veNheHzqi8Y", "08:05", "Супер-пила из одной волны"], ["veNheHzqi8Y", "21:02", "ADR, ADA.C и огибающая фильтра"], ["V4JWVPrgjMg", "14:12", "Убрать щелчок баса"], ["SqH9BcxpVhk", "06:28", "Single-cycle волны на пэде"]],lv:"L5",t:"Синтезатор из сэмпла",time:"45 мин",page:"124729099126665227",
  src:"«Как сделать синт на Roland P6» (Vladislav CREW)",
  goal:"Превратить короткий кусок звука в играбельный синт: бас, лид или пэд.",
@@ -784,7 +826,7 @@ const lessons=[
  "Сохрани пак на компьютере: папку с WAV и файлом лицензий. Так его можно будет вернуть на прибор в любой момент."],
  check:"В отдельном банке лежат 6 твоих звуков, и про каждый ты знаешь, откуда он и под какой лицензией.",
  warn:"Не бери звуки из роликов на YouTube и из чужих треков: открытой лицензии у них нет. Если хочешь потом выкладывать музыку, проще всего брать только CC0.",
- task:"Пак под жанр из раздела «Жанры»: лоу-фай кит с шуршанием винила, эмбиент-набор из полевых записей (дождь, улица, колокола) или набор для драм-н-бейса с брейком под лицензией CC0."},
+ task:"Пак под жанр из раздела «Рецепты»: лоу-фай кит с шуршанием винила, эмбиент-набор из полевых записей (дождь, улица, колокола) или набор для драм-н-бейса с брейком под лицензией CC0."},
 {n:"T1",t:"Теория: ритм на 16 шагах",page:"112346123114022795",
  goal:"Понять, что такое такт, доли, восьмые и шестнадцатые и как это ложится на 16 кнопок P-6.",
  steps:[
@@ -889,11 +931,13 @@ const zones=[
   {id:"midi",l:"MIDI IN/OUT",k:"",base:"TRS-MIDI. Пэды — канал 11, гранулы — 4, авто — 15, смена паттернов — 16."}]}
 ];
 const modeLabel={base:"Обычное нажатие",shift:"С SHIFT",pattern:"С PATTERN",kybd:"С KYBD",mfx:"С MFX",sampling:"В режиме SAMPLING",power:"При включении питания"};
-let curMode="none", curCtrl=null;
+let curMode="none", curCtrl=null, allModes=false;
 function renderModes(){
   const box=document.getElementById("modes");
-  box.innerHTML=modes.map(([id,l])=>`<button type="button" data-m="${id}" aria-pressed="${id===curMode}">${l}</button>`).join("");
-  box.querySelectorAll("button").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl)});
+  const all=allModes||modes.findIndex(m=>m[0]===curMode)>3;
+  box.innerHTML=(all?modes:modes.slice(0,4)).map(([id,l])=>`<button type="button" data-m="${id}" aria-pressed="${id===curMode}">${l}</button>`).join("")+(all?"":`<button type="button" class="more" data-more="1">Ещё: MFX, SAMPLING, при включении</button>`);
+  box.querySelectorAll("button[data-m]").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl)});
+  const mb=box.querySelector("[data-more]");if(mb)mb.onclick=()=>{allModes=true;renderModes();const f=box.querySelector('[data-m="mfx"]');if(f)f.focus()};
 }
 const KEYS=[["C","kC","EXIT"],["C♯","kCs","ENTER"],["D","kD","SHUFFLE"],["D♯","kDs","LAST"],["E","kEF","◀ PAGE"],["F","kEF","PAGE ▶"],["F♯","kFs","P.ENV"],["G","kG","VOICE"],["G♯","kGs","FILTER"],["A","kA","MIXER"],["A♯","kAs","DLY/REV"],["B","kB","ALL"],["C","kC2","PAD"],["OCT−","octm","MOTION"],["OCT+","octp","MENU"],["TIE","tie","WRITE"]];
 const KX=[85,215,345,475,605,735,860,985,1105,1225,1350,1470,1590,1715,1840,1960];
@@ -938,7 +982,9 @@ function showCtrl(id){
   const order=curMode!=="none"&&c[curMode]?[curMode,...keys.filter(k=>k!==curMode)]:keys;
   const ki=KEYS.findIndex(k=>k[1]===id);const stepInfo=ki>=0?`<p class="small muted">${fmt("Кнопка-шаг "+KEYS.filter(k=>k[1]===id).map(k=>KEYS.indexOf(k)+1).join(" и ")+" из 16. В режиме [KYBD] — клавиша "+KEYS.filter(k=>k[1]===id).map(k=>k[0]).join(" и ")+".")}</p>`:"";
   d.innerHTML=`<h3>${esc(c.l)}</h3>${stepInfo}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
+  const r=d.getBoundingClientRect();if(r.top>innerHeight*.7||r.bottom<0)d.scrollIntoView({block:"start",behavior:RM()?"auto":"smooth"});
 }
+function RM(){return matchMedia("(prefers-reduced-motion:reduce)").matches}
 
 const GLOSS=`<div class="box"><h4>Словарик ударных</h4>
 <p><button type="button" class="btn" data-hit="kick">▶ Бочка</button> <b>Бочка</b> (kick, большой барабан) — низкий глухой «бум». Держит основной пульс, чаще всего на шагах 1, 5, 9, 13.</p>
@@ -1010,17 +1056,17 @@ function chordsHTML(list){return `<div class="box"><h4>Схемы аккордо
  return `<div class="chord"><b>${esc(c[0])}</b><div class="piano">${w}${b}</div><span class="notes">${c[1].map(n=>NOTE_N[n]).join(" – ")}${c[2]?" · "+esc(c[2]):""}</span><button type="button" class="btn" data-chord="${c[1].join(",")}">▶ Послушать</button></div>`}).join("")}</div></div>`}
 function gridHTML(g,id){
  const KN=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","O−","O+","TIE"];
- const bt=g.len===12?3:4;const nums=R(1,16).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.map(k=>`<span class="num kn">${k}</span>`).join("");
+ const bt=g.len===12?3:4;const nums=R(1,16).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.map((k,j)=>`<span class="num kn${j===15?" end":""}">${k}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(1,16).map(i=>{
    if(g.len&&i>g.len)return `<button type="button" class="cell off${(i-1)%4===0&&i>1?" q":""}" disabled aria-hidden="true"></button>`;
    const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>1?" q":"";
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
-     return `<button type="button" class="cell${st?" on":hold?" hold":""}${q}" disabled aria-label="${esc(r.n)}, шаг ${i}">${st&&st[3]?`<span class="tag">${esc(st[3])}</span>`:""}</button>`}
+     return `<span class="cell ro${st?" on":hold?" hold":""}${q}" data-i="${i}" role="img" aria-label="${esc(r.n)}, шаг ${i}${st?", нота "+esc(st[3]||""):hold?", звучит":", тишина"}">${st&&st[3]?`<span class="tag" aria-hidden="true">${esc(st[3])}</span>`:""}</span>`}
    if(r.lvl){const v=r.v[i]??1;return `<button type="button" class="cell lvlcell${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-label="${esc(r.n)}, шаг ${i}, уровень ${Math.round(v*127)}"><span class="lvl" style="height:${Math.max(6,v*100)}%"></span></button>`}
    const p=r.p&&r.p[i],sb=r.sub&&r.sub[i],v=r.v&&r.v[i];
    const inner=on&&v!=null&&v<1?`<span class="lvl" style="height:${v*100}%"></span>`:"";
-   const tag=on&&sb?`<span class="tag">×${sb}</span>`:on&&p?`<span class="tag">${p}%</span>`:"";
-   return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}">${inner}${tag}</button>`}).join("")).join("");
+   const tag=on&&sb?`<span class="tag" aria-hidden="true">×${sb}</span>`:on&&p?`<span class="tag" aria-hidden="true">${p}</span>`:"";
+   return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}${on&&p?", вероятность "+p+"%":""}${on&&sb?", дробь ×"+sb:""}">${inner}${tag}</button>`}).join("")).join("");
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
  <div class="seq-wrap"><div class="seq-grid"><span></span>${nums}${rows}</div></div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
@@ -1062,39 +1108,58 @@ const LINKS={
  ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
 const LESSON_LINKS={"23":["freesound","pixabay","n99","akwf","audacity","digichain","sampletool"],"19":["digichain","audacity","sampletool"],"16":["akwf","digichain"],"14":["sampletool","factory"],"00":["factory"],"22":["ableton"]};
 function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a> — ${esc(relabel(L[2]))}</li>`}).join("")}</ul></div>`}
-let focus={};
+let focus=store.get("p6focus",{});function saveFocus(){store.set("p6focus",focus)}
+const TIPS=new Set(["01-8","02-4","02-6","02-9","02-10","02-11","09-7","13-8","19-2","21-3","T2-6"]);
+function isTip(n,i){return TIPS.has(n+"-"+i)}
+function act(l){return l.steps.map((_,i)=>i).filter(i=>!isTip(l.n,i))}
+function doneCnt(l){return act(l).filter(i=>done[l.n+"-"+i]).length}
+const INFO=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>`;
 function lessonByN(n){return lessons.find(l=>l.n===n)}
 function sesLabel(l){if(SES[l.n])return SES[l.n];const k=(PARTS[l.n]||[]).length+1;return "≈ "+k+(k===1?" занятие":" занятия")+" по 30 минут"}
 function stepsHTML(l){const sp=PARTS[l.n]||[];const letters="абвг";let out="";
  l.steps.forEach((st,i)=>{const pi=sp.indexOf(i);
   if(sp.length&&i===0)out+=`<li class="parthead">Занятие 1 (часть а)</li>`;
   if(pi>=0)out+=`<li class="parthead">Занятие ${pi+2} (часть ${letters[pi+1]})</li>`;
+  if(isTip(l.n,i)){out+=`<li class="tip" data-si="${i}"><span class="tipmark" aria-hidden="true">${INFO}</span><p><span class="vh">Совет. </span>${fmt(st)}</p></li>`;return}
   const id=`s${l.n}-${i}`,on=done[l.n+"-"+i];
   out+=`<li class="${on?"on":""}" data-si="${i}"><input type="checkbox" id="${id}" data-k="${l.n}-${i}"${on?" checked":""}><label for="${id}">${fmt(st)}</label></li>`});
  return out}
 function lessonHTML(l,open){
- const cnt=l.steps.filter((_,i)=>done[l.n+"-"+i]).length,complete=cnt===l.steps.length;
+ const tot=act(l).length,cnt=doneCnt(l),complete=cnt===tot;
  return `<details class="lesson${complete?" complete":""}${focus[l.n]!=null?" focusmode":""}" data-n="${l.n}"${open?" open":""}>
-<summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${l.steps.length}</span></summary>
+<summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${tot}</span></summary>
 <div class="lbody">
 <div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
-<div class="focusbar"><span class="fpos"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button></div>
-<div class="hideinfocus">${l.gloss?relabel(GLOSS):""}${l.chords?chordsHTML(l.chords):""}</div>
-${GRIDS[l.n]?`<div class="hideinfocus" style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
+${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
+${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
+<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
-${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} — раздел «Жанры» →</a></p>`:""}
+${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
-${l.tc?`<div class="box"><h4>Смотри в роликах</h4><p class="small">${l.tc.map(t=>{const [m,sec]=t[1].split(":").map(Number);return `<a href="https://www.youtube.com/watch?v=${t[0]}&t=${m*60+sec}s" target="_blank" rel="noopener">▶ ${t[1]} · ${esc(t[2])}</a>`}).join("<br>")}</p></div>`:""}
+${l.tc?`<div class="box"><h4>Смотри в роликах · нужен интернет</h4><p class="small">${l.tc.map(t=>{const [m,sec]=t[1].split(":").map(Number);return `<a href="https://www.youtube.com/watch?v=${t[0]}&t=${m*60+sec}s" target="_blank" rel="noopener">▶ ${t[1]} · ${esc(t[2])}</a>`}).join("<br>")}</p></div>`:""}
 ${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
+${nextHTML(l)}
 <p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
 </div></div></details>`}
+function secOf(n){return SECTIONS.find(x=>x.order.includes(n))}
+function nextHTML(l){const sec=secOf(l.n);const nx=sec?sec.order[sec.order.indexOf(l.n)+1]:null;
+ if(nx){const L=lessonByN(nx);return `<p class="nextles"><a class="btn" href="#${lessonHash(nx)}" data-open="${nx}">Следующий урок: ${lbl(nx)} · ${esc(L.t)} <span aria-hidden="true">→</span></a></p>`}
+ return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери ветку <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Ветка закончена: другие ветки <span aria-hidden="true">↓</span></a></p>`}
+function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
+ const cands=[];if(last&&lessonByN(last)){cands.push(last);cands.push(...secOf(last).order)}SECTIONS.forEach(x=>cands.push(...x.order));
+ for(const n of cands){const l=lessonByN(n);if(!l)continue;const i=first(l);if(i!=null){const a=act(l);return {l,i,k:a.indexOf(i),tot:a.length,fresh:!Object.keys(done).length}}}return null}
+function renderResume(){const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
+ const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
+ :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Один урок — одно-два занятия по 30 минут. Прибор держи под рукой.</p>`
+ :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a><p>Пройдено уроков: ${dl} из ${all}.</p>`;
+ ["resumeStart","resumeLessons"].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html})}
 function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
- const dn=ls.filter(l=>l.steps.every((_,i)=>done[l.n+"-"+i])).length;
- const steps=ls.reduce((a,l)=>a+l.steps.length,0),sd=ls.reduce((a,l)=>a+l.steps.filter((_,i)=>done[l.n+"-"+i]).length,0);
+ const dn=ls.filter(l=>doneCnt(l)===act(l).length).length;
+ const steps=ls.reduce((a,l)=>a+act(l).length,0),sd=ls.reduce((a,l)=>a+doneCnt(l),0);
  const ses=ls.reduce((a,l)=>a+(SES[l.n]?1:(PARTS[l.n]||[]).length+1),0);return {ls,dn,steps,sd,ses}}
 function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
 function branchTile(sec,showList){const st=secStats(sec);
@@ -1122,35 +1187,42 @@ function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;c
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
  document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin-top:14px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
-function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done)}
+function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done);store.set("p6last",k.slice(0,k.lastIndexOf("-")))}
 function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
- const cnt=l.steps.filter((_,i)=>done[n+"-"+i]).length;det.querySelector(".lcount").textContent=cnt+" / "+l.steps.length;det.classList.toggle("complete",cnt===l.steps.length);updateProgress();refreshTiles()}
+ const cnt=doneCnt(l),tot=act(l).length;det.querySelector(".lcount").textContent=cnt+" / "+tot;det.classList.toggle("complete",cnt===tot);updateProgress();refreshTiles()}
 function refreshTiles(){const fb=document.querySelector("#forkBox .fork");if(fb)fb.innerHTML=SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("");
  if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
-function placeFocus(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);let i=focus[n];
- det.querySelectorAll("li.cur").forEach(x=>x.classList.remove("cur"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
+function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);const a=act(l);let i=focus[n];
+ if(!a.includes(i)){i=a.find(k=>k>=i);if(i==null)i=a[0];focus[n]=i;saveFocus()}
+ det.querySelectorAll("li.cur,li.curtip").forEach(x=>x.classList.remove("cur","curtip"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
+ for(let k=i+1;isTip(n,k);k++){const t=det.querySelector(`li[data-si="${k}"]`);if(t)t.classList.add("curtip")}
  const sp=PARTS[n]||[];let part=0;sp.forEach(x=>{if(i>=x)part++});
- det.querySelector(".fpos").textContent=`Шаг ${i+1} из ${l.steps.length}`+(sp.length?` · занятие ${part+1}`:"")}
+ det.querySelector(".fpos").textContent=`Шаг ${a.indexOf(i)+1} из ${a.length}`+(sp.length?` · занятие ${part+1}`:"");
+ if(scroll&&li){const r=li.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)li.scrollIntoView({block:"center",behavior:RM()?"auto":"smooth"})}}
 ["lessonList","branchList"].forEach(hid=>{const host=document.getElementById(hid);
 host.addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
  setStep(cb.dataset.k,cb.checked);cb.closest("li").classList.toggle("on",cb.checked);refreshLesson(cb.closest("details").dataset.n)});
 host.addEventListener("click",e=>{
  const f=e.target.closest("[data-focus]");if(f){const n=f.dataset.focus,l=lessonByN(n);
-  if(focus[n]!=null){delete focus[n]}else{let i=l.steps.findIndex((_,k)=>!done[n+"-"+k]);focus[n]=i<0?0:i}
+  if(focus[n]!=null){delete focus[n]}else{const a=act(l);const i=a.find(k=>!done[n+"-"+k]);focus[n]=i==null?a[0]:i}saveFocus();
   const det=f.closest("details");det.outerHTML=lessonHTML(l,true);const nd=document.querySelector(`details[data-n="${n}"]`);
   nd.addEventListener("toggle",saveOpen);
-  if(focus[n]!=null){placeFocus(n);nd.scrollIntoView({block:"start"})}return}
+  if(focus[n]!=null)placeFocus(n);nd.scrollIntoView({block:"start"});if(focus[n]==null){const b=nd.querySelector("[data-focus]");if(b)b.focus({preventScroll:true})}else{const g=nd.querySelector("[data-fnext]");if(g)g.focus({preventScroll:true})}return}
  const nx=e.target.closest("[data-fnext]");if(nx){const n=nx.dataset.fnext,l=lessonByN(n),i=focus[n];const k=n+"-"+i;setStep(k,true);
   const li=document.querySelector(`details[data-n="${n}"] li[data-si="${i}"]`);if(li){li.classList.add("on");li.querySelector("input").checked=true}
-  refreshLesson(n);if(i<l.steps.length-1){focus[n]=i+1;placeFocus(n)}else{document.querySelector(`details[data-n="${n}"] .fpos`).textContent="Урок пройден! Можно выйти из режима по шагам."}return}
- const pv=e.target.closest("[data-fprev]");if(pv){const n=pv.dataset.fprev;if(focus[n]>0){focus[n]--;placeFocus(n)}return}
+  refreshLesson(n);const a=act(l),nxt=a.find(k=>k>i&&!done[n+"-"+k])??a.find(k=>!done[n+"-"+k]);
+  if(nxt!=null){focus[n]=nxt;saveFocus();placeFocus(n,true)}else{delete focus[n];saveFocus();const det=document.querySelector(`details[data-n="${n}"]`);det.outerHTML=lessonHTML(l,true);
+   const nd=document.querySelector(`details[data-n="${n}"]`);nd.addEventListener("toggle",saveOpen);const nl=nd.querySelector(".nextles a");if(nl){nl.scrollIntoView({block:"center",behavior:RM()?"auto":"smooth"});nl.focus({preventScroll:true})}
+   const lcd=document.getElementById("lcdHero"),was=lcd.textContent;lcd.textContent="donE";setTimeout(()=>{if(lcd.textContent==="donE")lcd.textContent=was},2600)}return}
+ const pv=e.target.closest("[data-fprev]");if(pv){const n=pv.dataset.fprev,a=act(lessonByN(n)),p=a.indexOf(focus[n]);if(p>0){focus[n]=a[p-1];saveFocus();placeFocus(n,true)}return}
 });});
 function updateProgress(){
-  const total=lessons.reduce((a,l)=>a+l.steps.length,0);
-  const n=Object.keys(done).length;
+  const total=lessons.reduce((a,l)=>a+act(l).length,0);
+  const n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
   document.getElementById("pbar").style.width=(100*n/total)+"%";
   const pw=document.getElementById("pbarWrap");pw.setAttribute("aria-valuemax",total);pw.setAttribute("aria-valuenow",n);
-  document.getElementById("ptext").textContent=n+" / "+total;
+  document.getElementById("ptext").textContent=`уроков ${dl} из ${lessons.length} · шагов ${n} из ${total}`;
+  renderResume();
 }
 document.getElementById("resetProgress").onclick=()=>{document.getElementById("resetConfirm").hidden=false};
 document.getElementById("resetNo").onclick=()=>{document.getElementById("resetConfirm").hidden=true};
@@ -1385,7 +1457,7 @@ function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES
  ${gridHTML(gridState[id],id)}
  <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(relabel(r.pads))}</p></div>
  <div class="box"><h4>Приёмы</h4><ul class="small">${r.tips.map(t=>`<li>${fmt(t[0])} <a href="#lessons" data-open="${t[1]}">урок ${lbl(t[1])}</a></li>`).join("")}</ul></div>
- <div class="box task"><h4>Итоговое задание</h4><p>${esc(relabel(r.task))}</p></div></div>`}).join("");
+ <div class="box task"><h4>Итоговое задание</h4><p>${esc(relabel(r.task))}</p></div></div>`}).join("").replace(/<(\/?)h4\b/g,"<$1h3");
  bindOpenLinks(document.getElementById("recipeList"))}
 /* ---------------- PROGRESS CODE ---------------- */
 function makeCode(){const o={d:Object.keys(done),c:Object.keys(chDone)};return "P6:"+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
@@ -1401,8 +1473,15 @@ document.getElementById("codeClose").onclick=()=>{cbx.hidden=true};
 document.getElementById("codeApply").onclick=()=>{try{const o=readCode(ctx.value);let n=0;o.d.forEach(k=>{if(!done[k]){done[k]=1;n++}});(o.c||[]).forEach(k=>{chDone[k]=1});
  store.set("p6done",done);store.set("p6chd",chDone);renderLessons();renderChallenges();cmsg.textContent="Загружено, новых отметок: "+n+"."}catch(e){cmsg.textContent="Код не подошёл. Скопируй его целиком, он начинается с P6:"}};
 function lessonHash(n){const sec=SECTIONS.find(x=>x.order.includes(n));return !sec||sec.id==="base"?"lessons":"branch-"+sec.id}
-function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>{const n=a.dataset.open;a.setAttribute("href","#"+lessonHash(n));a.onclick=ev=>{ev.preventDefault();const o=store.get("p6open",[]);if(!o.includes(n))o.push(n);store.set("p6open",o);
- const h=lessonHash(n);if(location.hash!=="#"+h)location.hash=h;else route();setTimeout(()=>{renderLessons();const el=document.querySelector(`details[data-n="${n}"]`);if(el)el.scrollIntoView({block:"start"})},80)}})}
+function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>a.setAttribute("href","#"+lessonHash(a.dataset.open)))}
+function openLesson(n,step){const o=store.get("p6open",[]);if(!o.includes(n))o.push(n);store.set("p6open",o);
+ const h=lessonHash(n);if(location.hash!=="#"+h)location.hash=h;else route();
+ setTimeout(()=>{renderLessons();const el=document.querySelector(`details[data-n="${n}"]`);if(!el)return;
+  const li=step!=null&&focus[n]==null?el.querySelector(`li[data-si="${step}"]`):null;
+  if(li){li.scrollIntoView({block:"center"});li.classList.add("flash");setTimeout(()=>li.classList.remove("flash"),2400);const cb=li.querySelector("input");if(cb)cb.focus({preventScroll:true})}
+  else{el.scrollIntoView({block:"start"});const sm=el.querySelector("summary");if(sm)sm.focus({preventScroll:true})}},80)}
+document.addEventListener("click",e=>{const a=e.target.closest("a[data-open]");if(a){e.preventDefault();openLesson(a.dataset.open,a.dataset.step!=null?+a.dataset.step:null);return}
+ const sc=e.target.closest("a[data-scroll]");if(sc){e.preventDefault();const h=sc.getAttribute("href");const go=()=>{const t=document.getElementById(sc.dataset.scroll);if(t)t.scrollIntoView({block:"start"})};if(location.hash!==h){location.hash=h;setTimeout(go,80)}else go()}});
 /* ---------------- ROUTING ---------------- */
 const views=["start","panel","lessons","recipes","challenges","cheats","videos"];
 function route(){
@@ -1410,15 +1489,17 @@ function route(){
   if(h.startsWith("branch-")&&SECTIONS.some(x=>"branch-"+x.id===h&&x.id!=="base")){br=h.slice(7);h="branch"}
   else if(!views.includes(h))h="start";
   document.getElementById("v-branch").hidden=h!=="branch";
-  views.forEach(v=>{document.getElementById("v-"+v).hidden=v!==h});
+  const help=h==="cheats"||h==="videos";
+  views.forEach(v=>{document.getElementById("v-"+v).hidden=help?!(v==="cheats"||v==="videos"):v!==h});
+  document.body.dataset.view=h;
   if(br)renderBranch(br);else curBranch=null;
-  const tab=h==="branch"?"lessons":h;
+  const tab=h==="branch"?"lessons":h==="videos"?"cheats":h;
   document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+tab?"page":"false"));
-  const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-16)}
-  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:"br-"+(br||"").slice(0,1).toUpperCase(),recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
+  const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-(w.clientWidth-cur.offsetWidth)/2)}
+  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
 }
-window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0)});
+window.addEventListener("hashchange",()=>{route();if(location.hash==="#videos")document.getElementById("v-videos").scrollIntoView({block:"start"});else window.scrollTo(0,0)});
 renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
 })();
 </script>
