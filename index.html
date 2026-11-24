@@ -172,7 +172,7 @@ td:first-child{white-space:normal;min-width:190px}
 .seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:.66rem}
 .seq-grid .num{font-family:var(--f-mono);font-size:.62rem;text-align:center;color:var(--muted)}
 .seq-grid .num.beat{color:var(--accent);font-weight:700}
-.seq-grid .num.kn{font-size:.52rem;opacity:.75;white-space:nowrap;overflow:hidden;text-align:center}
+.seq-grid .num.kn{font-size:.52rem;opacity:.75;white-space:nowrap;overflow:visible;text-align:center;letter-spacing:-.03em}
 .seq-grid .num.kn:first-of-type{text-align:left}
 .cell{height:26px;border-radius:4px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;position:relative;overflow:hidden}
 .cell.q{margin-left:4px}
@@ -186,6 +186,7 @@ td:first-child{white-space:normal;min-width:190px}
 .secdesc{color:var(--muted);font-size:.88rem;margin:-4px 0 4px}
 ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4px;padding-top:10px;font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding-top:6px;grid-template-columns:none}
 .lrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+@media (max-width:560px){.lbody>.lrow{flex-direction:column;align-items:stretch}.lbody>.lrow .goal{flex:none!important}.lbody>.lrow .btn{align-self:flex-start}}
 .focusbar{display:none;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-radius:10px;padding:10px}
 .focusmode .focusbar{display:flex}
 .focusmode ol.steps li{display:none}
