@@ -217,6 +217,27 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .recipe .meta span{font-family:var(--f-mono);font-size:var(--fs-xs);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
 .recipe ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .cell.hold{background:color-mix(in srgb,var(--accent) 35%,var(--surface));border-color:var(--accent)}
+/* branches */
+.forkhead{display:flex;align-items:center;gap:10px;margin-top:10px}
+.forkhead .node{width:14px;height:14px;border-radius:50%;background:var(--accent);flex:none}
+.fork{position:relative;margin-left:6px;padding-left:24px;display:grid;gap:12px;margin-top:6px}
+.fork::before{content:"";position:absolute;left:0;top:-8px;bottom:34px;width:2px;background:var(--accent)}
+.branch{position:relative;display:grid;gap:6px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.branch::before{content:"";position:absolute;left:-25px;top:34px;width:24px;height:2px;background:var(--accent)}
+.branch:hover,.branch:focus-visible{border-color:var(--accent)}
+.branch .bname{font-family:var(--f-display);font-size:var(--fs-md);font-weight:700;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.branch .bname .go{color:var(--accent);font-family:var(--f-body);font-size:var(--fs-sm);white-space:nowrap}
+.branch .bdesc{color:var(--muted);font-size:var(--fs-sm)}
+.branch .bles{font-size:var(--fs-sm);line-height:1.5}
+.branch .bmeta{display:flex;gap:10px;align-items:center;font-size:var(--fs-xs);color:var(--muted);font-variant-numeric:tabular-nums}
+.branch .bmeta .bar{max-width:160px}
+.branch.complete .bname .go::after{content:" ✓"}
+.crumb{font-size:var(--fs-sm);text-decoration:none;font-weight:700}
+.bhead{display:grid;gap:8px}
+.bhead .bmeta{display:flex;gap:10px;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
+.bhead .bmeta .bar{max-width:220px}
+.othergrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.othergrid .branch::before{display:none}
 footer{padding-block:24px 40px;color:var(--muted);font-size:var(--fs-sm);border-top:1px solid var(--line)}
 @media (max-width:560px){.plan .wk{grid-template-columns:1fr;gap:2px}.lesson>summary{grid-template-columns:auto 1fr}.lcount{grid-column:2}}
 /* typography: readable measure, aligned labels, steady numbers */
@@ -335,6 +356,13 @@ ol.steps input{margin-top:.2em}
   <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small muted" id="codeMsg"></span></div></div>
   <p class="small muted" id="resetConfirm" hidden>Точно стереть все галочки? <button class="btn" id="resetYes" type="button">Да, стереть</button> <button class="btn" id="resetNo" type="button">Нет</button></p>
   <div id="lessonList" style="display:grid;gap:10px"></div>
+  <div id="forkBox"></div>
+</section>
+
+<section class="view" id="v-branch" hidden>
+  <div id="branchHead"></div>
+  <div id="branchList" style="display:grid;gap:10px"></div>
+  <div id="branchOther"></div>
 </section>
 
 <section class="view" id="v-recipes" hidden>
@@ -1025,41 +1053,59 @@ ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
 <p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland ↗</a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
 </div></div></details>`}
+function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
+ const dn=ls.filter(l=>l.steps.every((_,i)=>done[l.n+"-"+i])).length;
+ const steps=ls.reduce((a,l)=>a+l.steps.length,0),sd=ls.reduce((a,l)=>a+l.steps.filter((_,i)=>done[l.n+"-"+i]).length,0);
+ const ses=ls.reduce((a,l)=>a+(SES[l.n]?1:(PARTS[l.n]||[]).length+1),0);return {ls,dn,steps,sd,ses}}
+function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
+function branchTile(sec,showList){const st=secStats(sec);
+ return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname">${esc(sec.name.replace("Ветка · ",""))}<span class="go">Открыть →</span></span>
+ <span class="bdesc">${esc(sec.desc)}</span>
+ ${showList?`<span class="bles">${st.ls.map(l=>`${l.n} · ${esc(l.t)}`).join("<br>")}</span>`:""}
+ <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
+function bindDetails(box){box.querySelectorAll("details").forEach(d=>{d.addEventListener("toggle",saveOpen);if(focus[d.dataset.n]!=null)placeFocus(d.dataset.n)})}
+function saveOpen(){const o=new Set(store.get("p6open",[]));document.querySelectorAll("details.lesson").forEach(d=>{if(d.open)o.add(d.dataset.n);else o.delete(d.dataset.n)});store.set("p6open",[...o])}
 function renderLessons(){
   const box=document.getElementById("lessonList");
   const open=store.get("p6open",[]);
-  let html="";
-  SECTIONS.forEach(sec=>{
-    const ls=sec.order.map(lessonByN).filter(Boolean);
-    const dn=ls.filter(l=>l.steps.every((_,i)=>done[l.n+"-"+i])).length;
-    html+=`<div class="levelhead"><h2>${sec.name}</h2><span>${sec.span} · пройдено уроков ${dn} из ${ls.length}</span></div><p class="secdesc">${esc(sec.desc)}</p>`;
-    ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
-  });
-  box.innerHTML=html;
-  box.querySelectorAll("details").forEach(d=>{d.addEventListener("toggle",()=>{
-    const o=[...box.querySelectorAll("details[open]")].map(x=>x.dataset.n);store.set("p6open",o)});if(focus[d.dataset.n]!=null)placeFocus(d.dataset.n)});
+  const base=SECTIONS[0],st=secStats(base);
+  let html=`<div class="levelhead"><h2>${base.name}</h2><span>${base.span} · пройдено уроков ${st.dn} из ${st.ls.length}</span></div><p class="secdesc">${esc(base.desc)}</p>`;
+  st.ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
+  box.innerHTML=html;bindDetails(box);
+  document.getElementById("forkBox").innerHTML=`<div class="forkhead"><span class="node"></span><h2>Ветки</h2></div><p class="secdesc" style="margin:4px 0 0 24px">После базы выбирай любую ветку, порядок не важен. Каждая открывается отдельной страницей.</p>
+  <div class="fork">${SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("")}</div>`;
+  if(curBranch)renderBranch(curBranch);
   updateProgress();
 }
+let curBranch=null;
+function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
+ document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons">← Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(sec.desc)} Уроки ${sec.span}.</p>
+ <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
+ const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
+ document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin-top:14px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
 function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done)}
 function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
- const cnt=l.steps.filter((_,i)=>done[n+"-"+i]).length;det.querySelector(".lcount").textContent=cnt+" / "+l.steps.length;det.classList.toggle("complete",cnt===l.steps.length);updateProgress()}
+ const cnt=l.steps.filter((_,i)=>done[n+"-"+i]).length;det.querySelector(".lcount").textContent=cnt+" / "+l.steps.length;det.classList.toggle("complete",cnt===l.steps.length);updateProgress();refreshTiles()}
+function refreshTiles(){const fb=document.querySelector("#forkBox .fork");if(fb)fb.innerHTML=SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("");
+ if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
 function placeFocus(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);let i=focus[n];
  det.querySelectorAll("li.cur").forEach(x=>x.classList.remove("cur"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
  const sp=PARTS[n]||[];let part=0;sp.forEach(x=>{if(i>=x)part++});
  det.querySelector(".fpos").textContent=`Шаг ${i+1} из ${l.steps.length}`+(sp.length?` · занятие ${part+1}`:"")}
-document.getElementById("lessonList").addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
+["lessonList","branchList"].forEach(hid=>{const host=document.getElementById(hid);
+host.addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
  setStep(cb.dataset.k,cb.checked);cb.closest("li").classList.toggle("on",cb.checked);refreshLesson(cb.closest("details").dataset.n)});
-document.getElementById("lessonList").addEventListener("click",e=>{
+host.addEventListener("click",e=>{
  const f=e.target.closest("[data-focus]");if(f){const n=f.dataset.focus,l=lessonByN(n);
   if(focus[n]!=null){delete focus[n]}else{let i=l.steps.findIndex((_,k)=>!done[n+"-"+k]);focus[n]=i<0?0:i}
   const det=f.closest("details");det.outerHTML=lessonHTML(l,true);const nd=document.querySelector(`details[data-n="${n}"]`);
-  nd.addEventListener("toggle",()=>{const o=[...document.querySelectorAll("#lessonList details[open]")].map(x=>x.dataset.n);store.set("p6open",o)});
+  nd.addEventListener("toggle",saveOpen);
   if(focus[n]!=null){placeFocus(n);nd.scrollIntoView({block:"start"})}return}
  const nx=e.target.closest("[data-fnext]");if(nx){const n=nx.dataset.fnext,l=lessonByN(n),i=focus[n];const k=n+"-"+i;setStep(k,true);
   const li=document.querySelector(`details[data-n="${n}"] li[data-si="${i}"]`);if(li){li.classList.add("on");li.querySelector("input").checked=true}
   refreshLesson(n);if(i<l.steps.length-1){focus[n]=i+1;placeFocus(n)}else{document.querySelector(`details[data-n="${n}"] .fpos`).textContent="Урок пройден! Можно выйти из режима по шагам."}return}
  const pv=e.target.closest("[data-fprev]");if(pv){const n=pv.dataset.fprev;if(focus[n]>0){focus[n]--;placeFocus(n)}return}
-});
+});});
 function updateProgress(){
   const total=lessons.reduce((a,l)=>a+l.steps.length,0);
   const n=Object.keys(done).length;
@@ -1314,14 +1360,21 @@ document.getElementById("loadCodeBtn").onclick=()=>{cbx.hidden=false;document.ge
 document.getElementById("codeClose").onclick=()=>{cbx.hidden=true};
 document.getElementById("codeApply").onclick=()=>{try{const o=readCode(ctx.value);let n=0;o.d.forEach(k=>{if(!done[k]){done[k]=1;n++}});(o.c||[]).forEach(k=>{chDone[k]=1});
  store.set("p6done",done);store.set("p6chd",chDone);renderLessons();renderChallenges();cmsg.textContent="Загружено, новых отметок: "+n+"."}catch(e){cmsg.textContent="Код не подошёл. Скопируй его целиком, он начинается с P6:"}};
-function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>a.onclick=()=>{const o=store.get("p6open",[]);if(!o.includes(a.dataset.open))o.push(a.dataset.open);store.set("p6open",o);setTimeout(()=>{renderLessons();const el=document.querySelector(`details[data-n="${a.dataset.open}"]`);if(el)el.scrollIntoView({block:"start"})},50)})}
+function lessonHash(n){const sec=SECTIONS.find(x=>x.order.includes(n));return !sec||sec.id==="base"?"lessons":"branch-"+sec.id}
+function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>{const n=a.dataset.open;a.setAttribute("href","#"+lessonHash(n));a.onclick=ev=>{ev.preventDefault();const o=store.get("p6open",[]);if(!o.includes(n))o.push(n);store.set("p6open",o);
+ const h=lessonHash(n);if(location.hash!=="#"+h)location.hash=h;else route();setTimeout(()=>{renderLessons();const el=document.querySelector(`details[data-n="${n}"]`);if(el)el.scrollIntoView({block:"start"})},80)}})}
 /* ---------------- ROUTING ---------------- */
 const views=["start","panel","lessons","recipes","challenges","cheats","videos"];
 function route(){
-  let h=(location.hash||"#start").slice(1);if(!views.includes(h))h="start";
+  let h=(location.hash||"#start").slice(1);let br=null;
+  if(h.startsWith("branch-")&&SECTIONS.some(x=>"branch-"+x.id===h&&x.id!=="base")){br=h.slice(7);h="branch"}
+  else if(!views.includes(h))h="start";
+  document.getElementById("v-branch").hidden=h!=="branch";
   views.forEach(v=>{document.getElementById("v-"+v).hidden=v!==h});
-  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"page":"false"));
-  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
+  if(br)renderBranch(br);else curBranch=null;
+  const tab=h==="branch"?"lessons":h;
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+tab?"page":"false"));
+  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:"br-"+(br||"").slice(0,1).toUpperCase(),recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
 }
 window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0)});
