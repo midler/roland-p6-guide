@@ -1,0 +1,1209 @@
+<title>Тренажёр Roland P-6</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one-column course shell; a sticky tab bar; content cards set on a cool graphite ground like the P-6 body. */
+:root{
+  --bg:#e7e9ec; --surface:#f6f7f8; --surface-2:#eef0f2; --ink:#16181c; --muted:#596170; --line:#cbd0d7;
+  --accent:#1f6f86; --accent-ink:#ffffff; --accent-soft:#d6e8ee; --done:#2f7d4f; --warn:#9a5b00;
+  --key-bg:#2a2d33; --key-ink:#f1f2f4; --key-edge:#111316;
+  --lcd-bg:#1a0d0a; --lcd-ink:#ff5a36;
+  --f-display:"Unbounded","Manrope",system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --surface:#1b1e23; --surface-2:#22262c; --ink:#e9ebef; --muted:#9aa3b2; --line:#2f343c;
+  --accent:#5fb7cf; --accent-ink:#0d1316; --accent-soft:#1d3540; --done:#5cc487; --warn:#e0a446;
+  --key-bg:#3a3f47; --key-ink:#f4f5f7; --key-edge:#08090b; --lcd-bg:#0d0605; --lcd-ink:#ff6a45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1b1e23; --surface-2:#22262c; --ink:#e9ebef; --muted:#9aa3b2; --line:#2f343c;
+  --accent:#5fb7cf; --accent-ink:#0d1316; --accent-soft:#1d3540; --done:#5cc487; --warn:#e0a446;
+  --key-bg:#3a3f47; --key-ink:#f4f5f7; --key-edge:#08090b; --lcd-bg:#0d0605; --lcd-ink:#ff6a45; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(1.6rem,4.5vw,2.4rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.02rem;font-weight:500}
+p{margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hero{padding-block:28px 18px;display:grid;gap:14px}
+.hero .lede{max-width:62ch;color:var(--muted)}
+.lcdline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.meta{font-size:.82rem;color:var(--muted)}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:8px}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:700;font-size:.9rem;padding:8px 12px;border-radius:8px}
+nav.tabs a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+main{padding-block:22px 60px}
+section.view{display:grid;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+/* hardware chips */
+kbd{font-family:var(--f-mono);font-size:.78em;font-weight:700;background:var(--key-bg);color:var(--key-ink);border-radius:5px;padding:.12em .45em;border-bottom:2px solid var(--key-edge);white-space:nowrap;letter-spacing:.02em}
+kbd .fn{opacity:.7;font-weight:500}
+.lcd{font-family:var(--f-mono);font-weight:700;background:var(--lcd-bg);color:var(--lcd-ink);padding:.08em .4em;border-radius:3px;font-size:.84em;letter-spacing:.08em;white-space:nowrap;text-shadow:0 0 6px color-mix(in srgb,var(--lcd-ink) 50%,transparent)}
+.lcd.big{font-size:1.5rem;padding:.15em .5em;letter-spacing:.18em}
+.plus{color:var(--muted);font-weight:700;margin:0 .15em}
+/* start */
+.legend{display:grid;gap:10px}
+.legend div{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.plan{display:grid;gap:10px;counter-reset:wk}
+.plan .wk{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.plan .wk:first-child{border-top:0}
+.plan .wk b{font-family:var(--f-mono);font-size:.82rem;color:var(--accent);padding-top:2px}
+.chiplinks{display:flex;flex-wrap:wrap;gap:6px}
+.chiplinks a{font-size:.85rem;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--ink);background:var(--surface-2)}
+/* panel explorer */
+.modes{display:flex;flex-wrap:wrap;gap:6px}
+.modes button,.btn{font:inherit;font-weight:700;font-size:.88rem;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.device{background:var(--key-edge);border-radius:14px;padding:14px;display:grid;gap:12px;color:#d7dbe1}
+.zone{display:grid;gap:8px}
+.zone>span{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#8c95a3}
+.ctrls{display:flex;flex-wrap:wrap;gap:6px}
+.ctrl{font-family:var(--f-mono);font-size:.76rem;font-weight:700;border:1px solid #3c424b;background:#24282e;color:#e8ebef;border-radius:7px;padding:7px 9px;cursor:pointer;min-width:44px;text-align:center;transition:opacity .15s,background .15s}
+.ctrl.knob{border-radius:999px}
+.ctrl.pad{min-width:58px;padding:14px 8px;background:#30353d}
+.ctrl small{display:block;font-weight:500;color:#9aa3b2;font-size:.66rem}
+.ctrl.dim{opacity:.28}
+.ctrl.hot{border-color:#ff6a45;box-shadow:0 0 0 1px #ff6a45 inset}
+.ctrl[aria-pressed="true"]{background:#ff6a45;color:#140806;border-color:#ff6a45}
+.ctrl[aria-pressed="true"] small{color:#3a130b}
+.toprow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.detail{min-height:120px}
+.detail ul{margin:8px 0 0;padding-left:18px;display:grid;gap:6px}
+.detail .tag{font-family:var(--f-mono);font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+/* lessons */
+.progress{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}.progress .bar{min-width:120px}
+.bar{flex:1;height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--done);width:0;transition:width .3s}
+.lesson{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.lesson>summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.lesson>summary::-webkit-details-marker{display:none}
+.lnum{font-family:var(--f-mono);font-weight:700;font-size:.8rem;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:4px 7px;min-width:38px;text-align:center}
+.lesson.complete .lnum{background:var(--done);color:var(--surface);border-color:var(--done)}
+.lmeta{font-size:.8rem;color:var(--muted)}
+.lcount{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);white-space:nowrap}
+.lbody{padding:0 16px 18px;display:grid;gap:14px;min-width:0}
+.goal{border-left:3px solid var(--accent);padding-left:12px}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;counter-increment:s}
+ol.steps input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--done);cursor:pointer}
+ol.steps label{cursor:pointer;min-width:0}
+ol.steps li.on label{color:var(--muted)}
+.box{background:var(--surface-2);border-radius:10px;padding:12px 14px;display:grid;gap:6px}
+.box .btn{padding:3px 9px;font-size:.78rem;margin:0 2px 4px 0}
+.box h4{margin:0;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:var(--f-mono)}
+.box.task h4{color:var(--accent)}
+.box.warn h4{color:var(--warn)}
+.levelhead{display:flex;align-items:baseline;gap:10px;margin-top:6px}
+.levelhead span{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+/* challenges */
+.dice{display:grid;gap:12px}
+.dice .out{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.dice .slot{background:var(--surface-2);border-radius:10px;padding:10px 12px;min-height:72px}
+.dice .slot b{display:block;font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.ch{display:grid;gap:8px;align-content:start}
+.ch .tags{display:flex;gap:6px;flex-wrap:wrap}
+.ch .tags span{font-size:.72rem;font-family:var(--f-mono);border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted)}
+.ch label{display:flex;gap:8px;align-items:center;font-size:.86rem;color:var(--muted);cursor:pointer}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+/* cheats */
+.search{width:100%;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+td:first-child{white-space:normal;min-width:190px}
+/* videos */
+.vid{display:grid;gap:4px}
+.vid a{font-weight:700;text-decoration:none}
+/* step grids */
+.seq{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0}
+.seq-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.seq-head h4{margin:0;font-size:.9rem;font-family:var(--f-body)}
+.seq-head .ctl{display:flex;gap:6px;align-items:center;font-size:.8rem;color:var(--muted)}
+.seq-wrap{overflow-x:auto}
+.seq-grid{display:grid;grid-template-columns:minmax(44px,auto) repeat(16,minmax(0,1fr));gap:3px;align-items:end}
+@media (max-width:520px){.seq-grid{gap:2px}.seq-grid .lbl{font-size:.66rem;padding-right:3px}.seq-grid .num{font-size:.55rem}.cell.q{margin-left:2px}.cell{height:24px;border-radius:3px}.seq{padding:10px}}
+.seq-grid .lbl{font-size:.74rem;line-height:1.15;color:var(--ink);padding-right:6px}
+.seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:.66rem}
+.seq-grid .num{font-family:var(--f-mono);font-size:.62rem;text-align:center;color:var(--muted)}
+.seq-grid .num.beat{color:var(--accent);font-weight:700}
+.cell{height:26px;border-radius:4px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;position:relative;overflow:hidden}
+.cell.q{margin-left:4px}
+.cell.on{background:var(--accent);border-color:var(--accent)}
+.cell.on.prob{opacity:.45}
+.cell .lvl{position:absolute;left:0;right:0;bottom:0;background:var(--accent)}
+.cell.lvlcell{background:var(--surface)}
+.cell .tag{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:.55rem;color:var(--accent-ink);font-weight:700}
+.cell.now{outline:2px solid var(--lcd-ink);outline-offset:1px}
+.seq-note{font-size:.78rem;color:var(--muted)}
+.secdesc{color:var(--muted);font-size:.88rem;margin:-4px 0 4px}
+ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4px;padding-top:10px;font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding-top:6px;grid-template-columns:none}
+.lrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.focusbar{display:none;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-radius:10px;padding:10px}
+.focusmode .focusbar{display:flex}
+.focusmode ol.steps li{display:none}
+.focusmode ol.steps li.cur{display:grid;font-size:1.12rem;line-height:1.5;padding:14px;border:2px solid var(--accent);border-radius:10px;background:var(--surface)}
+.focusmode ol.steps li.cur input{width:26px;height:26px}
+.focusmode .hideinfocus{display:none}
+.focusbar .fpos{font-family:var(--f-mono);font-size:.82rem;color:var(--muted);margin-right:auto}
+.codebox{display:grid;gap:8px}
+.codebox textarea{width:100%;min-height:64px;font-family:var(--f-mono);font-size:.78rem;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.chords{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.chord{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px}
+.chord b{font-family:var(--f-display);font-size:.95rem}
+.chord .notes{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.piano{position:relative;height:56px;display:flex}
+.piano .w{flex:1;border:1px solid var(--line);background:#fafafa;border-radius:0 0 4px 4px;position:relative}
+.piano .w.on{background:var(--accent)}
+.piano .bk{position:absolute;top:0;height:58%;background:#2a2d33;border-radius:0 0 3px 3px;z-index:1}
+.piano .bk.on{background:var(--accent);outline:1px solid #2a2d33}
+.piano .w span{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.55rem;font-family:var(--f-mono);color:#555}
+.piano .w.on span{color:var(--accent-ink)}
+.recipe{display:grid;gap:14px}
+.recipe .meta{display:flex;gap:8px;flex-wrap:wrap}
+.recipe .meta span{font-family:var(--f-mono);font-size:.75rem;border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.recipe ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.cell.hold{background:color-mix(in srgb,var(--accent) 35%,var(--surface));border-color:var(--accent)}
+footer{padding-block:24px 40px;color:var(--muted);font-size:.84rem;border-top:1px solid var(--line)}
+@media (max-width:560px){.plan .wk{grid-template-columns:1fr;gap:2px}.lesson>summary{grid-template-columns:auto 1fr}.lcount{grid-column:2}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="wrap hero">
+  <div class="lcdline"><span class="lcd big" id="lcdHero">P-6</span><span class="meta">По официальному руководству Roland, система Ver.&nbsp;1.02</span></div>
+  <h1>Тренажёр Roland P-6</h1>
+  <p class="lede">База из 11 уроков, четыре ветки по целям, рецепты лоу-фая, эмбиента и драм-н-бейса. Везде точные нажатия кнопок, сетки битов и аккордов, которые можно послушать, творческие задания и шпаргалка. Галочки сохраняются в этом браузере, а на другое устройство их переносит код прогресса.</p>
+</header>
+
+<nav class="tabs" aria-label="Разделы">
+  <div class="wrap">
+    <a href="#start">Как пользоваться</a>
+    <a href="#panel">Панель</a>
+    <a href="#lessons">Уроки</a>
+    <a href="#recipes">Жанры</a>
+    <a href="#challenges">Творческие задачи</a>
+    <a href="#cheats">Шпаргалка</a>
+    <a href="#videos">Видео и ссылки</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section class="view" id="v-start">
+  <div class="grid2">
+    <div class="card legend">
+      <h2>Как читать гайд</h2>
+      <div><kbd>SHIFT</kbd><span class="plus">+</span><kbd>G <span class="fn">VOICE</span></kbd><span>держи первую кнопку и нажми вторую</span></div>
+      <div><kbd>C♯ <span class="fn">ENTER</span></kbd><span>кнопка-шаг: на ней нота и функция мелким шрифтом</span></div>
+      <div><kbd>▶ <span class="fn">COPY</span></kbd><span>вторая функция кнопки, подписанная рядом с ней мелким шрифтом. Работает вместе с SHIFT. Отдельной кнопки COPY нет: это кнопка старта ▶ с зажатым SHIFT</span></div>
+      <div><span class="lcd">donE</span><span>что появится на дисплее (буквы как на 7-сегментном экране)</span></div>
+      <div><kbd>▶</kbd> <kbd>●</kbd><span>старт/стоп и запись</span></div>
+      <p class="small muted">Совет из «ЗОЖ» Vladislav CREW: сначала покрути прибор и посмотри ролики, потом перечитай руководство. Через месяц сочетания с SHIFT запоминаются сами.</p>
+      <p class="small muted">«Главный экран» — режим, в котором дисплей показывает темп (сразу после включения). Почти все меню закрываются кнопкой <kbd>C <span class="fn">EXIT</span></kbd>, иногда её нужно нажать дважды.</p>
+    </div>
+    <div class="card legend">
+      <h2>Три правила P-6</h2>
+      <p><b>1. Сохраняй вручную.</b> Точка в правом нижнем углу дисплея означает несохранённые правки. При выключении они пропадут, в том числе если сядет батарея: красный индикатор CHARGE значит, что до отключения меньше 30 минут. Сохранение: <kbd>SHIFT</kbd><span class="plus">+</span><kbd>TIE <span class="fn">WRITE</span></kbd>. Сами записанные сэмплы сохраняются сразу, вручную сохранять нужно настройки пэдов, паттерны и эффекты. Перед сохранением останови паттерн кнопкой <kbd>▶</kbd>: во время игры дисплей пишет <span class="lcd">StoP</span> и не сохраняет.</p>
+      <p><b>2. Сэмплы общие, паттерны свои.</b> 48 сэмплов (8 банков × 6 пэдов) и их настройки одни на все 64 паттерна. Гранулярный пэд, мьюты и темп хранятся в паттерне.</p>
+      <p><b>3. Сначала бэкап.</b> Сброс к заводским настройкам не возвращает заводские сэмплы. Их можно только скачать с сайта Roland. Поэтому урок 0 — экспорт.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Как проходить курс</h2>
+    <p class="muted small" style="margin:6px 0 10px">Темп выбираешь сам. У каждого урока написано, сколько занятий по 30 минут он займёт, а длинные уроки разбиты на части.</p>
+    <div class="plan" id="plan"></div>
+  </div>
+  <div class="card">
+    <h2>Что у прибора внутри</h2>
+    <div class="grid2" style="margin-top:10px">
+      <p class="small"><b>Сэмплы:</b> 48 шт. Максимум на сэмпл: 5,9 с (44,1 кГц, моно), 11,8 с (22 кГц), 17,8 с (14,7 кГц), 23,7 с (11 кГц). В стерео время вдвое меньше.</p>
+      <p class="small"><b>Паттерны:</b> 64 (банки 1–4 × 16). В 1-01…1-16 заводские пресеты, остальные пустые. До 64 шагов в паттерне.</p>
+      <p class="small"><b>Голоса:</b> сэмплы — до 16 одновременно, гранулярный пэд — до 4.</p>
+      <p class="small"><b>Эффекты:</b> 20 мульти-эффектов (5 на отдельных кнопках), плюс общие DELAY и REVERB.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Чего P-6 не умеет</h2>
+    <p class="muted small" style="margin:6px 0 10px">Об этом говорят почти все обзоры. Лучше знать заранее и не искать функцию, которой нет.</p>
+    <div class="grid2">
+      <p class="small"><b>Нет карты памяти.</b> Всего 48 сэмплов. Старое выгружай на компьютер (урок 00), а 8–16 ударов можно уложить на один пэд (урок 19).</p>
+      <p class="small"><b>Нет «ленивой» нарезки.</b> Нельзя ставить метки нажатиями на ходу. Есть только деление на равные части (Chop) и step sampling.</p>
+      <p class="small"><b>Пэды не чувствуют силу нажатия.</b> Громкость удара задаётся в шаге (урок 04) или параметром <span class="lcd">vELo</span> в меню. С MIDI-клавиатуры сила передаётся.</p>
+      <p class="small"><b>Нет режима песни.</b> Паттерны переключаются вручную, следующий начинается после текущего. Длинные треки удобно собирать в DAW по USB.</p>
+      <p class="small"><b>Настройки пэда общие.</b> Перекрутил бас в новом паттерне — он изменился и во всех старых. Для вариантов копируй пэд (урок 21).</p>
+      <p class="small"><b>Ручки CTRL не записываются.</b> Движения эффектов в паттерн не попадают, для этого ресемплируй. Нет и тап-темпа.</p>
+      <p class="small"><b>Нет встроенного динамика.</b> Нужны наушники, колонка или телефон по USB-C.</p>
+      <p class="small"><b>Реверс только на весь пэд.</b> Перевернуть один шаг нельзя. Нужен перевёрнутый удар — скопируй пэд и включи реверс на копии.</p>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-panel" hidden>
+  <div class="card">
+    <h2>Интерактивная панель</h2>
+    <p class="muted small" style="margin-top:6px">Выбери, какую кнопку держишь, и подсветятся органы, у которых есть функция в этом сочетании. Нажми на любой орган, чтобы увидеть всё, что он умеет. Органы сгруппированы по смыслу, как в руководстве, а не по точному расположению на корпусе.</p>
+  </div>
+  <div class="modes" role="group" aria-label="Что удерживаешь" id="modes"></div>
+  <div class="device" id="device"></div>
+  <div class="card detail" id="detail" aria-live="polite"><p class="muted">Нажми на кнопку, ручку или пэд на схеме выше.</p></div>
+</section>
+
+<section class="view" id="v-lessons" hidden>
+  <div class="card progress"><b class="small">Пройдено</b><div class="bar"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить</button></div>
+  <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small muted" id="codeMsg"></span></div></div>
+  <p class="small muted" id="resetConfirm" hidden>Точно стереть все галочки? <button class="btn" id="resetYes" type="button">Да, стереть</button> <button class="btn" id="resetNo" type="button">Нет</button></p>
+  <div id="lessonList" style="display:grid;gap:10px"></div>
+</section>
+
+<section class="view" id="v-recipes" hidden>
+  <div class="card"><h2>Жанровые рецепты</h2><p class="muted small" style="margin-top:6px">Как собрать трек в трёх жанрах: темп, бит, какие пэды взять, приёмы и итоговое задание. Порядок по сложности: лоу-фай → эмбиент → драм-н-бейс. Звуки в примерах синтезированы в браузере, на P-6 бери пэды из списка.</p></div>
+  <div id="recipeList" style="display:grid;gap:18px"></div>
+</section>
+
+<section class="view" id="v-challenges" hidden>
+  <div class="card dice">
+    <h2>Генератор задания</h2>
+    <p class="muted small">Брось кубики: получишь источник звука, ограничение, эффект и темп. Сделай из этого паттерн за 20 минут и сохрани его.</p>
+    <div class="out" id="diceOut"></div>
+    <div><button class="btn primary" id="roll" type="button">Бросить кубики</button></div>
+  </div>
+  <div class="filters" id="chFilters" role="group" aria-label="Фильтр заданий"></div>
+  <div class="grid2" id="chList"></div>
+</section>
+
+<section class="view" id="v-cheats" hidden>
+  <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, метроном, chop…" aria-label="Поиск по шпаргалке">
+  <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
+</section>
+
+<section class="view" id="v-videos" hidden>
+  <div class="card">
+    <h2>Видео и источники</h2>
+    <p class="muted small" style="margin-top:6px">Ссылки на подходящие ролики есть и внизу каждого урока. Ролики привязаны к урокам по расшифровкам их субтитров. Внутри уроков есть ссылки сразу на нужную минуту. Нажатия в старых видео могут отличаться, если прошивка старше 1.02. Сверяй со шпаргалкой.</p>
+  </div>
+  <div class="grid2" id="vidList"></div>
+</section>
+
+</main>
+<footer class="wrap">Источник нажатий — официальное онлайн-руководство Roland P-6 (static.roland.com/manuals/p-6), версия системы 1.02. Если что-то на твоём приборе ведёт себя иначе, проверь версию прошивки на странице поддержки Roland.</footer>
+
+<script>
+(function(){
+const M="https://static.roland.com/manuals/p-6/en-US/";
+/* text formatter: [KEY · FN] -> kbd, ⟨TXT⟩ -> lcd, + between -> plus */
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function fmt(s){
+  s=esc(s);
+  s=s.replace(/\[([^\]]+)\]/g,(m,k)=>{const p=k.split(" · ");return "<kbd>"+p[0]+(p[1]?" <span class=\"fn\">"+p[1]+"</span>":"")+"</kbd>"});
+  s=s.replace(/⟨([^⟩]+)⟩/g,'<span class="lcd">$1</span>');
+  s=s.replace(/ \+ /g,'<span class="plus">+</span>');
+  return s;
+}
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------------- LESSONS ---------------- */
+const SECTIONS=[
+ {id:"base",name:"База",span:"проходи по порядку",desc:"Без этого не обойтись: звуки, паттерны, ритм и ноты.",order:["00","01","02","T2","03","T1","04","05","06","07","08"]},
+ {id:"beats",name:"Ветка · Биты",span:"в любом порядке",desc:"Свои звуки и нарезка: из чего собирать бит.",order:["09","10","11","19","23"]},
+ {id:"sound",name:"Ветка · Саунд-дизайн",span:"в любом порядке",desc:"Гранулы, синты из сэмплов, эффекты. Для эмбиента и текстур.",order:["12","16","13"]},
+ {id:"live",name:"Ветка · Живая игра",span:"в любом порядке",desc:"Как играть паттернами вживую и записывать сет.",order:["15","17","18"]},
+ {id:"comp",name:"Ветка · Компьютер и порядок",span:"в любом порядке",desc:"Импорт, MIDI, Ableton и как не запутаться в 48 сэмплах.",order:["14","20","21","22"]}];
+const PARTS={"23":[4],"02":[5],"04":[5],"06":[5],"08":[6],"09":[4],"10":[3],"11":[3],"12":[3],"13":[6],"14":[4],"15":[2,5],"16":[5],"19":[4],"20":[4]};
+const SES={"00":"≈ 15 минут","21":"≈ 20 минут"};
+const GL={"23":"Какой пак собрать под жанр","04":"Как бит строится в лоу-фае и драм-н-бейсе","06":"Сабстепы и вероятность в драм-н-бейсе","11":"Нарезка брейка для драм-н-бейса","12":"Гранулы в эмбиенте","13":"Эффекты для лоу-фая и эмбиента","T2":"Аккорды для каждого жанра","16":"Синт-пэд для эмбиента"};
+const lessons=[
+{n:"00",lv:"L1",t:"Страховка: бэкап до экспериментов",time:"15 мин",page:"124639499124688139",
+ goal:"Сохранить заводские сэмплы и паттерны на компьютер, чтобы смело удалять и перезаписывать.",
+ steps:[
+ "Выключи P-6 и подключи его к компьютеру USB-кабелем, который передаёт данные (не кабелем только для зарядки).",
+ "Держи кнопки банков [A/E] [B/F] [C/G] [D/H] и включи [POWER]. Так экспортируются банки A–D.",
+ "Подожди около минуты: прогресс показывают кнопки-шаги. Открой на компьютере диск «P-6», папку EXPORT.",
+ "Скопируй все WAV и PRM к себе. Извлеки диск («Извлечь» в Windows, перетащи в корзину на Mac) и выключи P-6.",
+ "Повтори для банков E–H: держи [A/E]–[D/H] вместе с [SAMPLING] и включи питание.",
+ "Паттерны: держи [▶] и включи питание. Скопируй файлы P6_PTN1-01.PRM … P6_PTN4-16.PRM из папки BACKUP."],
+ check:"На компьютере лежит папка с WAV-сэмплами, PRM-настройками и 64 файлами паттернов.",
+ warn:"Сброс к заводским настройкам не восстанавливает заводские сэмплы и паттерны. Их можно только скачать со страницы поддержки Roland или вернуть из этого бэкапа."},
+{n:"01",tc:[["-gMw6gDpS9I", "14:46", "Первое включение: типичные затруднения"], ["tKkJvIwi23M", "16:13", "Заводские паттерны (PNV)"], ["MF4EohXfTEo", "06:35", "Остановить все звуки"]],lv:"L1",t:"Первый звук, банки и пресеты",time:"30 мин",page:"114038283114165131",
+ goal:"Понять главный экран, переключать банки и паттерны, глушить пэды на ходу.",
+ steps:[
+ "Включи [POWER], поставь [VOLUME] примерно на середину. На дисплее темп: это главный экран.",
+ "Понажимай пэды [1]–[6]. Это банк A.",
+ "Нажми [B/F], [C/G], [D/H]: кнопка горит — выбран банк A–D. Нажми ту же кнопку ещё раз: она мигает — выбран банк E–H.",
+ "Нажми [▶]: играет текущий паттерн. Ещё раз [▶] — стоп.",
+ "Выбор паттерна: нажми [PATTERN] (загорится). Держи [PATTERN] и нажми шаг 1 — это банк 1. Отпусти и нажми шаг 1–16 — номер паттерна. Выход — снова [PATTERN].",
+ "Переключи паттерн во время игры: его кнопка замигает, и он начнётся, когда доиграет текущий.",
+ "Темп: крути [TEMPO/VALUE] (40–300). С зажатым [SHIFT] — точная подстройка по 0,1.",
+ "Мьют: [SHIFT] + пэд глушит пэд, [SHIFT] + [A/E] глушит весь банк. Повтори, чтобы включить обратно.",
+ "Не можешь найти, в каком банке играет звук? Глуши банки по очереди через [SHIFT] + кнопку банка, пока звук не пропадёт. А лучше сразу заведи порядок (урок 21)."],
+ check:"Ты в такт переключаешь заводские паттерны 1-01…1-16 и выключаешь/включаешь отдельные пэды.",
+ task:"«Диджей на пресетах»: 2 минуты играй только переключением паттернов, темпом и мьютами. Запиши на телефон."},
+{n:"02",tc:[["OgHoQyyOL1o", "07:06", "Редактирование сэмпла (Roland)"], ["SqH9BcxpVhk", "14:03", "Откат и очистка (Vladislav CREW)"], ["TTpTh6zf2N8", "05:18", "Подсмотреть значение ручки"]],lv:"L1",t:"Характер звука пэда",time:"40 мин",page:"130545803130564363",
+ goal:"Менять высоту, начало, длину, режим воспроизведения и направление сэмпла, а потом сохранять или откатывать правки.",
+ steps:[
+ "Нажми пэд: он выбран. На главном экране ручки работают так: [PITCH] — высота (±24 полутона), [START] — начало, [END] — длина, [LEVEL] — громкость.",
+ "[GATE]: выключена — сэмпл доигрывает до конца (one-shot), включена — звучит, пока держишь пэд.",
+ "[LOOP] включает петлю. [SHIFT] + [LOOP] меняет направление: ⟨FrWd⟩ вперёд, ⟨rvrS⟩ назад, ⟨ALt⟩ туда-обратно.",
+ "[LO-Fi] портит звук понижением битности. Сила: [SHIFT] + [LO-Fi] → ⟨LoFi⟩ → [C♯ · ENTER] → крути [TEMPO/VALUE] → [C · EXIT].",
+ "Если петля в one-shot не останавливается, нажми пэд ещё раз. Остановить всё сразу: [SHIFT] + [C · EXIT].",
+ "Не понравилось? [SHIFT] + [OCT+ · MENU] → ⟨rL.Pd⟩ → [C♯ · ENTER]: пэд вернётся к последнему сохранению.",
+ "Если ты пришёл с SP-404: [SHIFT] + [▶] здесь не стоп, а меню копирования. Остановить всё — [SHIFT] + [C · EXIT].",
+ "Понравилось? [SHIFT] + [TIE · WRITE] → ⟨PAd⟩ → [C♯ · ENTER].",
+ "Подсмотреть значение, не меняя звук: держи [PATTERN] и поверни ручку — дисплей покажет текущее значение. Ручки на P-6 с упором, и без этого легко «перепрыгнуть» настройку.",
+ "Большие числа (точное начало, длина) в меню листаются медленно: крути [TEMPO/VALUE] с зажатым [SHIFT].",
+ "Осторожно с [TEMPO/VALUE]: если случайно вышел из меню на главный экран, эта же ручка меняет темп. Ручки стоят тесно, при быстрой игре легко задеть соседнюю.",
+ "Быстрый откат всего несохранённого: выключи и включи питание. Вернётся последнее сохранение."],
+ check:"Ты сделал из заводского сэмпла заметно другой звук и сохранил его.",
+ task:"«Один звук — четыре роли». Скопируй сэмпл на пустые пэды: держи пэд + [SHIFT] + [▶ · COPY] → ⟨COPY⟩ → [C♯ · ENTER] → мигающий пустой пэд → [C♯ · ENTER]. Сделай из копий бочку (ниже и короче), подъём (реверс и петля), стаб (GATE) и лоу-фай вариант. Поменять два сэмпла местами: тот же путь, но ⟨EXCG⟩. Ноты в паттернах при этом остаются на прежних пэдах."},
+{n:"03",lv:"L1",t:"Мелодии на кнопках-шагах",time:"30 мин",page:"120749195120823307",
+ goal:"Играть выбранный сэмпл по нотам и аккордами.",
+ steps:[
+ "Выбери пэд с тональным звуком (синт, голос, нота).",
+ "Нажми [KYBD]: он загорится, а шаги станут клавиатурой.",
+ "[OCT−] и [OCT+] сдвигают октаву. Нажми обе сразу, чтобы вернуть ⟨0⟩.",
+ "Аккорды: [SHIFT] + [GATE] → ⟨PoLy⟩ (до 16 голосов). Повтори для ⟨Mono⟩.",
+ "Удержание: держи пэд и нажми [KYBD · HOLD], пэд «залипнет» (работает, когда [GATE] включена).",
+ "Нажми [KYBD] ещё раз, чтобы вернуть кнопкам роль шагов."],
+ check:"Ты сыграл простую мелодию из 4–8 нот и пару аккордов одним сэмплом.",
+ task:"Подбери по слуху мелодию из 5 нот (детская песня, рингтон) на заводском сэмпле."},
+{n:"04",gloss:1,tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
+ goal:"Собрать бит на пустом паттерне, добавить акценты и свинг, сохранить.",
+ steps:[
+ "Пустой паттерн: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN].",
+ "Выбери банк с ударными: например, F — нажми [B/F] дважды (кнопка мигает). Проверь, что [KYBD] не горит. Выбери пэд бочки без звука: держи [PATTERN] + пэд [1].",
+ "Нажми шаги 1, 5, 9, 13: они загорятся. Повторное нажатие стирает ноту.",
+ "Снейр (в банке F — пэд [4]): шаги 5 и 13. Хэт (пэд [2]): шаги 3, 7, 11, 15 или все нечётные.",
+ "Нажми [▶] и продолжай вводить на ходу.",
+ "Акценты: держи шаг и нажми пэд — сила меняется ⟨StrG⟩ → ⟨MEdi⟩ → ⟨WEAK⟩ (100/75/50%).",
+ "Свинг: [SHIFT] + [D · SHUFFLE] → [TEMPO/VALUE] (10–16 звучат приятно) → [C · EXIT].",
+ "Стереть дорожку одного пэда: выбери пэд → [SHIFT] + верхняя [C · CLEAR PAD] → ⟨CLr.P⟩ → [C♯ · ENTER]. Стереть весь паттерн: [SHIFT] + [B · CLEAR ALL] → [C♯ · ENTER]. Показано в роликах, в онлайн-руководстве этого нет.",
+ "Быстро скопировать шаг: держи шаг и нажми [SHIFT] + [▶ · COPY], потом держи шаг-цель и снова [SHIFT] + [▶ · COPY]. Буфер одноразовый: для следующей вставки скопируй заново. Тоже показано в роликах, в руководстве нет.",
+ "Останови паттерн кнопкой [▶] и сохрани: [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]. Точка на дисплее исчезнет. Если паттерн играет, дисплей покажет ⟨StoP⟩ — сначала останови."],
+ check:"Паттерн 2-01 с бочкой, снейром и хэтом сохранён и звучит после перезагрузки.",
+ task:"Скопируй паттерн в 2-02…2-04. Отдельной кнопки COPY нет: это кнопка старта [▶], подпись COPY стоит рядом с ней. Держи [SHIFT] и нажми [▶] → ⟨Ptn⟩ → [C♯ · ENTER] → выбери номер → [C♯ · ENTER]) и сделай три вариации: брейк, заполнение, раскачку."},
+{n:"05",tc:[["hRx6BIV11Sk", "01:47", "Случайные лиги при живой записи"], ["d3uRNdytUa0", "04:39", "Метроном и его громкость"]],lv:"L2",t:"Живая запись",time:"40 мин",page:"112171659114050955",
+ goal:"Записать игру на пэдах в реальном времени с метрономом и квантизацией.",
+ steps:[
+ "Метроном: держи [PATTERN] и нажми [●]. ⟨M.PLY⟩ — включён, ⟨M.OFF⟩ — выключен.",
+ "Квантизация записи: [SHIFT] + [● · QUANTIZE] → ⟨On⟩. Удары встанут ровно на шаги.",
+ "Нажми [●], затем [▶]: запись началась. Отсчёт перед записью включается в меню: [SHIFT] + [OCT+ · MENU] → ⟨Cnt.I⟩.",
+ "Играй на пэдах (с [KYBD] — нотами). Новые удары добавляются к уже записанным.",
+ "Бей по пэдам коротко. Если задержать палец дольше шага, запишется нота с лигой на несколько шагов, и её потом неудобно стирать.",
+ "[●] — конец записи.",
+ "Испортил? [SHIFT] + [OCT+ · MENU] → ⟨rL.Sq⟩ → [C♯ · ENTER] вернёт ноты к последнему сохранению.",
+ "Квантизация при воспроизведении для одного пэда: держи пэд и нажми [●]. Пока она включена, микросдвиги (урок 06) у этого пэда не работают."],
+ check:"Ты записал хэт или перкуссию вживую поверх бита из урока 04.",
+ task:"«Человек и машина»: запиши одну и ту же партию с квантизацией и без. Оставь ту, что качает сильнее."},
+{n:"06",tc:[["OgHoQyyOL1o", "17:30", "Параметры шага и вероятность (Roland)"], ["D9hKUrkjH0U", "08:15", "Микросдвиг баса от бочки"], ["D9hKUrkjH0U", "09:46", "Вероятность: каждый второй проход"], ["5xllueR9U6M", "13:50", "Размер шага паттерна"]],lv:"L2",t:"Длина, размер шага и вероятность",time:"45 мин",page:"112175115114053259",
+ goal:"Сделать паттерн, который каждый раз звучит немного по-новому.",
+ steps:[
+ "Длина паттерна: [SHIFT] + [D♯ · LAST] → [TEMPO/VALUE] (1–64 шага) → [C · EXIT].",
+ "Шаги 17–64: [SHIFT] + [E · PAGE◀] / [F · PAGE▶]. Дисплей ⟨_o__⟩ показывает страницу.",
+ "Размер шага: держи [PATTERN] и крути [TEMPO/VALUE] — ⟨1_16⟩, ⟨1_8⟩, ⟨16t⟩ (триоли) и др.",
+ "Детали ноты: держи шаг и нажимай [GRANULAR]. Параметры идут по кругу: нота → сила (v) → вероятность (P) → длина (G) → сдвиг (t) → сабстеп. Значение меняй [TEMPO/VALUE], не отпуская шаг.",
+ "Вероятность: ⟨P. 50⟩ — нота звучит в половине случаев, ⟨P.1st⟩ — только первый раз, ⟨P.2_4⟩ — на втором из четырёх повторов.",
+ "Сабстеп дробит шаг: ⟨ooo⟩ — три удара в шаге. Так делаются трэп-хэты.",
+ "Лига: держи шаг и нажми [KYBD], нота протянется на следующий шаг.",
+ "Мастер-вероятность на лету: держи [KYBD] и крути [TEMPO/VALUE] (−100…100, не сохраняется).",
+ "Приём: сдвинь бас на первой доле чуть позже бочки (держи шаг → [GRANULAR] до ⟨t.⟩ → немного в плюс). Удар бочки станет чище, бас — заметнее.",
+ "Длина, размер шага и транспонирование действуют на весь паттерн сразу. Разной длины дорожек (полиритмии) в P-6 нет.",
+ "Step loop: во время игры [SHIFT] + [PATTERN] (замигает), держи шаги, которые надо зациклить. Выход — [PATTERN]."],
+ check:"У тебя паттерн с вероятностями и дробями, который не надоедает 2 минуты.",
+ task:"«Никогда не повторяйся»: поставь хэтам P.40–P.80, а снейру одну ⟨P.2_4⟩-ноту-призрак. Слушай 16 тактов."},
+{n:"07",tc:[["OgHoQyyOL1o", "20:00", "Ноты и аккорды в шагах (Roland)"], ["d3uRNdytUa0", "10:04", "Три способа выбрать слайс для шага"]],lv:"L2",t:"Ноты в шагах, аккорды и операции с шагами",time:"40 мин",page:"112348555114054795",
+ goal:"Вписать мелодию или бас по нотам и работать с шагами как в редакторе.",
+ steps:[
+ "Погаси [KYBD]. Нажми [●]: на дисплее ⟨St. 1⟩ — режим правки нот.",
+ "Выбери шаг ручкой [TEMPO/VALUE] или кнопкой-шагом.",
+ "Нажми [KYBD] и нажимай клавиши: нота вкл/выкл. До 8 нот в шаге; для аккорда переведи пэд в ⟨PoLy⟩ (урок 03).",
+ "[TIE] вписывает ноту-лигу, связанную с предыдущим шагом.",
+ "Операции с шагом: держи [KYBD] + [OCT+] → ⟨COPY⟩, ⟨PStE⟩ (вставить), ⟨Insr⟩ (пустой шаг), ⟨DUPL⟩ (удвоить паттерн) → [C♯ · ENTER].",
+ "Закончи правку: нажми [●] ещё раз, чтобы ⟨St.⟩ пропал с дисплея."],
+ check:"В паттерне есть басовая линия или мелодия с разными нотами.",
+ task:"«Бас из чего угодно»: возьми не басовый звук, опусти [PITCH] и впиши 8-шаговую басовую линию."},
+{n:"08",tc:[["D9hKUrkjH0U", "05:31", "Посыл на дилей только на одном ударе"], ["pLBiwzziB0I", "23:06", "Параметры меню в шагах"], ["d3uRNdytUa0", "07:00", "Удалить автоматизацию одной ручки"]],lv:"L2",t:"Моушены: записанные движения ручек",time:"30 мин",page:"119046795122846987",
+ goal:"Заставить звук меняться внутри паттерна.",
+ steps:[
+ "Во время живой записи (урок 05) крути [PITCH], [START], [END] или [LEVEL]: движения запишутся.",
+ "Точечно: держи шаг и поверни ручку — значение запишется только в этот шаг.",
+ "[CTRL1]–[CTRL3] (эффекты) в моушены не пишутся.",
+ "Стереть все моушены: [SHIFT] + [OCT− · MOTION] → ⟨CLr.M⟩ → [C♯ · ENTER].",
+ "Стереть только одну ручку: после [SHIFT] + [OCT− · MOTION] покрути её. ⟨CLr⟩ — стёрто, ⟨nonE⟩ — моушенов этой ручки нет. Затем [C · EXIT].",
+ "Только в одном шаге: [●] → выбери шаг → [SHIFT] + [OCT− · MOTION] → [C♯ · ENTER].",
+ "Параметры из меню тоже пишутся в шаг: остановись, нажми [●], выбери шаг, открой [SHIFT] + [A · MIXER] (или FILTER, VOICE) и поверни ручку.",
+ "Записанное значение действует и на следующие шаги, пока не встретит другое. Хочешь дилей только на одном клэпе — на следующем шаге с клэпом верни посыл в 0.",
+ "Перед новой живой записью той же ручки сотри старую: новые движения накладываются на прежние."],
+ check:"В паттерне хотя бы одна партия «двигается» сама.",
+ task:"«Говорящий хэт»: на 16 шагах хэта запиши в шаги разные значения [END]. Короткие и длинные удары дадут грув."},
+{n:"09",tc:[["ykDvjIwl2ps", "00:25", "Сэмплирование по шагам (XNB)"], ["hrOeBB2MfDA", "02:43", "Время сэмпла и частота"], ["OgHoQyyOL1o", "00:55", "Входы P-6 (Roland)"]],lv:"L3",t:"Сэмплирование микрофоном",time:"45 мин",page:"109730699114018699",
+ goal:"Записать свой звук встроенным микрофоном на пэд.",
+ steps:[
+ "Освободи пэд (бэкап из урока 00 сделан): [DELETE] → ⟨dEL⟩ → нажми пэд → [DELETE].",
+ "Нажми [SAMPLING]: горит, а кнопки-шаги стали индикатором уровня.",
+ "Покрути [LEVEL], чтобы [C]–[TIE] (−3…0 дБ) загорались лишь изредка. Пиковый уровень видно, если зажать [SHIFT].",
+ "Настройки записи: [LO-Fi] — частота ⟨44.1k⟩ / ⟨22.0k⟩ / ⟨14.7k⟩ / ⟨11.0k⟩; [PITCH] — ⟨Mono⟩ / ⟨StEr⟩; [START] — длина (⟨FREE⟩ или такты); [END] — запуск: ⟨t.OFF⟩ (кнопкой), ⟨SynC⟩ (с [▶]) или порог ⟨-12db⟩.",
+ "Нажми пустой (мигающий) пэд: [SAMPLING] замигает.",
+ "Нажми [SAMPLING]: запись идёт (при пороге — ждёт громкого звука). Хлопни, скажи слово, стукни по столу.",
+ "Нажми [SAMPLING], чтобы остановить. Появятся ⟨norM⟩ и ⟨Writ⟩: дождись мигающего ⟨donE⟩.",
+ "Если в MIX IN вставлен кабель или подключена гарнитура, встроенный микрофон в режиме сэмплинга отключается сам (показано в официальном ролике Roland).",
+ "Запомни частоту готового сэмпла: [SHIFT] + [LO-Fi] → ⟨SMP.r⟩ → [C♯ · ENTER]."],
+ check:"На пэде твой звук, и он срабатывает сразу, без тишины в начале (подрежь [START], если нужно).",
+ warn:"При 44,1 кГц моно на сэмпл есть только 5,9 секунды. Нужен длиннее — выбери ⟨22.0k⟩ (11,8 с) или ⟨11.0k⟩ (23,7 с) и получишь заодно лоу-фай характер.",
+ task:"«Бит из кухни»: шесть звуков с кухни (крышка, ложка, кран, пачка крупы, щелчок плиты, чашка) на пэды 1–6 и бит в новом паттерне."},
+{n:"10",tc:[["OgHoQyyOL1o", "22:38", "Ресемплинг (Roland)"], ["OgHoQyyOL1o", "03:00", "Сэмплинг J-6 по синхронизации (Roland)"], ["ykDvjIwl2ps", "08:05", "Ресемплинг и порог"], ["ykDvjIwl2ps", "12:14", "Внешний вход"], ["D9hKUrkjH0U", "12:04", "Голос вниз + дилей + ресемпл + Chop"]],lv:"L3",t:"Внешний звук и ресемплинг",time:"45 мин",page:"113319947114021515",
+ goal:"Сэмплировать телефон или компьютер и перезаписывать собственные паттерны.",
+ steps:[
+ "Подключи телефон к MIX IN стерео-кабелем мини-джек (моно-кабель работать не будет). Усиление входа: [SHIFT] + [OCT+ · MENU] → ⟨In.G⟩ (0–18 дБ).",
+ "Гарнитура с разъёмом CTIA в MIX OUT/HEADSET работает как микрофон.",
+ "Сэмплинг внешнего синта точно в такт: соедини MIDI OUT P-6 с MIDI IN синта, поставь запуск ⟨SynC⟩ и длину в тактах. По [▶] стартуют и синт, и запись (так в официальном ролике Roland записывают J-6).",
+ "Ресемплинг паттерна: [SAMPLING], нажми [DELETE], чтобы заглушить микрофон (кнопка горит).",
+ "[END] → ⟨SynC⟩, [START] → длина в тактах (короче 5,9 с при 44,1 кГц или понизь частоту).",
+ "Выбери пустой пэд и нажми [▶]: паттерн и запись стартуют вместе. Если запись не остановилась сама, нажми [SAMPLING].",
+ "Громкость результата регулируй вне режима сэмплинга ручкой [LEVEL] этого пэда.",
+ "Для ресемплинга не нужен особый режим: P-6 всегда слышит собственный звук. После записи петли включи на пэде [LOOP], и она зациклится ровно по длине."],
+ check:"На пэде лежит петля из твоего же паттерна, и поверх неё можно играть дальше.",
+ task:"«Матрёшка»: ресемплируй бит, пропусти через эффект, ресемплируй снова — три круга, пока звук не станет неузнаваемым."},
+{n:"11",tc:[["OgHoQyyOL1o", "15:03", "Chop и step sampling (Roland)"], ["FKXzYbeyAwI", "01:06", "Step sampling с порогом (SPVIDZ)"], ["MF4EohXfTEo", "00:41", "Chop"], ["NFZsxg4q75Y", "20:28", "Выключить Chop и играть одним звуком"]],lv:"L3",t:"Нарезка: step sampling и Chop",time:"45 мин",page:"112489355114020747",
+ goal:"Положить много кусочков на один пэд и играть их с клавиатуры.",
+ steps:[
+ "Step sampling: в режиме [SAMPLING] держи [SHIFT] и крути [PITCH] → ⟨S. 8⟩ (2–64 кусочка). [START] задаёт длину одного кусочка.",
+ "Выбери пустой пэд. Каждое нажатие [SAMPLING] записывает следующий кусочек. Переделать кусочек: выбери его номер [TEMPO/VALUE] и нажми [SAMPLING].",
+ "Когда кусочки закончатся, замигает ⟨End⟩. Кусочки сядут на ноты от C4 вверх.",
+ "Chop готового сэмпла: выбери пэд → [SHIFT] + [G · VOICE] → ⟨ChoP⟩ → [C♯ · ENTER] → [TEMPO/VALUE] (2–64) → [C · EXIT] дважды.",
+ "Играй кусочки: пэд + [KYBD], каждая клавиша — свой кусочек (высота не меняется).",
+ "Чтобы кусочки звучали внахлёст, включи пэду ⟨PoLy⟩ ([SHIFT] + [GATE]).",
+ "Step sampling с автозапуском: поставь [END] на порог ⟨-6db⟩ и подавай звуки по одному. После каждого P-6 переходит к следующему кусочку, а [SAMPLING] снова ставит запись в ожидание.",
+ "Нужен один звук из нарезки, чтобы играть им по нотам? Поставь ⟨ChoP⟩ → ⟨OFF⟩, выдели звук ручками [START] и [END] и включи [KYBD]. Число кусочков запомни, его легко забыть: удобно писать его в имени файла.",
+ "Chop делит строго поровну, а сдвиг [START] или [END] двигает границы всех кусочков сразу. Звуки разной длины перед загрузкой разложи на равные отрезки (урок 19)."],
+ check:"Одна фраза или петля разрезана, и ты переставляешь кусочки клавишами.",
+ task:"«Перепиши фразу»: скажи в микрофон предложение, нарежь на 8 частей и собери новое — смешное или бессмысленное."},
+{n:"12",tc:[["Z-i_7HeJrfw", "11:24", "G.Ky.F = 0 для аккордов (Sunwarper)"], ["veNheHzqi8Y", "30:38", "Все параметры гранул (Vladislav CREW)"], ["OgHoQyyOL1o", "21:01", "Granular (Roland)"]],lv:"L3",t:"Гранулярный пэд",time:"45 мин",page:"124689675124716299",
+ goal:"Превращать короткий звук в текстуры, пэды и дроны.",
+ steps:[
+ "Назначь материал: держи [PATTERN] и нажми [GRANULAR] вместе с нужным пэдом. Из стерео берётся только левый канал.",
+ "Нажми [GRANULAR], чтобы услышать. С [KYBD] играй нотами (до 4 голосов).",
+ "На главном экране: [START] — позиция головки (откуда берутся гранулы), [END] — размер гранулы, [PITCH] — высота, [LEVEL] — громкость.",
+ "Глубже: [SHIFT] + [G · VOICE]. [CTRL1] — Spread (разброс), [CTRL2] — Grains (плотность 0,5–8), [CTRL3] — Grain Shape (форма). Кнопки-шаги показывают работу гранул.",
+ "В том же меню: ⟨h.SPd⟩ — скорость головки (−4…4), ⟨G.rvS⟩ — доля гранул задом наперёд, ⟨G.TM.J⟩ — случайность по времени, ⟨St.Md⟩ — плавный (⟨CoLd⟩) или мгновенный (⟨hot⟩) старт. Выход — [C · EXIT] дважды.",
+ "Настройки гранулярного пэда хранятся в паттерне: сохрани ⟨Ptn⟩. Откатить: меню → ⟨rL.Gr⟩.",
+ "Аккорды фальшивят и голоса разъезжаются? Поставь ⟨G.Ky.F⟩ → 0: все ноты аккорда пойдут по сэмплу синхронно.",
+ "Форма гранулы ⟨G.ShP⟩: 1–49 — гранула затухает, 50 — нарастает и затухает, 51–100 — нарастает. В одном из роликов сказано наоборот; верно — как в руководстве.",
+ "Гранулярный пэд можно пустить через MFX: [MFX] + [GRANULAR] → ⟨EFX⟩."],
+ check:"Из секунды звука получился длинный пэд или шумовая текстура.",
+ task:"«Заморозка»: запиши одну спетую ноту, поставь ⟨h.SPd⟩ около 0, большую плотность и сыграй аккорды из трёх нот."},
+{n:"13",tc:[["OgHoQyyOL1o", "12:12", "Эффекты (Roland)"], ["x8jNZUJDjTg", "00:51", "Пять слоёв эффектов (SPVIDZ)"], ["x8jNZUJDjTg", "06:33", "Хэт + дилей = 16-е"], ["d3uRNdytUa0", "39:23", "Шины A, B, EFFECT"]],lv:"L4",t:"Эффекты и шины",time:"45 мин",page:"119195531119366283",
+ goal:"Управлять 20 эффектами вживую и решать, на что они действуют.",
+ steps:[
+ "Пять быстрых кнопок: [LOOPER] (зацикливание), [PITCH] (питч-шифтер), [DELAY] (синхронное эхо), [FILTER] (фильтр и перегруз), [SCATTER] (перемешивание). Крути [CTRL1]–[CTRL3]; с [SHIFT] доступны дополнительные параметры.",
+ "Остальные: держи [MFX] и крути [TEMPO/VALUE] (или нажми шаг). На дисплее ⟨iSo⟩, ⟨rES⟩, ⟨StoP⟩, ⟨S.FLt⟩, ⟨vny⟩, ⟨CSt⟩, ⟨CrSh⟩ и т.д. [MFX] включает и выключает эффект.",
+ "Эффект на долю секунды: держи [PATTERN] и нажимай кнопку эффекта. Он работает, пока держишь.",
+ "Убрать пэд из-под эффектов: [MFX] + пэд → ⟨BUS.A⟩ (сухой) или ⟨EFX⟩ (через эффекты). Бочку обычно держат сухой.",
+ "По умолчанию пэды идут через эффекты (EFX). Дилей и реверб у каждого паттерна свои; с ⟨GL.d.r⟩ → ⟨On⟩ они общие для всех, и при смене паттерна меняется только скорость дилея, если он привязан к темпу.",
+ "Где какой пэд, видно по подсветке, пока держишь [MFX]: горит ярко — EFX, горит тускло — BUS A, мигает тускло — BUS B.",
+ "Посылы на дилей и реверб: [SHIFT] + [A · MIXER]. [START] — Send Delay, [END] — Send Reverb. Сами дилей и реверб: [SHIFT] + [A♯ · DELAY/REVERB].",
+ "Громкость шин: [SHIFT] + [PITCH] (BUS A), [START] (BUS B), [END] (BUS EFFECT).",
+ "Не трать MFX на простой фильтр: у каждого пэда свой фильтр в [SHIFT] + [G♯ · FILTER].",
+ "Хэт восьмыми + посыл на дилей в такт = грув шестнадцатыми без лишних нот.",
+ "Хвосты дилея и реверба при смене паттерна: [SHIFT] + [A♯ · DELAY/REVERB] → ⟨GL.d.r⟩ → ⟨On⟩. Тогда эхо не обрывается на переходе.",
+ "Слои эффектов: на одном пэде одновременно работают [LO-Fi] пэда, фильтр пэда ([SHIFT] + [G♯ · FILTER]), выбранный MFX и посылы на дилей и реверб. Наслаивай их по одному и слушай разницу.",
+ "Сохрани настройки эффектов: [SHIFT] + [TIE · WRITE] → ⟨EFCt⟩ → [C♯ · ENTER]."],
+ check:"Бочка сухая, остальное идёт через эффект, а ты делаешь «сбивки» удержанием кнопок.",
+ task:"«Только руки»: минута живой игры поверх готового паттерна, где ты трогаешь только эффекты, мьюты и step loop."},
+{n:"14",tc:[["OgHoQyyOL1o", "04:00", "Сэмплинг с телефона по USB-C (Roland)"], ["MMQ5cRmt7Ds", "23:06", "Запись в планшет по USB-C"], ["kQOFFqQojwg", "08:11", "Один кабель с телефоном"], ["pLBiwzziB0I", "09:52", "Режим батареи против шума"], ["NFZsxg4q75Y", "06:41", "Импорт сэмплов"], ["NFZsxg4q75Y", "11:54", "Трюк с октавой"]],lv:"L4",t:"Компьютер, импорт и MIDI",time:"40 мин",page:"124651019124688651",
+ goal:"Загружать свои WAV, записывать P-6 в DAW и синхронизироваться с другими приборами.",
+ steps:[
+ "Импорт WAV: держи [SAMPLING] и включи питание. На диске «P-6» положи файлы в IMPORT/PAD_1…PAD_6, извлеки диск и нажми [KYBD]. Дождись ⟨donE⟩ и выключи P-6.",
+ "Форматы: WAV до 96 кГц, 8/16/24/32 бит. Лишнее по длине обрежется.",
+ "USB-аудио для DAW: [SHIFT] + [OCT+ · MENU] → ⟨A.LnK⟩ → ⟨OFF⟩, затем перезагрузи. Драйвер не нужен.",
+ "С iPhone/iPad, если не хочешь питать P-6 от устройства: включай, держа [C · EXIT] (режим «только батарея»).",
+ "MIDI: пэды по умолчанию на канале 11 (ноты 48–95 = пэды A1…H6), гранулярный пэд — канал 4, авто-канал — 15.",
+ "Синхронизация: меню ⟨SYnC⟩ (⟨AUtO⟩ / ⟨Int⟩ / ⟨MiDi⟩ / ⟨USb⟩). В SYNC IN/OUT нужен моно-кабель мини-джек.",
+ "Сетап из нескольких AIRA Compact (T-8, J-6, E-4, S-1): соедини их цепочкой SYNC OUT → SYNC IN моно-кабелями, а звук соседа заведи в MIX IN P-6. Он пройдёт насквозь на выход P-6, и его можно сразу сэмплировать. Если в SYNC IN что-то подключено, P-6 всегда идёт за внешним темпом.",
+ "Восстановить паттерны: держи [●] при включении, положи PRM в RESTORE, извлеки диск, нажми [KYBD].",
+ "Шум в MIX OUT при подключении по USB к компьютеру убирает режим «только батарея»: включай, держа [C · EXIT].",
+ "Телефон или планшет по одному кабелю USB-C работают в обе стороны: звук с телефона можно сэмплировать, а игру P-6 — записывать в телефон в стерео. С iPhone включай режим «только батарея», чтобы P-6 не садил телефон.",
+ "В поток на телефон идёт всё: звук P-6, внешние входы и микрофон. Удобно снимать видео джема или стримить без отдельной звуковой карты.",
+ "За один импорт влезает около 10 МБ (примерно 4 банка). Остальное загружай вторым заходом.",
+ "Файл длиннее лимита при импорте понижается до 22 кГц, а не обрезается сразу. Длинные синты можно заранее поднять на октаву и на P-6 опустить [PITCH] на −12: файл станет вдвое короче."],
+ check:"Твой WAV играет с пэда, а P-6 звучит в DAW по USB.",
+ task:"Возьми на компьютере 6 коротких звуков (поле, голос, синт) и сделай из них банк E."},
+{n:"15",tc:[["veNheHzqi8Y", "45:28", "Step loop и Effect Grab"], ["2JoKCge7QW8", "00:00", "Трек целиком на P-6"], ["V4JWVPrgjMg", "00:00", "Полный рабочий процесс (Jay Maculate)"]],lv:"L4",t:"Итог: живой сет на 5 минут",time:"2–3 занятия",page:"112346123114022795",
+ goal:"Собрать и сыграть цельный номер только на P-6.",
+ steps:[
+ "Собери банк звуков: свои записи (уроки 09–11), гранулярная подложка (урок 12).",
+ "Сделай 4 паттерна в банке 3: интро (3-01), основной грув (3-02), брейк (3-03), кульминация (3-04). Копируй и меняй, а не начинай с нуля.",
+ "Спланируй переходы: выбранный следующим паттерн начнётся, когда доиграет текущий. Режима песни (цепочки паттернов) в P-6 нет, переключаешь вручную.",
+ "Чтобы на переходах не обрывались звучащие сэмплы: [SHIFT] + [OCT+ · MENU] → ⟨StoP⟩ → ⟨rEMn⟩. Для хвостов дилея и реверба — ⟨GL.d.r⟩ → ⟨On⟩ (урок 13).",
+ "Отрепетируй «живые» приёмы: мьюты ([SHIFT] + пэд), эффекты удержанием ([PATTERN] + эффект), step loop ([SHIFT] + [PATTERN]).",
+ "Сохрани всё: [SHIFT] + [TIE · WRITE] → ⟨ALL⟩ → [C♯ · ENTER], плюс ⟨EFCt⟩ для эффектов.",
+ "Запиши сет с MIX OUT на телефон или по USB в DAW, без монтажа.",
+ "Сравни с записью «Диджея на пресетах» из урока 01."],
+ check:"Готова запись на 3–5 минут, сделанная от начала до конца на P-6.",
+ task:"Выложи запись или покажи друзьям. Потом брось кубики в разделе «Творческие задачи» и сделай следующий номер."},
+{n:"16",tc:[["OgHoQyyOL1o", "08:30", "Огибающая и фильтр сэмпла (Roland)"], ["veNheHzqi8Y", "08:05", "Супер-пила из одной волны"], ["veNheHzqi8Y", "21:02", "ADR, ADA.C и огибающая фильтра"], ["V4JWVPrgjMg", "14:12", "Убрать щелчок баса"], ["SqH9BcxpVhk", "06:28", "Single-cycle волны на пэде"]],lv:"L5",t:"Синтезатор из сэмпла",time:"45 мин",page:"124729099126665227",
+ src:"«Как сделать синт на Roland P6» (Vladislav CREW)",
+ goal:"Превратить короткий кусок звука в играбельный синт: бас, лид или пэд.",
+ steps:[
+ "Возьми пэд с ровной тональной нотой: спетое «а-а-а», нота пианино, гитары или синта.",
+ "Включи [GATE] (звучит, пока держишь), [LOOP] (петля) и полифонию [SHIFT] + [GATE] → ⟨PoLy⟩.",
+ "Найди устойчивый кусок: [START] сдвигает начало, [END] — длину. Чем короче петля, тем больше звук похож на осциллятор. Точная длина петли — [SHIFT] + [G · VOICE] → ⟨LP.SZ⟩.",
+ "Огибающая громкости: в том же меню [SHIFT] + [G · VOICE] поставь ⟨tvA⟩ → ⟨On⟩. Ручки [PITCH] [START] [END] [LEVEL] в этом меню — атака, спад, сустейн, затухание.",
+ "Фильтр: [SHIFT] + [G♯ · FILTER]. [PITCH] — тип (⟨LPF⟩ для баса), [START] — срез, [END] — резонанс, [LEVEL] — сколько огибающая открывает фильтр.",
+ "Нажми [KYBD] и играй. [OCT−] опускает в басовый регистр.",
+ "Щелчок при отпускании баса убирает затухание: в [SHIFT] + [G · VOICE] подними [LEVEL] (Release) примерно до 15–20.",
+ "Режимы огибающей ⟨t.Env⟩: ⟨ADR⟩ — короткий удар, не ждёт отпускания; ⟨ADA.C⟩ — циклический повтор, даёт пульсацию.",
+ "Жирный синт: скопируй пэд на 3–4 пэда, разведи копии панорамой ([SHIFT] + [A · MIXER], [PITCH]), расстрой ⟨F.tUn⟩ на несколько центов в разные стороны, сыграй всеми одну ноту и ресемплируй в стерео ([PITCH] → ⟨StEr⟩, [END] → ⟨SynC⟩). Получится один пэд, на нём включи ⟨PoLy⟩.",
+ "Сохрани пэд: [SHIFT] + [TIE · WRITE] → ⟨PAd⟩ → [C♯ · ENTER]."],
+ check:"Из одного звука получился инструмент, на котором можно сыграть бас или аккорды.",
+ task:"«Синт из голоса»: спой одну ноту, сделай из неё бас с LPF и короткой атакой и запиши 8-шаговую басовую линию (урок 07)."},
+{n:"17",tc:[["D9hKUrkjH0U", "01:41", "Сайдчейн тремоло"], ["D9hKUrkjH0U", "02:46", "Ручной сайдчейн по шагам"]],lv:"L5",t:"Кач без компрессора (сайдчейн)",time:"30 мин",page:"119774091144760587",
+ src:"«SIDECHAINE ON ROLAND P6» (Vladislav CREW)",
+ goal:"Сделать «дышащий» звук, который проседает под бочку, как в хаусе.",
+ steps:[
+ "Подготовь паттерн: бочка на каждую долю (шаги 1, 5, 9, 13) и длинный аккорд или пэд поверх.",
+ "Выведи бочку из-под эффектов: [MFX] + пэд бочки → ⟨BUS.A⟩. Аккорд оставь на ⟨EFX⟩.",
+ "Выбери Tremolo/Pan: держи [MFX] и крути [TEMPO/VALUE] до ⟨trEM⟩, включи [MFX].",
+ "[CTRL3] (TYPE) → ⟨trE⟩ (тремоло, то есть громкость). [SHIFT] + [CTRL2] (SYNC) → ⟨On⟩, чтобы качало в темп.",
+ "[SHIFT] + [CTRL1] (WAVE) → пила ⟨SAW1⟩ или ⟨SAW2⟩. Выбери ту, где звук после удара бочки плавно поднимается.",
+ "[CTRL2] (RATE) подбери так, чтобы провалы совпали с бочкой. [CTRL1] (DEPTH) задаёт глубину кача.",
+ "Вариант без эффекта, как в ролике: выбери пэд баса или аккорда и по шагам запиши [LEVEL] (держи шаг и крути ручку): на шагах бочки 1, 5, 9, 13 — 0, на следующих 2, 6, 10, 14 — около 35, на остальных — максимум (урок 08)."],
+ check:"Аккорд заметно «качает» в такт бочке, а сама бочка звучит сухо и плотно.",
+ warn:"Эффект действует на всё, что идёт через шину EFFECT. Звуки, которые качать не нужно, переведи на ⟨BUS.A⟩ или ⟨BUS.B⟩ тем же [MFX] + пэд."},
+{n:"18",tc:[["yW00zmRJ3Xs", "00:19", "Дилей как лупер"], ["yW00zmRJ3Xs", "02:26", "Захват петли на пэд"], ["yW00zmRJ3Xs", "06:05", "Петля на 2 такта"]],lv:"L5",t:"Лупер на дилее",time:"40 мин",page:"119755659144753931",
+ src:"«“Looper” Workflow on the Roland P-6»",
+ goal:"Наслаивать партии вживую, как на педали-лупере, и сохранять петлю на пэд.",
+ steps:[
+ "Включи [DELAY] (Sync Delay). [CTRL1] (TIME) → ⟨1/1⟩ — эхо через целый такт. [CTRL2] (FEEDBACK) → ⟨99⟩ — повторы почти не затухают. [CTRL3] (LEVEL) → ⟨100⟩.",
+ "Проверь, что нужные пэды идут через эффекты: [MFX] + пэд → ⟨EFX⟩. Для внешнего входа (MIX IN) — [MFX] + [LO-Fi].",
+ "Сыграй фразу на пэдах: она будет повторяться каждый такт. Добавляй слои поверх.",
+ "Когда петля нравится, засэмплируй её: [SAMPLING] → [DELETE] (микрофон выкл) → [START] длина ⟨M. 1⟩ → [END] ⟨SynC⟩ → пустой пэд → [▶].",
+ "Выключи [DELAY], поставь новый сэмпл на шаг 1 паттерна и начни следующий слой.",
+ "Новый пэд с петлёй переведи на сухую шину: [MFX] + пэд → ⟨BUS.A⟩. Иначе он снова попадёт в дилей и задвоится.",
+ "Петля на 2 такта: понизь темп вдвое и поставь размер шага ⟨1_32⟩ (держи [PATTERN] + крути [TEMPO/VALUE]), чтобы сетка секвенсора звучала как раньше. Если повторы перестали попадать в такт, верни темп выше."],
+ check:"У тебя на пэде петля из нескольких наслоенных партий, сыгранных вживую.",
+ warn:"FEEDBACK не бывает 100%: старые слои постепенно затухают. Сэмплируй петлю, пока она звучит полностью."},
+{n:"19",tc:[["NFZsxg4q75Y", "01:14", "DigiChain и Spaced Chain"], ["pLBiwzziB0I", "17:54", "Расчёт длины цепочки"], ["FKXzYbeyAwI", "04:48", "Банк A как драм-библиотека"]],lv:"L5",t:"Драм-кит на одном пэде",time:"45 мин",page:"124651019124688651",
+ src:"«This P6 feature could change my WHOLE WORKFLOW!» (SPVIDZ), «Using the Sample Tool»",
+ goal:"Обойти лимит в 48 сэмплов: положить 8–16 ударов на один пэд.",
+ steps:[
+ "Способ 1, прямо на P-6: step sampling (урок 11). [SAMPLING] → [SHIFT] + крути [PITCH] → ⟨S. 8⟩ → [START] короткая длина → пустой пэд → запиши 8 ударов по очереди нажатиями [SAMPLING].",
+ "Способ 2, с компьютера: склей удары в один WAV с равными промежутками. Проще всего в бесплатном браузерном DigiChain (digichain.brianbar.net): загрузи звуки, выбери моно или стерео и нажми Spaced Chain.",
+ "Помни про лимит: при 44,1 кГц моно на пэд влезает 5,9 секунды. 8 ударов по 0,5 с — это 4 секунды.",
+ "Импорт: держи [SAMPLING] при включении → файл в IMPORT/PAD_1 → извлеки диск → [KYBD] → ⟨donE⟩.",
+ "Нарежь: [SHIFT] + [G · VOICE] → ⟨ChoP⟩ → [C♯ · ENTER] → ⟨8⟩ → [C · EXIT] дважды.",
+ "Полифония: [SHIFT] + [GATE] → ⟨PoLy⟩, чтобы бочка и хэт звучали одновременно. В ⟨Mono⟩ каждый удар обрывает предыдущий.",
+ "Пиши бит нотами: [●] → шаг → [KYBD] → клавиша нужного удара (от C4 вверх). На шаге можно включить несколько ударов сразу (урок 07)."],
+ check:"Целый бит играет с одного пэда, а остальные пэды свободны."},
+{n:"20",tc:[["0b3ZzmtAfKQ", "05:32", "Каналы 11, 4, 15"], ["0b3ZzmtAfKQ", "10:15", "Ввод нарезки с клавиатуры"], ["pLBiwzziB0I", "30:37", "Связка с Roland S-1"]],lv:"L5",t:"MIDI-клавиатура и ручки контроллера",time:"40 мин",page:"141557771143073803",
+ src:"«Arturia minilab 3 и Roland P6» (Vladislav CREW)",
+ goal:"Играть на P-6 с нормальных клавиш и крутить гранулярный пэд ручками контроллера.",
+ steps:[
+ "Подключи MIDI OUT клавиатуры к MIDI IN P-6 кабелем TRS-MIDI (Roland BMIDI-5-35 или аналог). Если у клавиатуры есть USB-хост-режим, проще через USB.",
+ "Игра нотами выбранного пэда: поставь на клавиатуре канал 15 (авто-канал P-6, меню ⟨A.CH⟩).",
+ "Запуск всех 48 пэдов без смены высоты: канал 11 (⟨S.CH⟩). Ноты C3–B6 = пэды A1…H6.",
+ "Гранулярный пэд напрямую: канал 4 (⟨G.CH⟩).",
+ "Ручки контроллера: P-6 принимает MIDI CC для гранулярного пэда и общих дилея и реверба. Полезные номера: 19 — позиция головки, 20 — скорость головки, 21 — плотность, 23 — размер гранулы, 25 — разброс, 74 — срез фильтра, 71 — резонанс, 73/75/30/72 — атака/спад/сустейн/затухание, 89/91 — время/уровень реверба, 90/92 — время/уровень дилея.",
+ "Назначь эти CC на ручки контроллера (у Arturia — в программе MIDI Control Center) и отправляй их на канал 4 или 15.",
+ "Записывай игру с клавиатуры вживую: [●] → [▶] (урок 05).",
+ "Быстрый ввод нарезки с клавиатуры: остановись, нажми [●], выбери шаг на P-6 и нажми нужную клавишу на контроллере. Слайсы всегда под рукой, а кнопки P-6 остаются шагами."],
+ check:"Ты играешь гранулярным пэдом с клавиатуры и меняешь звук ручками контроллера.",
+ warn:"Сила нажатия с MIDI-клавиатуры передаётся, а pitch bend и aftertouch P-6 не принимает. CC для обычных пэдов 1–6 в таблице нет: только гранулярный пэд и дилей с ревербом."},
+{n:"21",tc:[["sLkPtMzkTUY", "11:00", "Банк E как второй слой барабанов"], ["O9y94OX6pmM", "00:31", "4 бита на приборе (SPVIDZ)"], ["pLBiwzziB0I", "18:35", "Банки-доноры (BND)"]],lv:"L5",t:"Порядок на приборе: 4 трека сразу",time:"20 мин",page:"109295627114023819",
+ src:"«How to organise the Roland P6 LIKE A PRO!» (SPVIDZ)",
+ goal:"Держать на P-6 несколько треков и не путаться, где чьи сэмплы.",
+ steps:[
+ "Договорись с собой: каждой кнопке банков соответствует один трек. Трек 1 — сэмплы A и E (кнопка [A/E]) и паттерны 1-01…1-16. Трек 2 — B и F, паттерны 2-xx. Трек 3 — C и G, 3-xx. Трек 4 — D и H, 4-xx.",
+ "На каждый трек получается 12 сэмплов и 16 паттернов. Для большого трека отдай ему две пары банков (24 сэмпла).",
+ "Заводские паттерны лежат в 1-01…1-16. Перед перезаписью сделай бэкап (урок 00).",
+ "Помни: настройки пэдов общие для всех паттернов, а гранулярный пэд, мьюты и темп хранятся в паттерне.",
+ "В конце каждой сессии: [SHIFT] + [TIE · WRITE] → ⟨ALL⟩ → [C♯ · ENTER].",
+ "Раз в неделю экспортируй банки трека на компьютер (урок 00): места всего 48 сэмплов, и старое придётся освобождать.",
+ "Другая схема: банки A и B — «библиотека» (наборы ударных и стабов), их не трогаешь. Для трека копируешь нужное в свободный банк C–H и уже там крутишь. Так правка в новом треке не испортит старый.",
+ "Приём из трека Vladislav CREW: в банк E (на той же кнопке, что и A) положи копии барабанных пэдов из A с другими звуками и своей секвенцией. Это второй слой грува, и его удобно обрабатывать отдельно."],
+ check:"Ты знаешь, где лежит каждый твой трек, и можешь переключиться между ними за секунды."},
+{n:"23",t:"Свой пак звуков с открытых сайтов",page:"124651019124688651",
+ goal:"Собрать набор из 6 звуков с бесплатных сайтов, подготовить их и загрузить в свободный банк P-6.",
+ steps:[
+ "Реши, какой пак собираешь. Например, «лоу-фай кит»: бочка, снейр, два хэта, перкуссия и одна текстура (шуршание винила). 6 звуков — ровно один банк.",
+ "Где брать звуки бесплатно и легально. Freesound (freesound.org) — огромная база, нужна бесплатная регистрация. Pixabay (pixabay.com/sound-effects) — звуки под своей свободной лицензией. 99Sounds (99sounds.org) — бесплатные паки от звукорежиссёров. AKWF (Adventure Kid Waveforms) — бесплатные короткие волны для синта из урока 16; лицензию уточни в README на GitHub, источники называют то CC0, то CC BY.",
+ "Смотри лицензию каждого звука. CC0 — делай что угодно. CC BY — можно, но укажи автора, если выкладываешь трек. NC — только не для продажи. На Freesound удобно сразу отфильтровать CC0. Записывай в текстовый файл: звук, сайт, автор, лицензия.",
+ "Ищи по-английски: kick, snare, closed hihat, rimshot, clap, vinyl crackle, field recording, drone, pad. Бери короткие звуки: на P-6 сэмпл длится до 5,9 с (моно, 44,1 кГц).",
+ "Подготовь файлы в бесплатном Audacity: убери тишину в начале (иначе удар запаздывает), обрежь хвост, сделай Normalize и сохрани как WAV, 16 бит, 44,1 кГц. Длинные текстуры сохраняй в моно — влезет вдвое больше.",
+ "Без установки программ то же делает DigiChain в браузере (digichain.brianbar.net). Он же склеит удары в цепочку для Chop (урок 19).",
+ "Назови файлы понятно: 01_kick.wav, 02_snare.wav и т.д. Для цепочек пиши число кусочков в имени: drums_8.wav.",
+ "Выбери свободный банк (урок 21) и сделай бэкап (урок 00). Импорт: держи [SAMPLING] при включении → по одному файлу в папки IMPORT/PAD_1…PAD_6 → извлеки диск → [KYBD] → дождись ⟨donE⟩.",
+ "Подстрой пэды: громкость [LEVEL], [GATE] для длинных звуков, [LO-Fi] по вкусу. Сохрани: [SHIFT] + [TIE · WRITE] → ⟨Pd.AL⟩ → [C♯ · ENTER].",
+ "Сохрани пак на компьютере: папку с WAV и файлом лицензий. Так его можно будет вернуть на прибор в любой момент."],
+ check:"В отдельном банке лежат 6 твоих звуков, и про каждый ты знаешь, откуда он и под какой лицензией.",
+ warn:"Не бери звуки из роликов на YouTube и из чужих треков: открытой лицензии у них нет. Если хочешь потом выкладывать музыку, проще всего брать только CC0.",
+ task:"Пак под жанр из раздела «Жанры»: лоу-фай кит с шуршанием винила, эмбиент-набор из полевых записей (дождь, улица, колокола) или набор для драм-н-бейса с брейком под лицензией CC0."},
+{n:"T1",t:"Теория: ритм на 16 шагах",page:"112346123114022795",
+ goal:"Понять, что такое такт, доли, восьмые и шестнадцатые и как это ложится на 16 кнопок P-6.",
+ steps:[
+ "Темп (BPM) — сколько ударов в минуту. Он на дисплее главного экрана. Ориентиры: эмбиент 60–80 или вообще без ритма, лоу-фай 70–90, драм-н-бейс 170–175.",
+ "Такт — это четыре счёта: «раз-два-три-четыре». На P-6 16 шагов — ровно один такт, на каждый счёт приходится 4 шага: счёт «раз» — шаг 1, «два» — 5, «три» — 9, «четыре» — 13.",
+ "Включи метроном (держи [PATTERN] + [●] → ⟨M.PLY⟩), нажми [▶] и считай вслух «раз-два-три-четыре» на каждый щелчок. Хлопай на «раз».",
+ "Шаг — это шестнадцатая нота: четыре шага на счёт. Каждый второй шаг (1, 3, 5…) — восьмые: «раз-и-два-и». Смотри сетку выше и послушай разницу.",
+ "Сильные доли — «раз» и «три» (шаги 1 и 9): там обычно бочка. Слабые — «два» и «четыре» (шаги 5 и 13): там снейр. Это основа почти любого бита.",
+ "Свинг сдвигает каждую вторую шестнадцатую чуть позже, и бит начинает «качаться». На P-6 это SHUFFLE (урок 04).",
+ "Триоли — три удара на счёт вместо двух или четырёх. На P-6 размер шага ⟨16t⟩ (держи [PATTERN] + крути [TEMPO/VALUE]): тогда 12 шагов — один такт.",
+ "Больше одного такта: 32 шага — 2 такта, 64 шага — 4 такта (урок 06)."],
+ check:"Ты считаешь такт вслух под метроном и знаешь, на какие шаги ставить бочку, снейр и хэт.",
+ task:"Включи заводской паттерн и посчитай вслух: на какие счёты падает бочка, а на какие снейр?"},
+{n:"T2",chords:[["Am",[0,4,9],"ля минор"],["C",[0,4,7],"до мажор"],["Dm",[2,5,9]],["F",[0,5,9]],["G",[2,7,11]],["Am7",[0,4,7,9],"лоу-фай"],["Dm7",[0,2,5,9]],["G7",[2,5,7,11]],["Cmaj7",[0,4,7,11]],["Fmaj7",[0,4,5,9],"эмбиент"]],t:"Теория: ноты и аккорды на кнопках",page:"120749195120823307",
+ goal:"Узнать названия нот на кнопках P-6, разницу мажора и минора и сыграть первые аккорды.",
+ steps:[
+ "В режиме [KYBD] кнопки-шаги — это клавиши. Буквы на них — ноты: C — до, D — ре, E — ми, F — фа, G — соль, A — ля, B — си. Кнопки с ♯ — «чёрные клавиши» между ними.",
+ "От C до следующей C — октава, 12 нот. [OCT−] и [OCT+] переносят всю клавиатуру на октаву ниже или выше.",
+ "Ля минор — это «белые» ноты, если считать от A. Звучит мягко и грустно. До мажор — те же ноты от C, звучит светло. Во всех примерах курса — ля минор: никаких ♯.",
+ "Аккорд — несколько нот вместе. Рецепт: возьми ноту, пропусти одну белую, возьми следующую, снова пропусти одну и возьми. A–C–E — это Am (ля минор).",
+ "Добавь ещё одну через одну — получится септаккорд, мягкий «джазовый» звук лоу-фая: A–C–E–G — Am7. Схемы всех аккордов курса — выше.",
+ "Сыграй: выбери пэд с одной тянущейся нотой (свой голос, синт или клавиши), [SHIFT] + [GATE] → ⟨PoLy⟩, включи [KYBD] и нажми кнопки аккорда одновременно.",
+ "Если сэмпл сам звучит не как «до», все аккорды сдвинутся по высоте, но друг с другом будут звучать правильно.",
+ "Записать аккорд в паттерн — урок 07: [●] → шаг → [KYBD] → кнопки аккорда."],
+ check:"Ты играешь Am, F, C и G на кнопках P-6 и слышишь разницу между минором и мажором.",
+ task:"Сыграй по кругу Am – F – C – G, по четыре счёта на аккорд, под метроном."},
+{n:"22",t:"Ableton: запись, общий темп, партии",page:"104364811123728523",
+ goal:"Записать P-6 в Ableton по одному USB-кабелю и синхронизировать темп.",
+ steps:[
+ "Подключи P-6 к компьютеру по USB-C и проверь в меню P-6: ⟨A.LnK⟩ → ⟨OFF⟩ (урок 14). Драйвер не нужен.",
+ "В Ableton: Preferences → Audio. Выбери P-6 как устройство входа и выхода. На Windows тип драйвера зависит от версии Ableton; если P-6 нет в списке, попробуй другой тип драйвера.",
+ "Создай аудиодорожку, вход — P-6 (каналы 1/2), включи запись дорожки и нажми запись в Ableton. Играй на P-6 — звук пишется.",
+ "Общий темп: Preferences → Link, Tempo & MIDI. Для выхода P-6 включи Sync. На P-6 в меню ⟨SYnC⟩ поставь ⟨USb⟩ или ⟨AUtO⟩. Теперь [▶] в Ableton запускает P-6 в темпе проекта.",
+ "Партии по отдельности: у P-6 нет поканального выхода. Заглуши всё, кроме нужного пэда ([SHIFT] + пэд или банк), запиши проход, затем следующую партию в новую дорожку.",
+ "Оставляй пару тактов в конце записи, чтобы не обрезать хвосты реверба и гранул.",
+ "Громкость записи не зависит от ручки VOLUME, если в меню задать ⟨USb.d⟩ (1–127)."],
+ check:"В Ableton лежит запись P-6, а [▶] в Ableton запускает паттерн в нужном темпе.",
+ warn:"Названия пунктов меню Ableton зависят от версии. Здесь только общий путь, нажатия на P-6 сверены с руководством Roland."}
+];
+const plan_old=[
+ ["Неделя 1","Уроки 00–02: бэкап, звуки, пресеты"],["Неделя 2","Урок 03 + задачи «Диджей на пресетах», «Один звук — четыре роли»"],
+ ["Неделя 3","Уроки 04–05: бит по шагам и живая запись"],["Неделя 4","Уроки 06–08: вероятность, ноты, моушены"],
+ ["Неделя 5","Уроки 09–10: микрофон, MIX IN, ресемплинг"],["Неделя 6","Уроки 11–12: нарезка и гранулы"],
+ ["Неделя 7","Уроки 13–14: эффекты, импорт, MIDI"],["Неделя 8","Урок 15: живой сет и запись"],["Потом","Уроки 16–21: синт из сэмпла, кач, лупер, кит на одном пэде, MIDI, порядок на приборе"]];
+
+/* ---------------- PANEL ---------------- */
+const modes=[["none","Ничего не держу"],["shift","SHIFT"],["pattern","PATTERN"],["kybd","KYBD"],["mfx","MFX"],["sampling","Режим SAMPLING"],["power","При включении"]];
+const zones=[
+ {name:"Общее",items:[
+  {id:"display",l:"Дисплей",k:"",base:"Темп на главном экране, имена параметров и сообщения: ⟨donE⟩, ⟨Writ⟩, ⟨dEL⟩. Точка справа внизу — есть несохранённые правки."},
+  {id:"tempo",l:"TEMPO/VALUE",k:"knob",base:"Темп 40–300 и любые значения в меню.",shift:"Точная подстройка темпа по 0,1.",pattern:"Размер шага паттерна (Pattern Scale): 1_8, 1_16, 1_32, триоли.",kybd:"Мастер-вероятность −100…100 (не сохраняется).",mfx:"Выбор одного из 20 эффектов."},
+  {id:"volume",l:"VOLUME",k:"knob",base:"Громкость выхода MIX OUT / наушников."},
+  {id:"shift",l:"SHIFT",k:"",base:"Второй слой функций. Держи и нажимай другие кнопки.",sampling:"Удерживай, чтобы увидеть пиковый уровень входа."},
+  {id:"pattern",l:"PATTERN",k:"",base:"Режим выбора паттерна: держи + шаг 1–4 выбирает банк, затем шаг 1–16 — номер.",shift:"Step loop: зацикливание выбранных шагов во время игры."},
+  {id:"play",l:"▶",k:"",base:"Старт/стоп паттерна.",shift:"COPY: копировать паттерн (⟨Ptn⟩), удвоить (⟨dUPL⟩), копировать партию (⟨PArt⟩). Если держишь пэд — копировать или обменять сэмпл.",sampling:"При запуске ⟨SynC⟩ стартует и останавливает запись.",power:"Держи при включении — бэкап паттернов в папку BACKUP."},
+  {id:"rec",l:"●",k:"",base:"Готовность к записи; затем [▶] начинает живую запись. Без запуска — правка нот по шагам (⟨St.⟩).",shift:"QUANTIZE: квантизация живой записи ⟨On⟩/⟨OFF⟩.",pattern:"Метроном ⟨M.PLY⟩ / ⟨M.OFF⟩.",power:"Держи при включении — восстановление паттернов из папки RESTORE."}]},
+ {name:"Эффекты",items:[
+  {id:"ctrl",l:"CTRL1–3",k:"knob",base:"Параметры выбранного эффекта.",shift:"Дополнительные параметры эффекта."},
+  {id:"looper",l:"LOOPER",k:"",base:"DJFX Looper: короткая петля, направление и скорость, как на вертушке.",pattern:"Работает, только пока держишь."},
+  {id:"pitchfx",l:"PITCH",k:"",base:"Chromatic PS: двухголосый питч-шифтер по полутонам.",pattern:"Работает, только пока держишь."},
+  {id:"delay",l:"DELAY",k:"",base:"Sync Delay: эхо в темп.",pattern:"Работает, только пока держишь.",mfx:"[MFX] + [DELAY] + пэд переключает пэд между BUS B и EFX."},
+  {id:"filter",l:"FILTER",k:"",base:"Filter+Drive: фильтр с перегрузом.",pattern:"Работает, только пока держишь."},
+  {id:"scatter",l:"SCATTER",k:"",base:"Scatter: перемешивает куски петли, меняя направление и длину.",pattern:"Работает, только пока держишь."},
+  {id:"mfx",l:"MFX",k:"",base:"Вкл/выкл выбранный мульти-эффект. Держи + шаг или + TEMPO/VALUE — выбрать эффект.",pattern:"Работает, только пока держишь."}]},
+ {name:"Редактирование сэмпла",items:[
+  {id:"kpitch",l:"PITCH",k:"knob",base:"Высота сэмпла (±24 полутона). В меню SAMPLE EDIT — другие параметры.",shift:"Громкость BUS A.",sampling:"Моно/стерео. С [SHIFT] — число кусочков для step sampling (⟨S. 2⟩…⟨S. 64⟩)."},
+  {id:"kstart",l:"START",k:"knob",base:"Начало сэмпла. У гранулярного пэда — позиция головки.",shift:"Громкость BUS B.",sampling:"Длина записи: ⟨FREE⟩ или число тактов."},
+  {id:"kend",l:"END",k:"knob",base:"Длина сэмпла. У гранулярного пэда — размер гранулы.",shift:"Громкость BUS EFFECT.",sampling:"Запуск: ⟨t.OFF⟩, ⟨SynC⟩ или порог −3…−24 дБ."},
+  {id:"klevel",l:"LEVEL",k:"knob",base:"Громкость пэда.",sampling:"Чувствительность микрофона: [C]–[TIE] должны загораться лишь изредка."},
+  {id:"sampling",l:"SAMPLING",k:"",base:"Вход в режим сэмплирования; затем пустой пэд и снова [SAMPLING] — старт/стоп.",power:"Держи при включении — импорт WAV. С кнопками банков — экспорт банков E–H."},
+  {id:"lofi",l:"LO-Fi",k:"",base:"Лоу-фай эффект на пэде.",shift:"Сила лоу-фай (⟨LoFi⟩) и частота сэмпла (⟨SMP.r⟩).",mfx:"Переключает внешний вход (MIX IN, микрофон) между BUS A и EFX.",sampling:"Частота записи: 44.1k / 22.0k / 14.7k / 11.0k."},
+  {id:"gate",l:"GATE",k:"",base:"One-shot (выкл) или звучит, пока держишь (вкл).",shift:"Полифония ⟨PoLy⟩ / ⟨Mono⟩.",mfx:"Переключает USB-вход между BUS A и EFX."},
+  {id:"del",l:"DELETE",k:"",base:"Удалить сэмпл: ⟨dEL⟩ → пэд → [DELETE].",sampling:"Заглушить/включить микрофон."},
+  {id:"loop",l:"LOOP",k:"",base:"Петля вкл/выкл.",shift:"Направление: ⟨FrWd⟩ / ⟨rvrS⟩ / ⟨ALt⟩."},
+  {id:"banks",l:"A/E–D/H",k:"",base:"Банки: одно нажатие — A–D (горит), два — E–H (мигает).",shift:"Заглушить весь банк.",power:"Держи при включении — экспорт этих банков (A–D; с [SAMPLING] — E–H)."}]},
+ {name:"Пэды",items:[
+  {id:"pads",l:"1–6",k:"pad",base:"Играют сэмплы текущего банка и выбирают пэд для правки.",shift:"Заглушить пэд в паттерне.",pattern:"Выбрать пэд без звука.",mfx:"Переключить пэд между BUS A (без эффектов) и EFX.",sampling:"Мигающий — пустой: выбери его для записи."},
+  {id:"gran",l:"GRANULAR",k:"pad",base:"Гранулярный пэд. Удерживая шаг и нажимая его — листаешь параметры ноты.",shift:"Заглушить гранулярный пэд.",pattern:"Выбрать без звука. [PATTERN] + [GRANULAR] + пэд — назначить материал.",mfx:"Переключить между BUS A и EFX.",power:"Подтверждает сброс к заводским (после ⟨FACt⟩)."}]},
+ {name:"Шаги и клавиатура",items:[
+  {id:"steps",l:"Шаги 1–16",k:"",base:"Ввод нот, выбор паттернов и банков. Держи шаг + крути ручку — моушен в шаг; держи шаг + пэд — сила удара.",pattern:"Шаги 1–4 — банк паттернов, 1–16 — номер.",mfx:"Выбрать эффект.",kybd:"При горящем [KYBD] — клавиатура.",sampling:"Индикатор уровня входа."},
+  {id:"kybd",l:"KYBD",k:"",base:"Шаги становятся клавиатурой. Держи пэд + [KYBD] — удержание (HOLD). Держи шаг + [KYBD] — лига.",power:"Держи при включении — сброс к заводским (⟨FACt⟩)."},
+  {id:"kC",l:"C",k:"",base:"EXIT — выход из меню.",shift:"Остановить все звучащие сэмплы.",power:"Держи при включении — режим «только батарея» (для iOS, MX-1)."},
+  {id:"kCs",l:"C♯",k:"",base:"ENTER — подтвердить."},
+  {id:"kD",l:"D",k:"",base:"Нота.",shift:"SHUFFLE — свинг −90…90."},
+  {id:"kDs",l:"D♯",k:"",base:"Нота.",shift:"LAST — длина паттерна."},
+  {id:"kEF",l:"E / F",k:"",base:"Ноты.",shift:"PAGE◀ / PAGE▶ — страницы шагов 1–64."},
+  {id:"kFs",l:"F♯",k:"",base:"Нота.",shift:"P.ENV — огибающая высоты."},
+  {id:"kG",l:"G",k:"",base:"Нота.",shift:"VOICE — тон, огибающая громкости, Chop, гранулы."},
+  {id:"kGs",l:"G♯",k:"",base:"Нота.",shift:"FILTER — фильтр сэмпла."},
+  {id:"kA",l:"A",k:"",base:"Нота.",shift:"MIXER — громкость, панорама, шина, посылы."},
+  {id:"kAs",l:"A♯",k:"",base:"Нота.",shift:"DELAY/REVERB — общие дилей и реверб."},
+  {id:"tie",l:"TIE",k:"",base:"Лига при правке нот.",shift:"WRITE — сохранить: ⟨ALL⟩, ⟨PAd⟩, ⟨Pd.AL⟩, ⟨Ptn⟩, ⟨Pt.AL⟩, ⟨EFCt⟩."},
+  {id:"octm",l:"OCT−",k:"",base:"Октава вниз (при [KYBD]).",shift:"MOTION — стереть моушены (⟨CLr.M⟩)."},
+  {id:"octp",l:"OCT+",k:"",base:"Октава вверх. Оба OCT вместе — сброс.",shift:"MENU — системное меню, откаты ⟨rL.…⟩, инициализации.",kybd:"Откаты и инициализации; в режиме ⟨St.⟩ — копирование, вставка, вставка пустого, удвоение шагов."}]},
+ {name:"Разъёмы",items:[
+  {id:"mixin",l:"MIX IN",k:"",base:"Линейный вход: стерео мини-джек. Усиление — меню ⟨In.G⟩."},
+  {id:"mixout",l:"MIX OUT / HEADSET",k:"",base:"Выход и наушники. Гарнитура CTIA работает и как микрофон."},
+  {id:"sync",l:"SYNC IN/OUT",k:"",base:"Синхронизация, только моно-кабель мини-джек. Не подключай аудио к SYNC OUT."},
+  {id:"usb",l:"USB-C",k:"",base:"Питание, USB-аудио и MIDI, диск для бэкапа и импорта."},
+  {id:"midi",l:"MIDI IN/OUT",k:"",base:"TRS-MIDI. Пэды — канал 11, гранулы — 4, авто — 15, смена паттернов — 16."}]}
+];
+const modeLabel={base:"Обычное нажатие",shift:"С SHIFT",pattern:"С PATTERN",kybd:"С KYBD",mfx:"С MFX",sampling:"В режиме SAMPLING",power:"При включении питания"};
+let curMode="none", curCtrl=null;
+function renderModes(){
+  const box=document.getElementById("modes");
+  box.innerHTML=modes.map(([id,l])=>`<button type="button" data-m="${id}" aria-pressed="${id===curMode}">${l}</button>`).join("");
+  box.querySelectorAll("button").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl)});
+}
+function renderDevice(){
+  const dev=document.getElementById("device");
+  dev.innerHTML=zones.map(z=>`<div class="zone"><span>${z.name}</span><div class="ctrls">${z.items.map(c=>{
+    const has=curMode==="none"?true:!!c[curMode];
+    const cls=["ctrl",c.k,has?(curMode==="none"?"":"hot"):"dim"].join(" ");
+    return `<button type="button" class="${cls}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}">${esc(c.l)}${c.k==="knob"?"<small>ручка</small>":""}</button>`}).join("")}</div></div>`).join("");
+  dev.querySelectorAll(".ctrl").forEach(b=>b.onclick=()=>{curCtrl=b.dataset.id;renderDevice();showCtrl(curCtrl)});
+}
+function findCtrl(id){for(const z of zones)for(const c of z.items)if(c.id===id)return c}
+function showCtrl(id){
+  const c=findCtrl(id);const d=document.getElementById("detail");
+  const keys=["base","shift","pattern","kybd","mfx","sampling","power"].filter(k=>c[k]);
+  const order=curMode!=="none"&&c[curMode]?[curMode,...keys.filter(k=>k!==curMode)]:keys;
+  d.innerHTML=`<h3>${esc(c.l)}</h3><ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
+}
+
+const GLOSS=`<div class="box"><h4>Словарик ударных</h4>
+<p><button type="button" class="btn" data-hit="kick">▶ Бочка</button> <b>Бочка</b> (kick, большой барабан) — низкий глухой «бум». Держит основной пульс, чаще всего на шагах 1, 5, 9, 13.</p>
+<p><button type="button" class="btn" data-hit="snare">▶ Снейр</button> <button type="button" class="btn" data-hit="clap">▶ Клэп</button> <b>Снейр</b> (snare, малый барабан) — хлёсткий «тщ» или «пэ». Отвечает бочке на вторую и четвёртую долю: шаги 5 и 13. Похожую роль играет <b>клэп</b> (clap, хлопок).</p>
+<p><button type="button" class="btn" data-hit="hat">▶ Хэт</button> <button type="button" class="btn" data-hit="ohat">▶ Открытый хэт</button> <b>Хэт</b> (hi-hat, хай-хэт) — короткое металлическое «ц». Отсчитывает мелкие доли: восьмыми (шаги 1, 3, 5…) или между ударами бочки (3, 7, 11, 15). <b>Открытый хэт</b> звучит дольше: «цссс».</p>
+<p class="muted small">Звуки на кнопках синтезированы в браузере и только похожи на настоящие. Точное звучание слушай на пэдах P-6 из таблицы ниже.</p>
+<p class="muted small">16 шагов — это один такт на четыре счёта: «раз» — шаг 1, «два» — 5, «три» — 9, «четыре» — 13.</p>
+</div>
+<div class="box task"><h4>Где ударные в заводских банках</h4>
+<p class="small">Проще всего банк <b>F</b> (нажми <kbd>B/F</kbd> дважды, кнопка замигает): <b>пэд 1 — бочка, пэд 2 — закрытый хэт, пэд 4 — снейр</b>. Так их использует заводской паттерн 1-10.</p>
+<div class="tablewrap"><table><thead><tr><th>Банк</th><th>Бочка</th><th>Снейр</th><th>Хэт</th></tr></thead><tbody>
+<tr><td>A</td><td>A-1</td><td>A-2</td><td>— (на A-5 брейк, нарезанный на 32 удара)</td></tr>
+<tr><td>B</td><td>B-1</td><td>—</td><td>B-3 (нарезка из 16 хэтов)</td></tr>
+<tr><td>C / D</td><td>C-5</td><td>C-6</td><td>D-5</td></tr>
+<tr><td>E</td><td>E-1</td><td>—</td><td>E-3 (открытый, тарелка)</td></tr>
+<tr><td>F</td><td>F-1</td><td>F-4</td><td>F-2</td></tr>
+<tr><td>G</td><td>G-1</td><td>G-2</td><td>G-4 (открытый, тарелка)</td></tr>
+<tr><td>H</td><td colspan="3">H-1, H-2, H-3 — наборы ударных, нарезанные на 8–16 кусочков: играй их через KYBD (урок 11)</td></tr>
+</tbody></table></div>
+<p class="muted small">Таблица составлена по заводским файлам Roland: по звуку сэмплов и по тому, на каких шагах они играют в паттернах 1-01…1-16. Если ты уже менял сэмплы, проверь на слух. Остальные пэды — басы, аккорды, мелодии и лупы.</p>
+</div>`;
+
+/* ---------------- STEP GRIDS ---------------- */
+const R=(a,b,st=1)=>{const o=[];for(let i=a;i<=b;i+=st)o.push(i);return o};
+const GRIDS={
+ "T1":[
+  {t:"Четыре счёта",bpm:90,note:"Бочка на каждый счёт: «раз» — шаг 1, «два» — 5, «три» — 9, «четыре» — 13.",rows:[{n:"Бочка",pad:"счёт",k:"kick",s:[1,5,9,13]}]},
+  {t:"Восьмые и шестнадцатые",bpm:90,note:"Верхний ряд — шестнадцатые (каждый шаг), средний — восьмые (каждый второй).",rows:[{n:"16-е",pad:"хэт",k:"hat",s:R(1,16)},{n:"8-е",pad:"хэт",k:"hat",s:R(1,15,2)},{n:"Счёт",pad:"бочка",k:"kick",s:[1,5,9,13]}]},
+  {t:"Сильные и слабые доли",bpm:90,note:"Бочка на «раз» и «три», снейр на «два» и «четыре» — основа большинства битов.",rows:[{n:"Снейр",pad:"слабые",k:"snare",s:[5,13]},{n:"Бочка",pad:"сильные",k:"kick",s:[1,9]}]}],
+ "04":[
+  {t:"Базовый бит",bpm:96,note:"Бочка на счёт, снейр на «два» и «четыре», хэт между ударами бочки.",rows:[
+   {n:"Хэт",pad:"F-2",k:"hat",s:[3,7,11,15]},{n:"Снейр",pad:"F-4",k:"snare",s:[5,13]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,5,9,13]}]},
+  {t:"Хэт восьмыми и акценты",bpm:96,note:"Высота столбика — сила удара: держи шаг и нажимай пэд, чтобы выбрать StrG / MEdi / WEAK.",rows:[
+   {n:"Хэт",pad:"F-2",k:"hat",s:R(1,15,2),v:{1:1,3:.5,5:.75,7:.5,9:1,11:.5,13:.75,15:.5}},{n:"Снейр",pad:"F-4",k:"snare",s:[5,13]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,5,9,13]}]},
+  {t:"Брейк (хип-хоп)",bpm:88,note:"Бочка уходит с ровного счёта — бит начинает качать. Добавь свинг 10–16.",rows:[
+   {n:"Хэт",pad:"F-2",k:"hat",s:R(1,15,2)},{n:"Снейр",pad:"F-4",k:"snare",s:[5,13]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,8,11]}]}],
+ "06":[
+  {t:"Вероятность и сабстепы",bpm:100,note:"Бледные клетки звучат не всегда (вероятность). Цифра в клетке — дробь: шаг делится на 2–3 удара. Нажми «Слушать» несколько раз — каждый проход чуть другой.",rows:[
+   {n:"Хэт",pad:"F-2",k:"hat",s:R(1,16),p:{2:40,4:60,6:40,8:60,10:40,12:60,14:40},sub:{16:3}},{n:"Снейр",pad:"F-4",k:"snare",s:[5,13,15],p:{15:30}},{n:"Бочка",pad:"F-1",k:"kick",s:[1,5,9,13]}]}],
+ "17":[
+  {t:"Ручной сайдчейн: громкость баса по шагам",bpm:122,note:"Столбики — значение LEVEL, записанное в шаг. Там, где бьёт бочка, бас почти пропадает и плавно возвращается.",rows:[
+   {n:"Бас",pad:"LEVEL",k:"bass",s:R(1,16),v:{1:0,2:.28,3:1,4:1,5:0,6:.28,7:1,8:1,9:0,10:.28,11:1,12:1,13:0,14:.28,15:1,16:1},lvl:1},{n:"Бочка",pad:"F-1",k:"kick",s:[1,5,9,13]}]}]
+};
+let AC=null,seqTimer=null,seqPlaying=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return AC}
+function noiseBuf(c){const b=c.createBuffer(1,c.sampleRate*0.4,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
+let NB=null;
+function hit(k,t,v){const c=ac();if(!c)return;v=v==null?1:v;const g=c.createGain();g.connect(c.destination);
+ if(k==="kick"){const o=c.createOscillator();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(42,t+.25);g.gain.setValueAtTime(.9*v,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.connect(g);o.start(t);o.stop(t+.4)}
+ else{NB=NB||noiseBuf(c);const n=c.createBufferSource();n.buffer=NB;const f=c.createBiquadFilter();
+  if(k==="snare"){f.type="bandpass";f.frequency.value=1800;g.gain.setValueAtTime(.6*v,t);g.gain.exponentialRampToValueAtTime(.001,t+.18);
+   const o=c.createOscillator(),g2=c.createGain();o.frequency.value=190;g2.gain.setValueAtTime(.35*v,t);g2.gain.exponentialRampToValueAtTime(.001,t+.1);o.connect(g2);g2.connect(c.destination);o.start(t);o.stop(t+.12)}
+  else if(k==="clap"){f.type="bandpass";f.frequency.value=1200;f.Q.value=1.2;[0,.012,.024].forEach((d,j)=>{g.gain.setValueAtTime(.55*v,t+d);g.gain.exponentialRampToValueAtTime(j<2?.05:.001,t+d+(j<2?.011:.2))})}
+  else if(k==="ohat"){f.type="highpass";f.frequency.value=7000;g.gain.setValueAtTime(.3*v,t);g.gain.exponentialRampToValueAtTime(.001,t+.35)}
+  else{f.type="highpass";f.frequency.value=7000;g.gain.setValueAtTime(.35*v,t);g.gain.exponentialRampToValueAtTime(.001,t+.05)}
+  n.connect(f);f.connect(g);n.start(t);n.stop(t+.3)}}
+function bassNote(t,dur,lv){const c=ac();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.type="sawtooth";o.frequency.value=55;const f=c.createBiquadFilter();f.type="lowpass";f.frequency.value=400;
+ g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.25*Math.max(lv,.001),t+.01);g.gain.setValueAtTime(.25*Math.max(lv,.001),t+dur-.01);g.gain.linearRampToValueAtTime(.0001,t+dur);o.connect(f);f.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02)}
+const NOTE_N=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
+function tone(t,dur,midi,v,kind){const c=ac();if(!c)return;const o=c.createOscillator(),o2=c.createOscillator(),g=c.createGain(),f=c.createBiquadFilter();
+ const fr=440*Math.pow(2,(midi-69)/12);o.type=kind==="pad"?"sawtooth":"triangle";o2.type="sine";o.frequency.value=fr;o2.frequency.value=fr*(kind==="pad"?1.005:2);
+ f.type="lowpass";f.frequency.value=kind==="pad"?900:2500;const a=kind==="pad"?.25:.01,peak=(kind==="pad"?.07:.12)*(v==null?1:v),rel=kind==="pad"?.6:.4;
+ g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.setValueAtTime(peak,t+Math.max(a,dur-.05));g.gain.exponentialRampToValueAtTime(.0001,t+dur+rel);
+ o.connect(f);o2.connect(f);f.connect(g);g.connect(c.destination);o.start(t);o2.start(t);o.stop(t+dur+rel+.05);o2.stop(t+dur+rel+.05)}
+function chordsHTML(list){return `<div class="box"><h4>Схемы аккордов (одна октава кнопок, от C до B)</h4><div class="chords">${list.map((c,ci)=>{
+ const on=new Set(c[1]);const whites=[0,2,4,5,7,9,11],blacks=[1,3,6,8,10],bpos={1:1,3:2,6:4,8:5,10:6};
+ const w=whites.map(n=>`<span class="w${on.has(n)?" on":""}"><span>${NOTE_N[n]}</span></span>`).join("");
+ const b=blacks.map(n=>`<span class="bk${on.has(n)?" on":""}" style="left:calc(${bpos[n]}*100%/7 - 100%/7*.3);width:calc(100%/7*.6)"></span>`).join("");
+ return `<div class="chord"><b>${esc(c[0])}</b><div class="piano">${w}${b}</div><span class="notes">${c[1].map(n=>NOTE_N[n]).join(" – ")}${c[2]?" · "+esc(c[2]):""}</span><button type="button" class="btn" data-chord="${c[1].join(",")}">▶ Послушать</button></div>`}).join("")}</div></div>`}
+function gridHTML(g,id){
+ const nums=R(1,16).map(i=>`<span class="num${(i-1)%4===0?" beat":""}">${i}</span>`).join("");
+ const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(1,16).map(i=>{
+   const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>1?" q":"";
+   if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
+     return `<button type="button" class="cell${st?" on":hold?" hold":""}${q}" disabled aria-label="${esc(r.n)}, шаг ${i}">${st&&st[3]?`<span class="tag">${esc(st[3])}</span>`:""}</button>`}
+   if(r.lvl){const v=r.v[i]??1;return `<button type="button" class="cell lvlcell${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-label="${esc(r.n)}, шаг ${i}, уровень ${Math.round(v*127)}"><span class="lvl" style="height:${Math.max(6,v*100)}%"></span></button>`}
+   const p=r.p&&r.p[i],sb=r.sub&&r.sub[i],v=r.v&&r.v[i];
+   const inner=on&&v!=null&&v<1?`<span class="lvl" style="height:${v*100}%"></span>`:"";
+   const tag=on&&sb?`<span class="tag">×${sb}</span>`:on&&p?`<span class="tag">${p}%</span>`:"";
+   return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}">${inner}${tag}</button>`}).join("")).join("");
+ return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}">▶ Слушать</button></span></div>
+ <div class="seq-wrap"><div class="seq-grid"><span></span>${nums}${rows}</div></div><p class="seq-note">${esc(g.note)} Нажимай на клетки, чтобы менять бит.</p></div>`}
+const gridState={};
+function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
+function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>b.textContent="▶ Слушать");seqPlaying=null}
+function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
+ if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;const g=gridState[id];const stepDur=60/g.bpm/4;let step=0,next=c.currentTime+.05,bars=0;
+ document.querySelector(`[data-play="${id}"]`).textContent="■ Стоп";
+ seqTimer=setInterval(()=>{while(next<c.currentTime+.12){const i=step+1;
+  g.rows.forEach((r,ri)=>{
+   if(r.k==="tone"||r.k==="pad"){const bar=r.bars[bars%r.bars.length];bar.filter(x=>x[0]===i).forEach(x=>{if(x[4]&&Math.random()*100>x[4])return;(Array.isArray(x[2])?x[2]:[x[2]]).forEach(m=>tone(next,x[1]*stepDur,m,r.vol||1,r.k))});return}
+   if(!r.s.includes(i))return;
+   if(r.k==="bass"){bassNote(next,stepDur,r.v?r.v[i]??1:1);return}
+   if(r.p&&r.p[i]&&Math.random()*100>r.p[i])return;
+   const n=r.sub&&r.sub[i]||1,v=r.v&&r.v[i]!=null?r.v[i]:1;for(let k=0;k<n;k++)hit(r.k,next+k*stepDur/n,v)});
+  const tt=(next-c.currentTime)*1000,el=document.getElementById(id);
+  setTimeout(()=>{if(seqPlaying!==id||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
+  next+=stepDur;step=(step+1)%16;if(step===0&&++bars>=8){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
+document.addEventListener("click",e=>{
+ const ch=e.target.closest("[data-chord]");if(ch){const c=ac();if(c){if(c.state==="suspended")c.resume();ch.dataset.chord.split(",").map(Number).forEach(n=>tone(c.currentTime+.02,1.2,60+n,.8,"tone"))}return}
+ const hb=e.target.closest("[data-hit]");if(hb){const c=ac();if(c){if(c.state==="suspended")c.resume();hit(hb.dataset.hit,c.currentTime+.02,1)}return}
+ const pb=e.target.closest("[data-play]");if(pb){playSeq(pb.dataset.play);return}
+ const cell=e.target.closest(".cell[data-g]");if(!cell||cell.disabled)return;const g=gridState[cell.dataset.g],r=g.rows[+cell.dataset.r],i=+cell.dataset.i;
+ if(r.lvl){const v=r.v[i]??1;r.v[i]=v>=1?0:v<.28?.28:1}else{const at=r.s.indexOf(i);if(at>=0)r.s.splice(at,1);else{r.s.push(i);if(r.p)delete r.p[i];if(r.v)delete r.v[i];if(r.sub)delete r.sub[i]}if(!r.lvl&&r.k!=="bass"&&r.s.includes(i))hit(r.k,ac()?ac().currentTime:0,1)}
+ const host=document.getElementById(cell.dataset.g);host.outerHTML=gridHTML(g,cell.dataset.g);
+});
+/* ---------------- LESSON RENDER ---------------- */
+let done=store.get("p6done",{});
+const LINKS={
+ digichain:["DigiChain","https://digichain.brianbar.net/","В браузере: обрезка, нормализация, моно/стерео и цепочки с равным шагом для Chop (кнопка Spaced Chain)."],
+ audacity:["Audacity","https://www.audacityteam.org/","Бесплатный аудиоредактор для Windows, Mac и Linux: подрезать, нормализовать, сохранить WAV."],
+ freesound:["Freesound","https://freesound.org/","Огромная база звуков. Нужна бесплатная регистрация, фильтруй по лицензии CC0."],
+ pixabay:["Pixabay — звуковые эффекты","https://pixabay.com/sound-effects/","Бесплатные звуки под лицензией Pixabay."],
+ n99:["99Sounds","https://99sounds.org/","Бесплатные паки от звукорежиссёров: ударные, текстуры, полевые записи."],
+ akwf:["AKWF (Adventure Kid Waveforms)","https://github.com/KristofferKarlAxelEkstrand/AKWF-FREE","Тысячи коротких волн для синта из сэмпла. Лицензию смотри в README."],
+ sampletool:["P-6 SampleTool","https://www.roland.com/us/products/rc_p-6_sampletool/","Бесплатная программа Roland для загрузки сэмплов. Скачивается через Roland Cloud Manager."],
+ manual:["Руководство Roland P-6","https://static.roland.com/manuals/p-6/en-US/index.html","Официальное онлайн-руководство, источник всех нажатий в гайде."],
+ factory:["Заводские сэмплы и паттерны","https://www.roland.com/global/support/by_product/p-6/updates_drivers/e56e996e-88d3-4132-a778-d399ed68901b/","Архив Roland, чтобы вернуть заводские звуки после сброса."],
+ ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
+const LESSON_LINKS={"23":["freesound","pixabay","n99","akwf","audacity","digichain","sampletool"],"19":["digichain","audacity","sampletool"],"16":["akwf","digichain"],"14":["sampletool","factory"],"00":["factory"],"22":["ableton"]};
+function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a> — ${esc(L[2])}</li>`}).join("")}</ul></div>`}
+let focus={};
+function lessonByN(n){return lessons.find(l=>l.n===n)}
+function sesLabel(l){if(SES[l.n])return SES[l.n];const k=(PARTS[l.n]||[]).length+1;return "≈ "+k+(k===1?" занятие":" занятия")+" по 30 минут"}
+function stepsHTML(l){const sp=PARTS[l.n]||[];const letters="абвг";let out="";
+ l.steps.forEach((st,i)=>{const pi=sp.indexOf(i);
+  if(sp.length&&i===0)out+=`<li class="parthead">Занятие 1 (часть а)</li>`;
+  if(pi>=0)out+=`<li class="parthead">Занятие ${pi+2} (часть ${letters[pi+1]})</li>`;
+  const id=`s${l.n}-${i}`,on=done[l.n+"-"+i];
+  out+=`<li class="${on?"on":""}" data-si="${i}"><input type="checkbox" id="${id}" data-k="${l.n}-${i}"${on?" checked":""}><label for="${id}">${fmt(st)}</label></li>`});
+ return out}
+function lessonHTML(l,open){
+ const cnt=l.steps.filter((_,i)=>done[l.n+"-"+i]).length,complete=cnt===l.steps.length;
+ return `<details class="lesson${complete?" complete":""}${focus[l.n]!=null?" focusmode":""}" data-n="${l.n}"${open?" open":""}>
+<summary><span class="lnum">${l.n}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${l.steps.length}</span></summary>
+<div class="lbody">
+<div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
+<div class="focusbar"><span class="fpos"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button></div>
+<div class="hideinfocus">${l.gloss?GLOSS:""}${l.chords?chordsHTML(l.chords):""}</div>
+${GRIDS[l.n]?`<div class="hideinfocus" style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
+<ol class="steps">${stepsHTML(l)}</ol>
+<div class="hideinfocus" style="display:grid;gap:14px">
+${GL[l.n]?`<p class="small"><a href="#recipes">🎧 ${esc(GL[l.n])} — раздел «Жанры» →</a></p>`:""}
+${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
+${l.tc?`<div class="box"><h4>Смотри в роликах</h4><p class="small">${l.tc.map(t=>{const [m,sec]=t[1].split(":").map(Number);return `<a href="https://www.youtube.com/watch?v=${t[0]}&t=${m*60+sec}s" target="_blank" rel="noopener">▶ ${t[1]} · ${esc(t[2])}</a>`}).join("<br>")}</p></div>`:""}
+${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
+${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
+<div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
+${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
+<p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland ↗</a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
+</div></div></details>`}
+function renderLessons(){
+  const box=document.getElementById("lessonList");
+  const open=store.get("p6open",[]);
+  let html="";
+  SECTIONS.forEach(sec=>{
+    const ls=sec.order.map(lessonByN).filter(Boolean);
+    const dn=ls.filter(l=>l.steps.every((_,i)=>done[l.n+"-"+i])).length;
+    html+=`<div class="levelhead"><h2>${sec.name}</h2><span>${sec.span} · пройдено уроков ${dn} из ${ls.length}</span></div><p class="secdesc">${esc(sec.desc)}</p>`;
+    ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
+  });
+  box.innerHTML=html;
+  box.querySelectorAll("details").forEach(d=>{d.addEventListener("toggle",()=>{
+    const o=[...box.querySelectorAll("details[open]")].map(x=>x.dataset.n);store.set("p6open",o)});if(focus[d.dataset.n]!=null)placeFocus(d.dataset.n)});
+  updateProgress();
+}
+function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done)}
+function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
+ const cnt=l.steps.filter((_,i)=>done[n+"-"+i]).length;det.querySelector(".lcount").textContent=cnt+" / "+l.steps.length;det.classList.toggle("complete",cnt===l.steps.length);updateProgress()}
+function placeFocus(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);let i=focus[n];
+ det.querySelectorAll("li.cur").forEach(x=>x.classList.remove("cur"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
+ const sp=PARTS[n]||[];let part=0;sp.forEach(x=>{if(i>=x)part++});
+ det.querySelector(".fpos").textContent=`Шаг ${i+1} из ${l.steps.length}`+(sp.length?` · занятие ${part+1}`:"")}
+document.getElementById("lessonList").addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
+ setStep(cb.dataset.k,cb.checked);cb.closest("li").classList.toggle("on",cb.checked);refreshLesson(cb.closest("details").dataset.n)});
+document.getElementById("lessonList").addEventListener("click",e=>{
+ const f=e.target.closest("[data-focus]");if(f){const n=f.dataset.focus,l=lessonByN(n);
+  if(focus[n]!=null){delete focus[n]}else{let i=l.steps.findIndex((_,k)=>!done[n+"-"+k]);focus[n]=i<0?0:i}
+  const det=f.closest("details");det.outerHTML=lessonHTML(l,true);const nd=document.querySelector(`details[data-n="${n}"]`);
+  nd.addEventListener("toggle",()=>{const o=[...document.querySelectorAll("#lessonList details[open]")].map(x=>x.dataset.n);store.set("p6open",o)});
+  if(focus[n]!=null){placeFocus(n);nd.scrollIntoView({block:"start"})}return}
+ const nx=e.target.closest("[data-fnext]");if(nx){const n=nx.dataset.fnext,l=lessonByN(n),i=focus[n];const k=n+"-"+i;setStep(k,true);
+  const li=document.querySelector(`details[data-n="${n}"] li[data-si="${i}"]`);if(li){li.classList.add("on");li.querySelector("input").checked=true}
+  refreshLesson(n);if(i<l.steps.length-1){focus[n]=i+1;placeFocus(n)}else{document.querySelector(`details[data-n="${n}"] .fpos`).textContent="Урок пройден! Можно выйти из режима по шагам."}return}
+ const pv=e.target.closest("[data-fprev]");if(pv){const n=pv.dataset.fprev;if(focus[n]>0){focus[n]--;placeFocus(n)}return}
+});
+function updateProgress(){
+  const total=lessons.reduce((a,l)=>a+l.steps.length,0);
+  const n=Object.keys(done).length;
+  document.getElementById("pbar").style.width=(100*n/total)+"%";
+  document.getElementById("ptext").textContent=n+" / "+total;
+}
+document.getElementById("resetProgress").onclick=()=>{document.getElementById("resetConfirm").hidden=false};
+document.getElementById("resetNo").onclick=()=>{document.getElementById("resetConfirm").hidden=true};
+document.getElementById("resetYes").onclick=()=>{done={};store.set("p6done",done);document.getElementById("resetConfirm").hidden=true;renderLessons()};
+
+/* ---------------- CHALLENGES ---------------- */
+const challenges=[
+ {t:"Диджей на пресетах",tag:"Встроенные",need:"01",d:"2 минуты живой игры только переключением заводских паттернов 1-01…1-16, мьютами и темпом."},
+ {t:"Один звук — четыре роли",tag:"Встроенные",need:"02",d:"Скопируй один сэмпл на 4 пэда и сделай бочку, подъём, стаб и лоу-фай вариант. Собери из них бит."},
+ {t:"Ремикс пресета",tag:"Встроенные",need:"04",d:"Скопируй заводской паттерн в банк 3 и замени в нём один пэд своим звуком или поменяй сэмплы местами (⟨EXCG⟩)."},
+ {t:"Бит без барабанов",tag:"Секвенсор",need:"04",d:"Ритм только из тональных звуков: голоса, аккорды, синт. Короткие [END] и [GATE] делают их ударными."},
+ {t:"Нечётная петля",tag:"Секвенсор",need:"06",d:"Паттерн длиной 7 или 12 шагов, размер шага ⟨8t⟩ или ⟨16t⟩. Найди, где он начинает качать."},
+ {t:"Никогда не повторяйся",tag:"Секвенсор",need:"06",d:"Вероятности на хэтах и перкуссии, одна нота ⟨P.1st⟩ в начале. 16 тактов без скуки."},
+ {t:"Бит из кухни",tag:"Запись",need:"09",d:"6 звуков с кухни на пэды 1–6 и полноценный бит из них."},
+ {t:"Голосовая драм-машина",tag:"Запись",need:"09",d:"Битбокс ртом: «бум», «ц», «к» на три пэда. Порог запуска ⟨-12db⟩ отрежет тишину сам."},
+ {t:"Звуковая открытка",tag:"Запись",need:"10",d:"Запиши звуки одного места (двор, метро, парк) и сделай из них 30-секундную атмосферу."},
+ {t:"Кассета",tag:"Запись",need:"09",d:"Сэмплируй на ⟨11.0k⟩, включи [LO-Fi] и эффект Cassette Sim ⟨CSt⟩. Тёплый лоу-фай бит."},
+ {t:"Перепиши фразу",tag:"Нарезка",need:"11",d:"Скажи предложение, нарежь на 8 частей через ⟨ChoP⟩ и сыграй с клавиатуры новое предложение."},
+ {t:"Хор одной ноты",tag:"Нарезка",need:"03",d:"Спой одну ноту, включи ⟨PoLy⟩ и сыграй аккордовую последовательность из 4 аккордов."},
+ {t:"Заморозка",tag:"Гранулы",need:"12",d:"Секунда голоса превращается в бесконечный пэд: медленная головка, высокая плотность, мягкая форма гранулы."},
+ {t:"Дождь из гранул",tag:"Гранулы",need:"12",d:"Шумный сэмпл, маленький размер гранул, большой Spread и ⟨G.TM.J⟩ — сделай текстуру дождя под бит."},
+ {t:"Колокола из мусора",tag:"Эффекты",need:"13",d:"Перкуссия через Resonator ⟨rES⟩: подбери ROOT и CHORD, чтобы стуки зазвучали аккордом."},
+ {t:"Только руки",tag:"Эффекты",need:"13",d:"Минута живой игры без программирования: только эффекты удержанием, мьюты и step loop."},
+ {t:"Матрёшка",tag:"Запись",need:"10",d:"Три круга ресемплинга с разными эффектами. Сравни первый и последний звук."},
+ {t:"10 минут",tag:"Секвенсор",need:"04",d:"Таймер на 10 минут: бит с нуля на пустом паттерне. Сохрани, даже если не нравится."},
+ {t:"Один сэмпл — весь трек",tag:"Нарезка",need:"12",d:"Всё из одного звука: копии с разной высотой, нарезка через Chop и гранулярная подложка."},
+ {t:"Мой первый пак",tag:"Запись",need:"23",d:"Шесть звуков с Freesound (CC0) под одну тему — например, «кухня», «лес» или «старое радио». Загрузи их в банк и сделай из них бит на 4 такта."},
+ {t:"Живой сет",tag:"Сцена",need:"15",d:"4 паттерна, переходы, мьюты и эффекты. 5 минут записи без остановки."},
+ {t:"Хаус с качем",tag:"Эффекты",need:"17",d:"124–128 BPM, бочка на каждую долю, аккорд с сайдчейном через Tremolo. Три паттерна: интро, раскачка с фильтром, дроп."},
+ {t:"Лупер-джем",tag:"Эффекты",need:"18",d:"Три слоя через лупер на дилее, каждый засэмплирован на свой пэд. Потом собери из них паттерн."},
+ {t:"Кит в кармане",tag:"Нарезка",need:"19",d:"8 ударов на одном пэде через step sampling, только звуки улицы или квартиры. Весь бит — с одного пэда."},
+ {t:"Синт из голоса",tag:"Нарезка",need:"16",d:"Спетая нота превращается в бас и в пэд. Сыграй ими аккордовую последовательность и басовую линию."},
+ {t:"Демонический вокал",tag:"Запись",need:"10",d:"Запиши фразу в микрофон, опусти [PITCH], добавь дилей, ресемплируй и нарежь через Chop. Так делает Vladislav CREW в ролике про сайдчейн."},
+ {t:"Хор из телевизора",tag:"Гранулы",need:"12",d:"Запиши 3 секунды хора или оркестра с динамика, отдай гранулярному пэду и сделай из него фон для танцевального трека."},
+ {t:"Супер-пила",tag:"Нарезка",need:"16",d:"Три копии одной пилы: центр, L20 с −12 центов, R20 с +12. Ресемплируй в стерео и сыграй аккорды в PoLy."},
+ {t:"Пять слоёв",tag:"Эффекты",need:"13",d:"Сухой сэмпл пианино: LO-Fi пэда, фильтр пэда, Isolator, посыл на дилей и реверб. Сравни до и после."}
+];
+const dice={
+ "Источник":["Только заводские сэмплы","Звуки кухни","Твой голос","Звуки улицы через окно","Телефон в MIX IN","Один-единственный сэмпл","Ресемпл собственного паттерна","Стук по разным поверхностям стола"],
+ "Ограничение":["Не больше 3 пэдов","Длина паттерна 7 шагов","Без бочки","Каждая нота с вероятностью ниже 80","Только сабстепы на хэте","Размер шага 8t (триоли)","Все сэмплы задом наперёд","Гранулярный пэд — главный инструмент","Ни одной ноты на шаге 1","Сэмплируй на 11 кГц"],
+ "Эффект":["Scatter","DJFX Looper","Sync Delay с большим Feedback","Resonator","Stopper","Vinyl Sim","Cassette Sim","Super Filter","Crusher","Ring Mod","Без эффектов вообще"],
+ "Темп":["70–80","85–95","100–110","120–125","130–140","160–175"]};
+let chFilter=store.get("p6chf","Все");let chDone=store.get("p6chd",{});
+function renderChallenges(){
+  const tags=["Все",...new Set(challenges.map(c=>c.tag))];
+  const f=document.getElementById("chFilters");
+  f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
+  f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
+  const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
+  document.getElementById("chList").innerHTML=list.map(c=>`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${c.need}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p><label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`).join("");
+  document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone)});
+}
+function roll(){
+  const out=document.getElementById("diceOut");
+  out.innerHTML=Object.entries(dice).map(([k,v])=>`<div class="slot"><b>${k}</b>${esc(v[Math.floor(Math.random()*v.length)])}</div>`).join("");
+}
+document.getElementById("roll").onclick=roll;
+
+/* ---------------- CHEATS ---------------- */
+const cheats=[
+ ["[▶] стоп → [SHIFT] + [TIE · WRITE] → выбор → [C♯ · ENTER]","Сохранить (только на остановленном паттерне, иначе ⟨StoP⟩): ⟨ALL⟩ всё, ⟨PAd⟩ пэд, ⟨Pd.AL⟩ все пэды, ⟨Ptn⟩ паттерн, ⟨Pt.AL⟩ все паттерны, ⟨EFCt⟩ эффекты","02"],
+ ["[SHIFT] + [OCT+ · MENU]","Системное меню: громкость паттерна ⟨vOL⟩, транспонирование ⟨trAn⟩, метроном ⟨Mtro⟩, отсчёт ⟨Cnt.I⟩, MIDI, синхронизация","05"],
+ ["Меню → ⟨rL.Pd⟩ / ⟨rL.Pt⟩ / ⟨rL.Sq⟩ / ⟨rL.Gr⟩","Откат пэда / паттерна / нот / гранулярного пэда к последнему сохранению","02"],
+ ["Меню → ⟨It.Pt⟩ / ⟨It.FX⟩ / ⟨It.Sy⟩","Очистить паттерн / сбросить эффекты / сбросить системные настройки","04"],
+ ["[TEMPO/VALUE]; с [SHIFT] — по 0,1","Темп 40–300","01"],
+ ["[PATTERN] → держи [PATTERN] + шаг 1–4 → отпусти → шаг 1–16","Выбрать банк и номер паттерна","01"],
+ ["[A/E]–[D/H] один / два раза","Банки A–D (горят) / E–H (мигают)","01"],
+ ["[SHIFT] + пэд / [GRANULAR] / банк","Заглушить пэд / гранулярный пэд / банк целиком","01"],
+ ["[SHIFT] + [C · EXIT]","Остановить все звучащие сэмплы","02"],
+ ["[GATE]","One-shot или пока держишь","02"],
+ ["[LOOP]; [SHIFT] + [LOOP]","Петля; направление ⟨FrWd⟩ / ⟨rvrS⟩ / ⟨ALt⟩","02"],
+ ["[LO-Fi]; [SHIFT] + [LO-Fi]","Лоу-фай вкл/выкл; сила ⟨LoFi⟩ и частота ⟨SMP.r⟩","02"],
+ ["Держи пэд + [SHIFT] + [▶ · COPY] → ⟨COPY⟩ или ⟨EXCG⟩","Копировать сэмпл на пустой пэд или поменять два сэмпла местами","02"],
+ ["[DELETE] → пэд → [DELETE]","Удалить сэмпл с пэда","09"],
+ ["[KYBD]; [OCT−] [OCT+]; оба OCT вместе","Клавиатура; октава; сброс октавы","03"],
+ ["[SHIFT] + [GATE]","Полифония ⟨PoLy⟩ / моно ⟨Mono⟩","03"],
+ ["Держи пэд + [KYBD]","HOLD: пэд залипает (при включённой GATE)","03"],
+ ["Держи [PATTERN] + пэд","Выбрать пэд без звука","04"],
+ ["Держи шаг + пэд","Сила удара ⟨StrG⟩ / ⟨MEdi⟩ / ⟨WEAK⟩","04"],
+ ["[SHIFT] + [D · SHUFFLE]","Свинг −90…90 (10–16 — мягкий шаффл)","04"],
+ ["[SHIFT] + [▶ · COPY] → ⟨Ptn⟩ / ⟨dUPL⟩ / ⟨PArt⟩","Копировать паттерн / удвоить длину / скопировать партию одного пэда","04"],
+ ["Держи [PATTERN] + [●]","Метроном ⟨M.PLY⟩ / ⟨M.OFF⟩","05"],
+ ["[●] → [▶] … [●]","Живая запись: старт и стоп","05"],
+ ["[SHIFT] + [● · QUANTIZE]","Квантизация при записи","05"],
+ ["Держи пэд + [●]","Квантизация при воспроизведении для пэда","05"],
+ ["[SHIFT] + [D♯ · LAST]","Длина паттерна 1–64 шага","06"],
+ ["[SHIFT] + [E · PAGE◀] / [F · PAGE▶]","Страницы шагов 1–16, 17–32, 33–48, 49–64","06"],
+ ["Держи [PATTERN] + крути [TEMPO/VALUE]","Размер шага: ⟨1_8⟩ ⟨1_16⟩ ⟨1_32⟩ ⟨8t⟩ ⟨16t⟩ ⟨32t⟩","06"],
+ ["Держи шаг + [GRANULAR] (листать) + [TEMPO/VALUE]","Нота, сила, вероятность, длина, микросдвиг, сабстеп","06"],
+ ["Держи шаг + [KYBD]","Лига на следующий шаг","06"],
+ ["Держи [KYBD] + крути [TEMPO/VALUE]","Мастер-вероятность (не сохраняется)","06"],
+ ["[SHIFT] + [PATTERN] → держи шаги","Step loop во время игры; выход — [PATTERN]","06"],
+ ["[●] → шаг → [KYBD] → клавиши","Вписать ноты/аккорд в шаг (до 8 нот)","07"],
+ ["В режиме ⟨St.⟩: держи [KYBD] + [OCT+]","⟨COPY⟩ / ⟨PStE⟩ / ⟨Insr⟩ / ⟨DUPL⟩ шагов","07"],
+ ["Держи шаг + крути [PITCH]/[START]/[END]/[LEVEL]","Записать значение ручки в шаг (моушен)","08"],
+ ["[SHIFT] + [OCT− · MOTION] → [C♯ · ENTER]","Стереть моушены (⟨CLr.M⟩); с поворотом ручки — только её","08"],
+ ["[SAMPLING] → пустой пэд → [SAMPLING] … [SAMPLING]","Записать сэмпл","09"],
+ ["В SAMPLING: [LO-Fi] / [PITCH] / [START] / [END] / [LEVEL] / [DELETE]","Частота / моно-стерео / длина / запуск / уровень / мьют микрофона","09"],
+ ["В SAMPLING: [SHIFT] + крути [PITCH]","Step sampling: ⟨S. 2⟩…⟨S. 64⟩ кусочков","11"],
+ ["[SHIFT] + [G · VOICE] → ⟨ChoP⟩","Нарезать сэмпл на 2–64 равные части","11"],
+ ["Держи [PATTERN] + [GRANULAR] + пэд","Назначить материал гранулярному пэду","12"],
+ ["[SHIFT] + [G · VOICE] (гранулярный пэд выбран)","Spread, Grains, Shape на [CTRL1]–[CTRL3]; скорость головки, реверс, джиттер","12"],
+ ["[SHIFT] + [F♯ · P.ENV]","Огибающая высоты сэмпла","02"],
+ ["[SHIFT] + [G♯ · FILTER]","Фильтр сэмпла: LPF / BPF / HPF / PKG, срез, резонанс","02"],
+ ["[SHIFT] + [A · MIXER]","Громкость, панорама, шина, посылы на дилей и реверб","13"],
+ ["[SHIFT] + [A♯ · DELAY/REVERB]","Настройки общих дилея и реверба","13"],
+ ["Держи [MFX] + шаг или крути [TEMPO/VALUE]","Выбрать один из 20 эффектов","13"],
+ ["Держи [PATTERN] + кнопка эффекта","Эффект работает, только пока держишь","13"],
+ ["[MFX] + пэд; [MFX] + [DELAY] + пэд","Шина пэда: BUS A ↔ EFX; BUS B ↔ EFX","13"],
+ ["[SHIFT] + [PITCH] / [START] / [END]","Громкость BUS A / BUS B / BUS EFFECT","13"],
+ ["Включение с [A/E]–[D/H] (+ [SAMPLING] для E–H)","Экспорт сэмплов на компьютер","00"],
+ ["Включение с [▶] / с [●]","Бэкап / восстановление паттернов","00"],
+ ["Включение с [SAMPLING]","Импорт WAV в папки PAD_1…PAD_6","14"],
+ ["Включение с [C · EXIT]","Режим «только батарея» (iOS, MX-1)","14"],
+ ["Включение с [KYBD] → ⟨FACt⟩ → [GRANULAR]","Сброс к заводским (стирает сэмплы и паттерны!)","00"],
+ ["[SHIFT] + [A♯ · DELAY/REVERB] → ⟨GL.d.r⟩ → ⟨On⟩","Хвосты дилея и реверба не обрываются при смене паттерна","13"],
+ ["Меню → ⟨StoP⟩ → ⟨rEMn⟩","Сэмплы доигрывают при стопе и смене паттерна","15"],
+ ["Меню → ⟨USb.d⟩","Громкость USB-выхода независимо от ручки VOLUME","14"],
+ ["Меню → ⟨vELo⟩","Сила удара пэдов и кнопок-клавиш (1–127)","04"],
+ ["[SHIFT] + [G · VOICE] → ⟨tvA⟩ → ⟨On⟩","Включить огибающую громкости (атака, спад, сустейн, затухание)","16"],
+ ["[SHIFT] + [G · VOICE] → ⟨LP.SZ⟩","Длина петли сэмпла","16"],
+ ["[SHIFT] + [G · VOICE] → ⟨MU.Gr⟩","Группа глушения: сэмплы одной группы обрывают друг друга","19"],
+ ["MIDI-каналы 15 / 11 / 4 / 16","Нотами выбранного пэда / все 48 пэдов / гранулярный пэд / смена паттернов","20"]
+];
+function renderCheats(q){
+  q=(q||"").toLowerCase().trim();
+  const rows=cheats.filter(r=>!q||r.join(" ").toLowerCase().includes(q));
+  document.getElementById("cheatBody").innerHTML=rows.length?rows.map(r=>`<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td><a href="#lessons" data-open="${r[2]}">${r[2]}</a></td></tr>`).join(""):`<tr><td colspan="3" class="muted">Ничего не нашлось. Попробуй другое слово: «запись», «копир», «эффект».</td></tr>`;
+  bindOpenLinks(document.getElementById("cheatBody"));
+}
+document.getElementById("q").addEventListener("input",e=>renderCheats(e.target.value));
+
+/* ---------------- VIDEOS ---------------- */
+const Y="https://www.youtube.com/watch?v=";
+const vidGroups=[
+ {name:"На русском · канал Vladislav CREW",items:[
+  ["Распаковка и первые впечатления об Roland P6",Y+"-gMw6gDpS9I","Что в коробке и первое знакомство.",["01"]],
+  ["Почему Roland P-6 — лучший выбор для новичка",Y+"d3uRNdytUa0","Сильные стороны прибора для начинающих.",[]],
+  ["Обзор на Roland P6 / Tutorial",Y+"SqH9BcxpVhk","Обзор с объяснением работы. Хорошее начало перед уроками 01–04.",["01","02"]],
+  ["Как нарезать сэмпл (Chopping)",Y+"NFZsxg4q75Y","Нарезка сэмпла на P-6.",["11"]],
+  ["Как сделать синт на Roland P6",Y+"veNheHzqi8Y","Как превратить сэмпл в синтезаторный звук.",["03","16"]],
+  ["Sidechain on Roland P6",Y+"D9hKUrkjH0U","Эффект «качающего» сайдчейна на P-6.",["17"]],
+  ["Arturia MiniLab 3 и Roland P6",Y+"0b3ZzmtAfKQ","P-6 с внешней MIDI-клавиатурой.",["20"]],
+  ["Сделал хит на Roland P6 (Progressive House)",Y+"2JoKCge7QW8","Трек от начала до конца: пример для итогового сета.",["15"]],
+  ["ЗОЖ — Roland P6",Y+"-EeP9wjumUs","Трек, сделанный на P-6.",["15"]],
+  ["Мои Роланды / My projects on Roland",Y+"sLkPtMzkTUY","Подборка треков автора на приборах Roland.",[]],
+  ["Roland P6 vs T.E. OP-Z",Y+"TTpTh6zf2N8","Сравнение с OP-Z.",[]],
+  ["Roland P6 vs Circuit Rhythm",Y+"MMQ5cRmt7Ds","Сравнение с Novation Circuit Rhythm, часть 1.",[]],
+  ["Roland P6 vs Circuit Rhythm, часть 2",Y+"5xllueR9U6M","Продолжение сравнения.",[]]]},
+ {name:"На русском · другие авторы",items:[
+  ["ROLAND P-6 / Распаковка / Первые впечатления / Демо (PNV)",Y+"tKkJvIwi23M","Распаковка и демо звучания.",["01"]],
+  ["Жёстко про Roland P-6 и S-1 (и немного про J-6) (BND)",Y+"pLBiwzziB0I","Мнение о P-6 рядом с другими приборами AIRA Compact.",[]]]},
+ {name:"На английском",items:[
+  ["Roland AIRA Compact P-6 Creative Sampler",Y+"OgHoQyyOL1o","Официальный 24-минутный разбор от Roland (ведущий Dustin Good): входы, редактирование, эффекты, нарезка, секвенсор, гранулы, ресемплинг. Лучший первый ролик.",["01","02","04","10","11","13"]],
+  ["Introducing Roland AIRA Compact P-6 Creative Sampler",Y+"xmMerCybP4Q","Официальная 10-минутная презентация: запись через входы и микрофон, Chop и step sampling, гранулы, секвенсор с эффектами и ресемплингом, связка с T-8, J-6, E-4 и S-1. Обзорный, без пошаговых нажатий — хорош до урока 01 и перед уроком 14.",["01","14"]],
+  ["The Roland P-6 Sampling — Guide tutorial (XNB)",Y+"ykDvjIwl2ps","Разбор сэмплирования.",["09"]],
+  ["How I Like to Use the Roland P-6 (Full Workflow) (Jay Maculate)",Y+"V4JWVPrgjMg","Полный рабочий процесс одного автора от начала до конца.",["15"]],
+  ["Master the Roland P-6 with these MUST KNOW tips! (SPVIDZ)",Y+"MF4EohXfTEo","Подборка обязательных приёмов.",["02","04","11"]],
+  ["4 Roland P-6 limitations you should know BEFORE buying (SPVIDZ)",Y+"hrOeBB2MfDA","Ограничения прибора: полезно знать, чтобы не биться о них.",["09"]],
+  ["I've been sleeping on this P6 FX Technique (SPVIDZ)",Y+"x8jNZUJDjTg","Приём с эффектами.",["13"]],
+  ["This P6 feature could change my WHOLE WORKFLOW! (SPVIDZ)",Y+"FKXzYbeyAwI","Одна функция, меняющая подход к работе.",["11","19"]],
+  ["How to organise the Roland P6 LIKE A PRO! (SPVIDZ)",Y+"O9y94OX6pmM","Как раскладывать сэмплы и паттерны по банкам.",["21"]],
+  ["Is the Roland AIRA P6 Worth it in 2026? (ONE37Works)",Y+"kQOFFqQojwg","Стоит ли P-6 своих денег сегодня.",[]],
+  ["Roland P-6 Beatmaking: Try THIS Workflow to Skip Menu Diving",Y+"sCoDX0v7mAM","Быстрый путь от сэмплирования до бита и нарезки.",["04","09"]],
+  ["Sequencer Tips for the Roland P-6",Y+"hRx6BIV11Sk","Приёмы секвенсора.",["06","07"]],
+  ["Roland P-6 Step input",Y+"875wlkQtxmw","Короткий ролик про пошаговый ввод.",["04"]],
+  ["Roland P-6 Granular Engine Explained! Every Setting & How to Make a Beat",Y+"Z-i_7HeJrfw","Все параметры гранулярного движка по шагам.",["12"]],
+  ["The Roland P6 Granular Engine is INSANE… Here’s how to use it",Y+"iUbUjdlCD3U","Ещё один разбор гранул на практике.",["12"]],
+  ["“Looper” Workflow on the Roland P-6",Y+"yW00zmRJ3Xs","P-6 как лупер с хитростью через дилей.",["18"]],
+  ["ROLAND AIRA P-6 USING THE SAMPLE TOOL",Y+"B2d_TBAO58E","Загрузка сэмплов с компьютера через P-6 Sample Tool.",["14","19"]],
+  ["Roland AIRA Compact P-6 review + Tips & Tricks",Y+"TFllWe3VmXA","Обзор с советами по работе.",["06","15"]],
+  ["Roland P-6 Beatmaking & Tutorials (плейлист)","https://www.youtube.com/playlist?list=PLl2wltiAbqRhG1NeTzy36jnIUgvXyRjHo","Подборка роликов с битмейкингом на P-6.",[]]]},
+ {name:"Документация",items:[
+  ["Официальное руководство Roland P-6 (онлайн)","https://static.roland.com/manuals/p-6/en-US/index.html","Первоисточник всех нажатий в этом гайде. Версия 1.02.",[]]]}
+];
+const allVids=vidGroups.flatMap(g=>g.items);
+document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a><p class="small muted">${esc(L[2])}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} ↗</a><p class="small muted">${esc(v[2])}${v[3].length?" К урокам: "+v[3].join(", ")+".":""}</p></div>`).join("")).join("");
+
+const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Жанры","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Творческие задачи и кубики — когда хочется просто поиграть."]];
+document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
+
+
+
+/* ---------------- RECIPES ---------------- */
+const A=57,C4=60;
+const RECIPES=[
+ {id:"lofi",t:"Лоу-фай хип-хоп",bpm:"70–90 BPM",mood:"Тёплый, ленивый, немного «пыльный» звук.",ex:"Заводские паттерны 1-07 и 1-08 (85 BPM): бочка C-5, снейр C-6, хэт D-5.",
+  grid:{t:"Бит и аккорды",bpm:84,note:"Бочка уходит с ровного счёта, хэт восьмыми с акцентами, аккорд меняется каждый такт: Am7 → Dm7 → G7 → Cmaj7.",rows:[
+   {n:"Аккорд",pad:"KYBD",k:"pad",vol:.8,bars:[[[1,16,[C4+0,C4+4,C4+7,C4+9],"Am7"]],[[1,16,[C4+0,C4+2,C4+5,C4+9],"Dm7"]],[[1,16,[C4+2,C4+5,C4+7,C4+11],"G7"]],[[1,16,[C4+0,C4+4,C4+7,C4+11],"Cmaj7"]]]},
+   {n:"Хэт",pad:"D-5",k:"hat",s:R(1,15,2),v:{1:1,3:.5,5:.75,7:.5,9:1,11:.5,13:.75,15:.5}},{n:"Снейр",pad:"C-6",k:"snare",s:[5,13]},{n:"Бочка",pad:"C-5",k:"kick",s:[1,8,11]}]},
+  pads:"Ударные — C-5, C-6, D-5 (или банк F: F-1, F-4, F-2). Аккорды — пэд с одной тянущейся нотой: свой голос, клавиши или синт.",
+  tips:[["Свинг [SHIFT] + [D · SHUFFLE] 10–16 — главный секрет «качания».","04"],["Сэмплируй на ⟨22.0k⟩ или ⟨11.0k⟩ и включай [LO-Fi] на пэдах.","09"],["MFX Vinyl Sim ⟨vny⟩ или Cassette Sim ⟨CSt⟩ дают «пыль» и плавание звука; бочку держи сухой ([MFX] + пэд → ⟨BUS.A⟩).","13"],["Аккорды Am7 – Dm7 – G7 – Cmaj7 запиши по одному на такт: [●] → шаг 1 → [KYBD] → кнопки аккорда.","T2"],["Длина паттерна 64 шага (4 такта), чтобы уместить все четыре аккорда.","06"]],
+  task:"Трек на 1–2 минуты: 4 такта аккордов без барабанов, потом бит, в середине — брейк через step loop, в конце снова одни аккорды."},
+ {id:"ambient",t:"Эмбиент",bpm:"60–80 BPM или без ритма",mood:"Медленные пространства, тянущиеся звуки, редкие «капли» нот.",ex:"Заводские паттерны 1-03 и 1-04 (72 BPM): длинные текстуры на B-5 и B-6.",
+  grid:{t:"Пэд и капли",bpm:70,note:"Нижний ряд — длинный аккорд (Am → Fmaj7). Верхний — редкие ноты с вероятностью: каждый проход звучит по-новому.",rows:[
+   {n:"Капли",pad:"KYBD",k:"tone",vol:.6,bars:[[[3,2,C4+16,"E",60],[7,2,C4+19,"G",40],[11,3,C4+21,"A",60],[15,2,C4+16,"E",30]]]},
+   {n:"Пэд",pad:"GRANULAR",k:"pad",vol:.9,bars:[[[1,16,[C4-12+9,C4+0,C4+4,C4+7],"Am"]],[[1,16,[C4-12+5,C4+0,C4+4,C4+9],"Fmaj7"]]]}]},
+  pads:"Тянущиеся текстуры B-5, B-6 или своя запись: голос, улица, гул холодильника. Всё длинное — в гранулярный пэд.",
+  tips:[["Гранулярный пэд из секунды голоса: медленная головка, плотность выше, ⟨G.Ky.F⟩ → 0 для чистых аккордов.","12"],["Долгая атака и затухание: [SHIFT] + [G · VOICE] → ⟨tvA⟩ → ⟨On⟩, ручки [PITCH] и [LEVEL] вправо.","16"],["Реверб ⟨hAL2⟩ или ⟨Mod⟩ с долгим временем и посыл [SHIFT] + [A · MIXER] → [END] побольше.","13"],["Редкие ноты с вероятностью ⟨P. 30⟩–⟨P. 60⟩ — мелодия, которая никогда не повторяется.","06"],["[LOOP] с направлением ⟨ALt⟩ (туда-обратно) делает петлю бесшовной.","02"]],
+  task:"Звуковой пейзаж на 2 минуты: начни с одного гула, добавь пэд аккордом Am → Fmaj7, затем «капли», в конце убирай слои по одному."},
+ {id:"dnb",t:"Драм-н-бейс",bpm:"170–175 BPM",mood:"Быстрые ломаные барабаны поверх медленного баса.",ex:"Заводские паттерны 1-01 и 1-02 (166 BPM): брейк на A-5 нарезан на 32 кусочка, A-1 — бочка, A-2 — снейр, A-3 — саб-бас. И 1-09 (175 BPM).",
+  grid:{t:"Двухшаговый бит",bpm:172,note:"Бочка на 1 и 11, снейр на 5 и 13, тихие «призрачные» снейры и дробь хэта на шаге 16. Бас держит одну ноту на половину такта.",rows:[
+   {n:"Хэт",pad:"F-2",k:"hat",s:[1,3,5,7,9,11,13,15,16],v:{3:.6,7:.6,11:.6,15:.6},sub:{16:2}},{n:"Снейр",pad:"A-2",k:"snare",s:[5,8,13,15],v:{8:.35,15:.35}},{n:"Бочка",pad:"A-1",k:"kick",s:[1,11]},
+   {n:"Саб-бас",pad:"A-3",k:"tone",vol:1,bars:[[[1,8,A-24+12,"A"],[11,6,A-24+8,"F"]]]}]},
+  pads:"Бочка A-1, снейр A-2, брейк A-5 (32 кусочка через KYBD), саб-бас A-3. Хэт — F-2.",
+  tips:[["Нарежь брейк через Chop и переставляй кусочки клавишами — так делают джангл.","11"],["Дроби хэта и снейра — сабстепы ⟨oo⟩ и ⟨ooo⟩ на последних шагах такта.","06"],["Длина 64 шага: 4 такта, в последнем — сбивка.","06"],["Сбивки вживую: step loop ([SHIFT] + [PATTERN]) и Scatter удержанием ([PATTERN] + [SCATTER]).","15"],["Бас качает под бочку: ручной сайдчейн по шагам.","17"]],
+  task:"Трек на 1 минуту: интро из пэда и баса, дроп с брейком и саб-басом, сбивка через step loop, снова дроп."}
+];
+function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES.map((r,ri)=>{
+ const id="rc_"+r.id;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(r.grid));
+ return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)}</span></div>
+ <p>${esc(r.mood)}</p><p class="small"><b>Послушать на приборе:</b> ${esc(r.ex)}</p>
+ ${gridHTML(gridState[id],id)}
+ <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(r.pads)}</p></div>
+ <div class="box"><h4>Приёмы</h4><ul class="small">${r.tips.map(t=>`<li>${fmt(t[0])} <a href="#lessons" data-open="${t[1]}">урок ${t[1]}</a></li>`).join("")}</ul></div>
+ <div class="box task"><h4>Итоговое задание</h4><p>${esc(r.task)}</p></div></div>`}).join("");
+ bindOpenLinks(document.getElementById("recipeList"))}
+/* ---------------- PROGRESS CODE ---------------- */
+function makeCode(){const o={d:Object.keys(done),c:Object.keys(chDone)};return "P6:"+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
+function readCode(t){t=t.trim();if(!t.startsWith("P6:"))throw 0;const o=JSON.parse(decodeURIComponent(escape(atob(t.slice(3)))));if(!o||!Array.isArray(o.d))throw 0;return o}
+const cbx=document.getElementById("codeBox"),ctx=document.getElementById("codeText"),cmsg=document.getElementById("codeMsg");
+document.getElementById("copyCode").onclick=()=>{const c=makeCode();cbx.hidden=false;document.getElementById("codeApply").hidden=true;
+ document.getElementById("codeHint").textContent="Это твой прогресс. Скопируй код и вставь его на другом устройстве через «Загрузить код». Нигде на сервере он не хранится.";
+ ctx.value=c;cmsg.textContent="";const sel=()=>{ctx.focus();ctx.select();cmsg.textContent="Выделено — скопируй вручную."};
+ try{navigator.clipboard.writeText(c).then(()=>{cmsg.textContent="Скопировано."},sel)}catch(e){sel()}};
+document.getElementById("loadCodeBtn").onclick=()=>{cbx.hidden=false;document.getElementById("codeApply").hidden=false;ctx.value="";cmsg.textContent="";
+ document.getElementById("codeHint").textContent="Вставь код с другого устройства. Отметки сложатся с теми, что уже есть здесь: ничего не сотрётся.";ctx.focus()};
+document.getElementById("codeClose").onclick=()=>{cbx.hidden=true};
+document.getElementById("codeApply").onclick=()=>{try{const o=readCode(ctx.value);let n=0;o.d.forEach(k=>{if(!done[k]){done[k]=1;n++}});(o.c||[]).forEach(k=>{chDone[k]=1});
+ store.set("p6done",done);store.set("p6chd",chDone);renderLessons();renderChallenges();cmsg.textContent="Загружено, новых отметок: "+n+"."}catch(e){cmsg.textContent="Код не подошёл. Скопируй его целиком, он начинается с P6:"}};
+function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>a.onclick=()=>{const o=store.get("p6open",[]);if(!o.includes(a.dataset.open))o.push(a.dataset.open);store.set("p6open",o);setTimeout(()=>{renderLessons();const el=document.querySelector(`details[data-n="${a.dataset.open}"]`);if(el)el.scrollIntoView({block:"start"})},50)})}
+/* ---------------- ROUTING ---------------- */
+const views=["start","panel","lessons","recipes","challenges","cheats","videos"];
+function route(){
+  let h=(location.hash||"#start").slice(1);if(!views.includes(h))h="start";
+  views.forEach(v=>{document.getElementById("v-"+v).hidden=v!==h});
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"page":"false"));
+  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
+  document.getElementById("lcdHero").textContent=lcd;
+}
+window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0)});
+renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
+})();
+</script>

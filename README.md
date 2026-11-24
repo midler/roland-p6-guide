@@ -20,3 +20,9 @@ Roland, AIRA и P-6 — товарные знаки Roland Corporation. Это �
 
 - Локально: откройте `index.html` в браузере.
 - Онлайн: Settings → Pages → Deploy from a branch → `main`, папка `/ (root)`. Через минуту страница будет доступна по адресу `https://<ваш-логин>.github.io/<имя-репозитория>/`.
+
+## Как устроен репозиторий
+
+- `src/guide.html` — исходник страницы (та же версия, что опубликована на claude.ai).
+- `tools/build_site.py` — собирает из исходника самостоятельную страницу: `python3 tools/build_site.py src/guide.html index.html`.
+- `index.html` — готовая страница для браузера и GitHub Pages. Правки вносятся в `src/guide.html`, затем `index.html` пересобирается.
