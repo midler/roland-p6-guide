@@ -202,6 +202,25 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .cell.hold{background:color-mix(in srgb,var(--accent) 35%,var(--surface));border-color:var(--accent)}
 footer{padding-block:24px 40px;color:var(--muted);font-size:.84rem;border-top:1px solid var(--line)}
 @media (max-width:560px){.plan .wk{grid-template-columns:1fr;gap:2px}.lesson>summary{grid-template-columns:auto 1fr}.lcount{grid-column:2}}
+/* phones: flat layout, no card chrome */
+@media (max-width:560px){
+ main{padding-block:12px 40px}
+ section.view{gap:12px}
+ .card,.lesson,.box,.seq,.chord,.recipe{background:transparent;border:0;border-radius:0;box-shadow:none}
+ .card{padding:10px 0}
+ .lesson{border-bottom:1px solid var(--line)}
+ .lesson>summary{padding:12px 0;gap:10px}
+ .lbody{padding:0 0 16px;gap:12px}
+ .box{padding:10px 0 0;border-top:1px solid var(--line)}
+ .seq{padding:6px 0;border-top:1px solid var(--line)}
+ .chords{gap:4px 10px}
+ .chord{padding:6px 0}
+ .focusbar{border-radius:8px}
+ .grid2{gap:0}
+ .grid2>.card+.card{border-top:1px solid var(--line)}
+ #chList>.card,#vidList>.card{border-bottom:1px solid var(--line)}
+ .dice .slot{background:transparent;padding:6px 0;border-bottom:1px solid var(--line);min-height:0;border-radius:0}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
