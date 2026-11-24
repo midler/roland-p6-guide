@@ -20,7 +20,7 @@
 /* Layout: one-column course shell; a sticky tab bar; content cards set on a cool graphite ground like the P-6 body. */
 :root{
   --bg:#e7e9ec; --surface:#f6f7f8; --surface-2:#eef0f2; --ink:#16181c; --muted:#596170; --line:#cbd0d7;
-  --accent:#1f6f86; --accent-ink:#ffffff; --accent-soft:#d6e8ee; --done:#2f7d4f; --warn:#9a5b00;
+  --accent:#1f6f86; --accent-ink:#ffffff; --accent-soft:#d6e8ee; --done:#2a7146; --warn:#8a5000;
   --key-bg:#2a2d33; --key-ink:#f1f2f4; --key-edge:#111316;
   --lcd-bg:#1a0d0a; --lcd-ink:#ff5a36;
   --f-display:"Unbounded","Manrope",system-ui,sans-serif;
@@ -173,10 +173,10 @@ td:first-child{white-space:normal;min-width:190px}
 .seq-grid{display:grid;grid-template-columns:minmax(44px,auto) repeat(16,minmax(0,1fr));gap:3px;align-items:end}
 @media (max-width:520px){.seq-grid{gap:2px}.seq-grid .lbl{font-size:.66rem;padding-right:3px}.seq-grid .num{font-size:.55rem}.cell.q{margin-left:2px}.cell{height:24px;border-radius:3px}.seq{padding:10px}}
 .seq-grid .lbl{font-size:var(--fs-xs);line-height:1.15;color:var(--ink);padding-right:6px}
-.seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:.66rem}
-.seq-grid .num{font-family:var(--f-mono);font-size:.62rem;text-align:center;color:var(--muted)}
+.seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:.6875rem}
+.seq-grid .num{font-family:var(--f-mono);font-size:.6875rem;text-align:center;color:var(--muted)}
 .seq-grid .num.beat{color:var(--accent);font-weight:700}
-.seq-grid .num.kn{font-size:.52rem;opacity:.75;white-space:nowrap;overflow:visible;text-align:center;letter-spacing:-.03em}
+.seq-grid .num.kn{font-size:.5625rem;opacity:.75;white-space:nowrap;overflow:visible;text-align:center;letter-spacing:-.03em}
 .seq-grid .num.kn:first-of-type{text-align:left}
 .cell{height:26px;border-radius:4px;border:1px solid var(--line);background:var(--surface);cursor:pointer;padding:0;position:relative;overflow:hidden}
 .cell.q{margin-left:4px}

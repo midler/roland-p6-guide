@@ -41,3 +41,4 @@ Roland, AIRA и P-6 — товарные знаки Roland Corporation. Это �
 - `tools/build_site.py` — собирает из исходника самостоятельную страницу: `python3 tools/build_site.py src/guide.html index.html`.
 - `index.html`, `sw.js` — готовая страница и офлайн-кэш для браузера и GitHub Pages. Правки вносятся в `src/guide.html`, затем оба файла пересобираются этой командой.
 - `manifest.webmanifest`, `icon-*.png`, `apple-touch-icon.png` — чтобы гайд ставился на телефон как приложение. Иконки делает `tools/make_icons.py`.
+- `TYPOGRAPHY.md` — шрифты, шкала размеров и контраст.
