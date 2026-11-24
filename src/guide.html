@@ -259,6 +259,16 @@ nav.tabs a{scroll-snap-align:start}
 .fact h3 .n{font-family:var(--f-mono);font-size:var(--fs-sm);color:var(--accent);font-variant-numeric:tabular-nums}
 .fact p{font-size:var(--fs-sm);line-height:1.55;color:var(--ink);max-width:60ch}
 @media (max-width:560px){.facts{gap:0}.fact{padding-block:12px}.fact+.fact{border-top:1px solid var(--line)}.fact:first-child{padding-top:4px}}
+/* ux pass 2: pressed feedback, focus under sticky nav, decorative glyphs */
+html{scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
+section.view,#lessonList,#branchList,#recipeList,.lbody{grid-template-columns:minmax(0,1fr)}
+ol.steps label,.fact p,.box p{overflow-wrap:anywhere}
+.progress .lcount{white-space:normal}
+.fork,.hero{grid-template-columns:minmax(0,1fr)}.branch{min-width:0;overflow-wrap:anywhere}.branch .bname{flex-wrap:wrap}.branch .bmeta{flex-wrap:wrap}footer,.vid a,.box li{overflow-wrap:anywhere}
+h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
+.btn,.modes button,nav.tabs a,.cell,.ctrl,.dev2 .el,.branch{transition:filter .12s ease,background-color .12s ease,border-color .12s ease}
+.btn:active,.modes button:active,nav.tabs a:active,.cell:not(:disabled):active,.ctrl:active,.dev2 .el:active,.branch:active{filter:brightness(.88)}
+@media (prefers-reduced-motion:reduce){.btn,.modes button,nav.tabs a,.cell,.ctrl,.dev2 .el,.branch{transition:none}}
 /* phones: flat layout, no card chrome */
 @media (max-width:560px){
  :root{--fs-lg:1.25rem;--fs-md:1.0625rem}
@@ -364,7 +374,7 @@ nav.tabs a{scroll-snap-align:start}
 </section>
 
 <section class="view" id="v-lessons" hidden>
-  <div class="card progress"><b class="small">Пройдено</b><div class="bar"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить</button></div>
+  <div class="card progress"><b class="small">Пройдено</b><div class="bar" role="progressbar" aria-label="Пройдено шагов" id="pbarWrap" aria-valuemin="0"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить</button></div>
   <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small muted" id="codeMsg"></span></div></div>
   <p class="small muted" id="resetConfirm" hidden>Точно стереть все галочки? <button class="btn" id="resetYes" type="button">Да, стереть</button> <button class="btn" id="resetNo" type="button">Нет</button></p>
   <div id="lessonList" style="display:grid;gap:10px"></div>
@@ -997,14 +1007,14 @@ function gridHTML(g,id){
    const inner=on&&v!=null&&v<1?`<span class="lvl" style="height:${v*100}%"></span>`:"";
    const tag=on&&sb?`<span class="tag">×${sb}</span>`:on&&p?`<span class="tag">${p}%</span>`:"";
    return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}">${inner}${tag}</button>`}).join("")).join("");
- return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}">▶ Слушать</button></span></div>
+ return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
  <div class="seq-wrap"><div class="seq-grid"><span></span>${nums}${rows}</div></div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
-function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>b.textContent="▶ Слушать");seqPlaying=null}
+function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null}
 function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
  if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;const g=gridState[id];const stepDur=60/g.bpm/4;let step=0,next=c.currentTime+.05,bars=0;
- document.querySelector(`[data-play="${id}"]`).textContent="■ Стоп";
+ {const pb=document.querySelector(`[data-play="${id}"]`);pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}
  seqTimer=setInterval(()=>{while(next<c.currentTime+.12){const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
   g.rows.forEach((r,ri)=>{
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[bars%r.bars.length];bar.filter(x=>x[0]===i).forEach(x=>{if(x[4]&&Math.random()*100>x[4])return;(Array.isArray(x[2])?x[2]:[x[2]]).forEach(m=>tone(tn,x[1]*stepDur,m,r.vol||1,r.k))});return}
@@ -1037,7 +1047,7 @@ const LINKS={
  factory:["Заводские сэмплы и паттерны","https://www.roland.com/global/support/by_product/p-6/updates_drivers/e56e996e-88d3-4132-a778-d399ed68901b/","Архив Roland, чтобы вернуть заводские звуки после сброса."],
  ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
 const LESSON_LINKS={"23":["freesound","pixabay","n99","akwf","audacity","digichain","sampletool"],"19":["digichain","audacity","sampletool"],"16":["akwf","digichain"],"14":["sampletool","factory"],"00":["factory"],"22":["ableton"]};
-function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a> — ${esc(relabel(L[2]))}</li>`}).join("")}</ul></div>`}
+function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a> — ${esc(relabel(L[2]))}</li>`}).join("")}</ul></div>`}
 let focus={};
 function lessonByN(n){return lessons.find(l=>l.n===n)}
 function sesLabel(l){if(SES[l.n])return SES[l.n];const k=(PARTS[l.n]||[]).length+1;return "≈ "+k+(k===1?" занятие":" занятия")+" по 30 минут"}
@@ -1053,20 +1063,20 @@ function lessonHTML(l,open){
  return `<details class="lesson${complete?" complete":""}${focus[l.n]!=null?" focusmode":""}" data-n="${l.n}"${open?" open":""}>
 <summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${l.steps.length}</span></summary>
 <div class="lbody">
-<div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
+<div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
 <div class="focusbar"><span class="fpos"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button></div>
 <div class="hideinfocus">${l.gloss?relabel(GLOSS):""}${l.chords?chordsHTML(l.chords):""}</div>
 ${GRIDS[l.n]?`<div class="hideinfocus" style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
 <div class="hideinfocus" style="display:grid;gap:14px">
-${GL[l.n]?`<p class="small"><a href="#recipes">🎧 ${esc(GL[l.n])} — раздел «Жанры» →</a></p>`:""}
+${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} — раздел «Жанры» →</a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
 ${l.tc?`<div class="box"><h4>Смотри в роликах</h4><p class="small">${l.tc.map(t=>{const [m,sec]=t[1].split(":").map(Number);return `<a href="https://www.youtube.com/watch?v=${t[0]}&t=${m*60+sec}s" target="_blank" rel="noopener">▶ ${t[1]} · ${esc(t[2])}</a>`}).join("<br>")}</p></div>`:""}
 ${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
-<p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland ↗</a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
+<p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
 </div></div></details>`}
 function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const dn=ls.filter(l=>l.steps.every((_,i)=>done[l.n+"-"+i])).length;
@@ -1074,7 +1084,7 @@ function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const ses=ls.reduce((a,l)=>a+(SES[l.n]?1:(PARTS[l.n]||[]).length+1),0);return {ls,dn,steps,sd,ses}}
 function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
 function branchTile(sec,showList){const st=secStats(sec);
- return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname">${esc(sec.name.replace("Ветка · ",""))}<span class="go">Открыть →</span></span>
+ return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname">${esc(sec.name.replace("Ветка · ",""))}<span class="go">Открыть <span aria-hidden="true">→</span></span></span>
  <span class="bdesc">${esc(relabel(sec.desc))}</span>
  ${showList?`<span class="bles">${st.ls.map(l=>`${lbl(l.n)} · ${esc(l.t)}`).join("<br>")}</span>`:""}
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
@@ -1094,7 +1104,7 @@ function renderLessons(){
 }
 let curBranch=null;
 function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
- document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons">← Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.</p>
+ document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.</p>
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
  document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin-top:14px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
@@ -1125,6 +1135,7 @@ function updateProgress(){
   const total=lessons.reduce((a,l)=>a+l.steps.length,0);
   const n=Object.keys(done).length;
   document.getElementById("pbar").style.width=(100*n/total)+"%";
+  const pw=document.getElementById("pbarWrap");pw.setAttribute("aria-valuemax",total);pw.setAttribute("aria-valuenow",n);
   document.getElementById("ptext").textContent=n+" / "+total;
 }
 document.getElementById("resetProgress").onclick=()=>{document.getElementById("resetConfirm").hidden=false};
@@ -1321,7 +1332,7 @@ const vidGroups=[
   ["Официальное руководство Roland P-6 (онлайн)","https://static.roland.com/manuals/p-6/en-US/index.html","Первоисточник всех нажатий в этом гайде. Версия 1.02.",[]]]}
 ];
 const allVids=vidGroups.flatMap(g=>g.items);
-document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} ↗</a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("");
+document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("");
 
 const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Жанры","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Творческие задачи и кубики — когда хочется просто поиграть."]];
 document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
