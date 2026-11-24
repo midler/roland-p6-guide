@@ -329,11 +329,11 @@ ol.steps input{margin-top:.2em}
     <h2>Чего P-6 не умеет</h2>
     <p class="muted small" style="margin:6px 0 10px">Об этом говорят почти все обзоры. Лучше знать заранее и не искать функцию, которой нет.</p>
     <div class="grid2">
-      <p class="small"><b>Нет карты памяти.</b> Всего 48 сэмплов. Старое выгружай на компьютер (урок 00), а 8–16 ударов можно уложить на один пэд (урок 19).</p>
+      <p class="small"><b>Нет карты памяти.</b> Всего 48 сэмплов. Старое выгружай на компьютер (урок 00), а 8–16 ударов можно уложить на один пэд (урок Б4).</p>
       <p class="small"><b>Нет «ленивой» нарезки.</b> Нельзя ставить метки нажатиями на ходу. Есть только деление на равные части (Chop) и step sampling.</p>
       <p class="small"><b>Пэды не чувствуют силу нажатия.</b> Громкость удара задаётся в шаге (урок 04) или параметром <span class="lcd">vELo</span> в меню. С MIDI-клавиатуры сила передаётся.</p>
       <p class="small"><b>Нет режима песни.</b> Паттерны переключаются вручную, следующий начинается после текущего. Длинные треки удобно собирать в DAW по USB.</p>
-      <p class="small"><b>Настройки пэда общие.</b> Перекрутил бас в новом паттерне — он изменился и во всех старых. Для вариантов копируй пэд (урок 21).</p>
+      <p class="small"><b>Настройки пэда общие.</b> Перекрутил бас в новом паттерне — он изменился и во всех старых. Для вариантов копируй пэд (урок К3).</p>
       <p class="small"><b>Ручки CTRL не записываются.</b> Движения эффектов в паттерн не попадают, для этого ресемплируй. Нет и тап-темпа.</p>
       <p class="small"><b>Нет встроенного динамика.</b> Нужны наушники, колонка или телефон по USB-C.</p>
       <p class="small"><b>Реверс только на весь пэд.</b> Перевернуть один шаг нельзя. Нужен перевёрнутый удар — скопируй пэд и включи реверс на копии.</p>
@@ -402,7 +402,10 @@ ol.steps input{margin-top:.2em}
 const M="https://static.roland.com/manuals/p-6/en-US/";
 /* text formatter: [KEY · FN] -> kbd, ⟨TXT⟩ -> lcd, + between -> plus */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function fmt(s){
+const PREFIX={beats:"Б",sound:"С",live:"Ж",comp:"К"};let _LBL=null;
+function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?id:PREFIX[sec.id]+(i+1)}))}return _LBL[n]||n}
+function relabel(t){return t.replace(/([Уу]рок(?:а|у|е|ом|и|ов|ам|ах)?\s+)((?:\d\d|T\d)(?:\s*(?:[–-]|,|и)\s*(?:\d\d|T\d))*)/g,(m,pre,list)=>pre+list.replace(/\d\d|T\d/g,x=>lbl(x)))}
+function fmt(s){s=relabel(s);
   s=esc(s);
   s=s.replace(/\[([^\]]+)\]/g,(m,k)=>{const p=k.split(" · ");return "<kbd>"+p[0]+(p[1]?" <span class=\"fn\">"+p[1]+"</span>":"")+"</kbd>"});
   s=s.replace(/⟨([^⟩]+)⟩/g,'<span class="lcd">$1</span>');
@@ -983,7 +986,7 @@ function gridHTML(g,id){
    const tag=on&&sb?`<span class="tag">×${sb}</span>`:on&&p?`<span class="tag">${p}%</span>`:"";
    return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}">${inner}${tag}</button>`}).join("")).join("");
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}">▶ Слушать</button></span></div>
- <div class="seq-wrap"><div class="seq-grid"><span></span>${nums}${rows}</div></div><p class="seq-note">${esc(g.note)} Нажимай на клетки, чтобы менять бит.</p></div>`}
+ <div class="seq-wrap"><div class="seq-grid"><span></span>${nums}${rows}</div></div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>b.textContent="▶ Слушать");seqPlaying=null}
@@ -1022,7 +1025,7 @@ const LINKS={
  factory:["Заводские сэмплы и паттерны","https://www.roland.com/global/support/by_product/p-6/updates_drivers/e56e996e-88d3-4132-a778-d399ed68901b/","Архив Roland, чтобы вернуть заводские звуки после сброса."],
  ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
 const LESSON_LINKS={"23":["freesound","pixabay","n99","akwf","audacity","digichain","sampletool"],"19":["digichain","audacity","sampletool"],"16":["akwf","digichain"],"14":["sampletool","factory"],"00":["factory"],"22":["ableton"]};
-function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a> — ${esc(L[2])}</li>`}).join("")}</ul></div>`}
+function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a> — ${esc(relabel(L[2]))}</li>`}).join("")}</ul></div>`}
 let focus={};
 function lessonByN(n){return lessons.find(l=>l.n===n)}
 function sesLabel(l){if(SES[l.n])return SES[l.n];const k=(PARTS[l.n]||[]).length+1;return "≈ "+k+(k===1?" занятие":" занятия")+" по 30 минут"}
@@ -1036,11 +1039,11 @@ function stepsHTML(l){const sp=PARTS[l.n]||[];const letters="абвг";let out="
 function lessonHTML(l,open){
  const cnt=l.steps.filter((_,i)=>done[l.n+"-"+i]).length,complete=cnt===l.steps.length;
  return `<details class="lesson${complete?" complete":""}${focus[l.n]!=null?" focusmode":""}" data-n="${l.n}"${open?" open":""}>
-<summary><span class="lnum">${l.n}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${l.steps.length}</span></summary>
+<summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${l.steps.length}</span></summary>
 <div class="lbody">
 <div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
 <div class="focusbar"><span class="fpos"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button></div>
-<div class="hideinfocus">${l.gloss?GLOSS:""}${l.chords?chordsHTML(l.chords):""}</div>
+<div class="hideinfocus">${l.gloss?relabel(GLOSS):""}${l.chords?chordsHTML(l.chords):""}</div>
 ${GRIDS[l.n]?`<div class="hideinfocus" style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
 <div class="hideinfocus" style="display:grid;gap:14px">
@@ -1060,8 +1063,8 @@ function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
 function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
 function branchTile(sec,showList){const st=secStats(sec);
  return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname">${esc(sec.name.replace("Ветка · ",""))}<span class="go">Открыть →</span></span>
- <span class="bdesc">${esc(sec.desc)}</span>
- ${showList?`<span class="bles">${st.ls.map(l=>`${l.n} · ${esc(l.t)}`).join("<br>")}</span>`:""}
+ <span class="bdesc">${esc(relabel(sec.desc))}</span>
+ ${showList?`<span class="bles">${st.ls.map(l=>`${lbl(l.n)} · ${esc(l.t)}`).join("<br>")}</span>`:""}
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
 function bindDetails(box){box.querySelectorAll("details").forEach(d=>{d.addEventListener("toggle",saveOpen);if(focus[d.dataset.n]!=null)placeFocus(d.dataset.n)})}
 function saveOpen(){const o=new Set(store.get("p6open",[]));document.querySelectorAll("details.lesson").forEach(d=>{if(d.open)o.add(d.dataset.n);else o.delete(d.dataset.n)});store.set("p6open",[...o])}
@@ -1079,7 +1082,7 @@ function renderLessons(){
 }
 let curBranch=null;
 function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
- document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons">← Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(sec.desc)} Уроки ${sec.span}.</p>
+ document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons">← Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.</p>
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
  document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin-top:14px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
@@ -1179,7 +1182,7 @@ function renderChallenges(){
   f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
   f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
-  document.getElementById("chList").innerHTML=list.map(c=>`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${c.need}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`).join("");
+  document.getElementById("chList").innerHTML=list.map(c=>`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`).join("");
   document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone)});
 }
 function roll(){
@@ -1257,7 +1260,7 @@ const cheats=[
 function renderCheats(q){
   q=(q||"").toLowerCase().trim();
   const rows=cheats.filter(r=>!q||r.join(" ").toLowerCase().includes(q));
-  document.getElementById("cheatBody").innerHTML=rows.length?rows.map(r=>`<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td><a href="#lessons" data-open="${r[2]}">${r[2]}</a></td></tr>`).join(""):`<tr><td colspan="3" class="muted">Ничего не нашлось. Попробуй другое слово: «запись», «копир», «эффект».</td></tr>`;
+  document.getElementById("cheatBody").innerHTML=rows.length?rows.map(r=>`<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td><a href="#lessons" data-open="${r[2]}">${lbl(r[2])}</a></td></tr>`).join(""):`<tr><td colspan="3" class="muted">Ничего не нашлось. Попробуй другое слово: «запись», «копир», «эффект».</td></tr>`;
   bindOpenLinks(document.getElementById("cheatBody"));
 }
 document.getElementById("q").addEventListener("input",e=>renderCheats(e.target.value));
@@ -1306,7 +1309,7 @@ const vidGroups=[
   ["Официальное руководство Roland P-6 (онлайн)","https://static.roland.com/manuals/p-6/en-US/index.html","Первоисточник всех нажатий в этом гайде. Версия 1.02.",[]]]}
 ];
 const allVids=vidGroups.flatMap(g=>g.items);
-document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a><p class="small muted">${esc(L[2])}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} ↗</a><p class="small muted">${esc(v[2])}${v[3].length?" К урокам: "+v[3].join(", ")+".":""}</p></div>`).join("")).join("");
+document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} ↗</a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} ↗</a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("");
 
 const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Жанры","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Творческие задачи и кубики — когда хочется просто поиграть."]];
 document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
@@ -1341,11 +1344,11 @@ const RECIPES=[
 function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES.map((r,ri)=>{
  const id="rc_"+r.id;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(r.grid));
  return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)}</span></div>
- <p>${esc(r.mood)}</p><p class="small"><b>Послушать на приборе:</b> ${esc(r.ex)}</p>
+ <p>${esc(relabel(r.mood))}</p><p class="small"><b>Послушать на приборе:</b> ${esc(relabel(r.ex))}</p>
  ${gridHTML(gridState[id],id)}
- <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(r.pads)}</p></div>
- <div class="box"><h4>Приёмы</h4><ul class="small">${r.tips.map(t=>`<li>${fmt(t[0])} <a href="#lessons" data-open="${t[1]}">урок ${t[1]}</a></li>`).join("")}</ul></div>
- <div class="box task"><h4>Итоговое задание</h4><p>${esc(r.task)}</p></div></div>`}).join("");
+ <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(relabel(r.pads))}</p></div>
+ <div class="box"><h4>Приёмы</h4><ul class="small">${r.tips.map(t=>`<li>${fmt(t[0])} <a href="#lessons" data-open="${t[1]}">урок ${lbl(t[1])}</a></li>`).join("")}</ul></div>
+ <div class="box task"><h4>Итоговое задание</h4><p>${esc(relabel(r.task))}</p></div></div>`}).join("");
  bindOpenLinks(document.getElementById("recipeList"))}
 /* ---------------- PROGRESS CODE ---------------- */
 function makeCode(){const o={d:Object.keys(done),c:Object.keys(chDone)};return "P6:"+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
