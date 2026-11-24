@@ -235,6 +235,22 @@ footer{padding-block:24px 40px;color:var(--muted);font-size:var(--fs-sm);border-
 ol.steps label{line-height:var(--lh-text)}
 kbd,.lcd{line-height:1.3;padding-block:.05em;vertical-align:.08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 ol.steps input{margin-top:.2em}
+/* ux audit (ui-ux-pro-max): touch targets, anchors under sticky nav, tab overflow cue */
+details.lesson,.recipe,.seq{scroll-margin-top:calc(64px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+nav.tabs{position:sticky}
+nav.tabs .wrap{scroll-snap-type:x proximity}
+nav.tabs a{scroll-snap-align:start}
+@media (max-width:560px){
+ .btn,.modes button,nav.tabs a{min-height:44px;display:inline-flex;align-items:center}
+ nav.tabs .wrap{padding-block:6px;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:40px}
+ .crumb{display:inline-flex;align-items:center;min-height:44px}
+ ol.steps input{width:24px;height:24px}
+ ol.steps li{grid-template-columns:30px 1fr}
+ .ch label{min-height:44px}
+ .ch label input{width:24px;height:24px}
+ .chord .btn{justify-content:center}
+}
 /* phones: flat layout, no card chrome */
 @media (max-width:560px){
  :root{--fs-lg:1.25rem;--fs-md:1.0625rem}
@@ -1363,6 +1379,7 @@ function route(){
   if(br)renderBranch(br);else curBranch=null;
   const tab=h==="branch"?"lessons":h;
   document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+tab?"page":"false"));
+  const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-16)}
   const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:"br-"+(br||"").slice(0,1).toUpperCase(),recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
 }
