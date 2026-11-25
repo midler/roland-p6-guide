@@ -316,6 +316,11 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 
 
 
+
+.focusmode .lbody>.nextles,.focusmode .lbody>.donecard{display:none}
+.srcs ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.srcs li{line-height:var(--lh-ui)}
+.srcs a{display:inline-block;padding-block:3px}
 /* harden pass: reset zone, undo, code errors */
 .resetzone{display:grid;gap:10px;justify-items:start;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
 .btn.quiet{background:transparent;border-color:transparent;color:var(--muted);padding-inline:0}
@@ -1232,14 +1237,15 @@ ${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
+<div class="box srcs"><h4>Источники</h4><ul class="small"><li><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a></li>${allVids.filter(v=>v[3].includes(l.n)).map(v=>`<li><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></div>
+</div>
 ${complete?doneHTML(l):nextHTML(l)}
-<p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
-</div></div></details>`}
+</div></details>`}
 function secOf(n){return SECTIONS.find(x=>x.order.includes(n))}
 function nextHTML(l){const sec=secOf(l.n);const nx=sec?sec.order[sec.order.indexOf(l.n)+1]:null;
  if(nx){const L=lessonByN(nx);return `<p class="nextles"><a class="btn" href="#${lessonHash(nx)}" data-open="${nx}">Следующий урок: ${lbl(nx)} · ${esc(L.t)} <span aria-hidden="true">→</span></a></p>`}
  return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери ветку <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Ветка закончена: другие ветки <span aria-hidden="true">↓</span></a></p>`}
-function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены, отметки сохранены в этом браузере.</p></div>${nextHTML(l)}</div>`}
+function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены, отметки сохранены в этом браузере.</p></div>${nextHTML(l).replace('class="btn"','class="btn primary"')}</div>`}
 function announce(t){const a=document.getElementById("announce");if(a){a.textContent="";setTimeout(()=>{a.textContent=t},60)}}
 function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
  const cands=[];if(last&&lessonByN(last)){cands.push(last);cands.push(...secOf(last).order)}SECTIONS.forEach(x=>cands.push(...x.order));
