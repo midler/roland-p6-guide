@@ -117,7 +117,7 @@ kbd .fn{opacity:.7;font-weight:500}
 .lnum{font-family:var(--f-mono);font-weight:700;font-size:var(--fs-sm);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:4px 7px;min-width:38px;text-align:center}
 .lesson.complete .lnum{background:var(--done);color:var(--surface);border-color:var(--done)}
 .lmeta{font-size:var(--fs-sm);color:var(--muted)}
-.lcount{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--muted);white-space:nowrap}
+.lcount{font-family:var(--f-body);font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--muted);white-space:nowrap}
 .lbody{padding:0 16px 18px;display:grid;gap:14px;min-width:0}
 .goal{font-weight:600;color:var(--ink)}
 ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:s}
@@ -131,7 +131,7 @@ ol.steps li.on label{color:var(--muted)}
 .box.task h4{color:var(--accent)}
 .box.warn h4{color:var(--warn)}
 .levelhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:6px}
-.levelhead span{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--muted)}
+.levelhead span{font-size:var(--fs-sm);color:var(--muted)}
 /* challenges */
 .dice{display:grid;gap:12px}
 .dice .out{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
@@ -195,7 +195,7 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .focusmode ol.steps li.cur{display:grid;font-size:var(--fs-md);line-height:1.5;padding:14px;border:2px solid var(--accent);border-radius:10px;background:var(--surface)}
 .focusmode ol.steps li.cur input{width:26px;height:26px}
 .focusmode .hideinfocus{display:none!important}
-.focusbar .fpos{font-family:var(--f-mono);font-size:var(--fs-sm);color:var(--muted);margin-right:auto}
+.focusbar .fpos{font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--muted);margin-right:auto}
 .codebox{display:grid;gap:8px}
 .codebox textarea{width:100%;min-height:64px;font-family:var(--f-mono);font-size:var(--fs-xs);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .chords{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
@@ -341,6 +341,13 @@ kbd{font-size:max(.78em,12px)}
 
 
 
+
+/* polish pass 3: phones keep notebook rows, not cards */
+@media (max-width:560px){
+ .fork .branch,.othergrid .branch{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 0 14px}
+ .fork .branch{padding-left:10px}
+ .donenote{border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 0;background:transparent}
+}
 /* harden pass 2: held key, keyboard hint, resume reminder */
 .dev2 .el.held{background:#5fb7cf;color:#0d1316;border-color:#5fb7cf}
 .keystrip .sk.held{background:#5fb7cf}
@@ -364,8 +371,8 @@ kbd{font-size:max(.78em,12px)}
 .keystrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#1c1e22;border-radius:14px;padding:10px}
 .keystrip .sk{position:relative;min-height:60px;display:grid;place-items:center;gap:3px;padding:16px 0 6px;border:1px solid #9aa0a8;border-radius:6px;background:#e9ebee;color:#202226;font-family:var(--f-mono);cursor:pointer}
 .keystrip .sk b{font-size:var(--fs-base);line-height:1}
-.keystrip .sk i{position:absolute;top:3px;left:5px;font-style:normal;font-size:var(--fs-xs);color:#6b717b;line-height:1}
-.keystrip .sk small{font-size:var(--fs-xs);line-height:1;color:#4a5058;white-space:nowrap}
+.keystrip .sk i{position:absolute;top:3px;left:5px;font-style:normal;font-size:var(--fs-xs);color:#596170;line-height:1}
+.keystrip .sk small{font-size:var(--fs-xs);line-height:1;color:#596170;white-space:nowrap}
 .keystrip .sk.dim{opacity:.25}
 .keystrip .sk.hot{outline:2px solid #5fb7cf;outline-offset:1px}
 .keystrip .sk[aria-pressed="true"]{outline:3px solid #5fb7cf;outline-offset:2px}
@@ -1369,9 +1376,10 @@ rBtn.onclick=()=>{if(!rBox.hidden){closeReset();return}rBox.hidden=false;rBtn.se
 document.getElementById("resetNo").onclick=()=>{closeReset();rBtn.focus()};
 document.getElementById("resetYes").onclick=()=>{const n=Object.keys(done).length;store.set("p6undo",{d:done,f:focus,last:store.get("p6last",null)});
  done={};focus={};store.set("p6done",done);saveFocus();closeReset();renderLessons();
- document.getElementById("undoText").textContent=`Отметки стёрты (${n} ${plural(n,"шаг","шага","шагов")}).`;uNote.hidden=false;document.getElementById("undoReset").focus()};
+ document.getElementById("undoText").textContent=`Отметки стёрты (${n} ${plural(n,"шаг","шага","шагов")}).`;document.getElementById("undoReset").hidden=false;uNote.hidden=false;document.getElementById("undoReset").focus()};
 document.getElementById("undoReset").onclick=()=>{const u=store.get("p6undo",null);if(!u)return;done=Object.assign({},u.d,done);focus=u.f||{};store.set("p6done",done);saveFocus();if(u.last)store.set("p6last",u.last);
- store.set("p6undo",null);uNote.hidden=true;renderLessons();announce("Отметки возвращены");rBtn.focus()};
+ store.set("p6undo",null);renderLessons();document.getElementById("undoText").textContent="Отметки возвращены.";document.getElementById("undoReset").hidden=true;uNote.hidden=false;announce("Отметки возвращены");rBtn.focus();
+ setTimeout(()=>{if(document.getElementById("undoReset").hidden)uNote.hidden=true},6000)};
 
 /* ---------------- CHALLENGES ---------------- */
 const challenges=[
