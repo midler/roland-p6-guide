@@ -750,7 +750,7 @@ const lessons=[
  "Нажми [KYBD] ещё раз, чтобы вернуть кнопкам роль шагов."],
  check:"Ты сыграл простую мелодию из 4–8 нот и пару аккордов одним сэмплом.",
  task:"Подбери по слуху мелодию из 5 нот (детская песня, рингтон) на заводском сэмпле."},
-{n:"04",gloss:1,ear:["hat"],tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
+{n:"04",gloss:1,ear:["hat"],diag:["silent"],tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
  goal:"Собрать бит на пустом паттерне, добавить акценты и свинг, сохранить.",
  steps:[
  "Пустой паттерн: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN].",
@@ -1380,6 +1380,40 @@ function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume
   const tt=(next-c.currentTime)*1000,el=document.getElementById(id),cid=id;
   setTimeout(()=>{if(seqPlaying!==cid||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
   next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=(g.loop||8)){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
+/* ---------------- TROUBLESHOOTING DRILL ---------------- */
+const DIAGS={
+ silent:{t:"Почему молчит пэд?",
+  symptom:"Пэд звучит, когда нажимаешь его рукой, но при запуске паттерна [▶] его не слышно. Остальные пэды в паттерне играют.",
+  checks:[["steps","Выбрать пэд без звука и посмотреть на шаги","[PATTERN] + пэд"],["mute","Снять мьют с пэда","[SHIFT] + пэд"],["vol","Прибавить громкость","[VOLUME] и [LEVEL] пэда"],["bank","Проверить, не заглушён ли весь банк","[SHIFT] + кнопка банка"]],
+  why:["Пэд был заглушён в этом паттерне","Для пэда не записано ни одного шага","Не хватало громкости"],
+  cases:[
+   {story:"Ты собрал бит, переключился на другой паттерн и вернулся. Бочка пропала.",fix:"mute",why:0,
+    res:{steps:"Шаги 1, 5, 9 и 13 горят: ноты для бочки записаны, дело не в них.",
+     mute:"Бочка снова звучит в паттерне. Пэд был заглушён: мьют хранится в паттерне, поэтому он вернулся вместе с этим паттерном.",
+     vol:"Пэд и так громко звучит при нажатии рукой, а другие пэды слышно в паттерне. Громкость ни при чём.",
+     bank:"Остальные пэды этого банка в паттерне звучат, значит банк целиком не заглушён."},
+    done:"Запусти [▶]: бочка слышна на каждой доле. Мьют включается и выключается одним и тем же [SHIFT] + пэд."},
+   {story:"Ты записал новый сэмпл на пэд и сразу запустил паттерн. Новый звук не играет.",fix:"steps",why:1,
+    res:{steps:"Ни один шаг не горит: в этом паттерне для пэда нет нот. Сэмпл на пэде есть, но секвенсору нечего играть.",
+     mute:"Ничего не изменилось. Осторожно: ты только что заглушил пэд, который не был заглушён. Нажми [SHIFT] + пэд ещё раз, чтобы вернуть.",
+     vol:"Пэд громко звучит при нажатии рукой. Громкость ни при чём.",
+     bank:"Остальные пэды этого банка в паттерне звучат, значит банк целиком не заглушён."},
+    done:"Пэд уже выбран: нажми шаг 1, он загорится. Запусти [▶]: новый звук играет в начале каждого такта."}]}};
+const diagState={};
+function diagHTML(id){const D=DIAGS[id],st=diagState[id]||(diagState[id]={c:Math.floor(Math.random()*D.cases.length),log:[],why:null}),C=D.cases[st.c];
+ const fixed=st.log.includes(C.fix),ok=st.why===C.why;
+ return `<div class="seq diag" id="diag_${id}"><div class="seq-head"><h4>Тренажёр · ${esc(D.t)}</h4><span class="ctl">Случай ${st.c+1} из ${D.cases.length}</span></div>
+ <p>${fmt(D.symptom)}</p><p class="small">${fmt(C.story)}</p>
+ <p><b>Что проверишь первым?</b></p><div class="earopts" role="group" aria-label="Проверки">${D.checks.map(([k,l,how])=>`<button type="button" class="btn" data-diag="${id}" data-c="${k}" aria-pressed="${st.log.includes(k)}"><span>${esc(l)}: ${fmt(how)}</span></button>`).join("")}</div>
+ <ol class="drill" aria-live="polite">${st.log.map(k=>`<li><b>${esc(D.checks.find(x=>x[0]===k)[1])}.</b> ${fmt(C.res[k])}</li>`).join("")}</ol>
+ ${fixed?`<div class="box task"><h4>Исправь на P-6</h4><p>${fmt(C.done)}</p><p><b>Самопроверка: почему пэд молчал?</b></p><div class="earopts" role="group" aria-label="Почему пэд молчал">${D.why.map((w,i)=>`<button type="button" class="btn" data-diagwhy="${id}" data-a="${i}" aria-pressed="${st.why===i}">${esc(w)}</button>`).join("")}</div><div aria-live="polite">${st.why==null?"":ok?`<p class="earfb ok">Верно. Удар слышен, и ты знаешь причину.</p>`:`<p class="earfb no">Пока нет. Перечитай, что показали проверки выше.</p>`}</div></div>`:""}
+ <p class="earrow"><button type="button" class="btn" data-diagnew="${id}">Другой случай</button></p></div>`}
+function diagRender(id,sel){const el=document.getElementById("diag_"+id);if(!el)return;el.outerHTML=diagHTML(id);const f=sel&&document.querySelector(`#diag_${id} ${sel}`);if(f)f.focus()}
+document.addEventListener("click",e=>{
+ const c=e.target.closest("[data-diag]");if(c){const id=c.dataset.diag,st=diagState[id];if(!st.log.includes(c.dataset.c))st.log.push(c.dataset.c);diagRender(id,`[data-c="${c.dataset.c}"]`);return}
+ const w=e.target.closest("[data-diagwhy]");if(w){const id=w.dataset.diagwhy;diagState[id].why=+w.dataset.a;diagRender(id,`[data-diagwhy][data-a="${w.dataset.a}"]`);return}
+ const n=e.target.closest("[data-diagnew]");if(n){const id=n.dataset.diagnew,st=diagState[id];st.c=(st.c+1)%DIAGS[id].cases.length;st.log=[];st.why=null;diagRender(id,"[data-diagnew]")}
+});
 /* ---------------- EAR TRAINING (A/B) ---------------- */
 const EARS={
  hat:{t:"На слух: какие удары хэта тише?",bpm:96,
@@ -1490,7 +1524,7 @@ ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
 <div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
-${l.ear?l.ear.map(earHTML).join(""):""}
+${l.ear?l.ear.map(earHTML).join(""):""}${l.diag?l.diag.map(diagHTML).join(""):""}
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
 ${l.ext?extBox(l.ext):""}
