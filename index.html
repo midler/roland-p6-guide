@@ -176,7 +176,9 @@ th{font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;let
 .seq-head h4,.seq-head h3{margin:0;font-size:var(--fs-sm);font-family:var(--f-body)}
 .seq-head .ctl{display:flex;gap:6px;align-items:center;font-size:var(--fs-sm);color:var(--muted)}
 .seq-wrap{overflow-x:auto}
-.seq-grid{display:grid;grid-template-columns:minmax(44px,auto) repeat(16,minmax(0,1fr));gap:3px;align-items:end}
+.seq-grid{display:grid;grid-template-columns:minmax(44px,auto) repeat(var(--cols,16),minmax(0,1fr));gap:3px;align-items:end}
+.seq-wrap.split{display:grid;gap:12px}
+.seq-wrap.split .cell{height:34px}
 @media (max-width:520px){.seq-grid{gap:2px}.seq-grid .lbl{padding-right:3px}.cell.q{margin-left:2px}.cell{height:24px;border-radius:3px}.seq{padding:10px}}
 .seq-grid .lbl{font-size:var(--fs-xs);line-height:1.15;color:var(--ink);padding-right:6px}
 .seq-grid .lbl small{display:block;color:var(--muted);font-family:var(--f-mono);font-size:var(--fs-xs)}
@@ -1115,6 +1117,7 @@ function showCtrl(id){
 
 }
 const DETAIL0=document.getElementById("detail").innerHTML;
+PHONE.addEventListener("change",()=>{stopSeq();renderLessons();renderRecipes();renderChallenges()});
 [PHONE,WIDE].forEach(m=>m.addEventListener("change",()=>{renderDevice();const d=document.getElementById("detail");if(curCtrl)showCtrl(curCtrl);else d.classList.remove("sheet")}));
 function RM(){return matchMedia("(prefers-reduced-motion:reduce)").matches}
 
@@ -1188,10 +1191,11 @@ function chordsHTML(list){return `<div class="box"><h4>Схемы аккордо
  return `<div class="chord"><b>${esc(c[0])}</b><div class="piano">${w}${b}</div><span class="notes">${c[1].map(n=>NOTE_N[n]).join(" – ")}${c[2]?" · "+esc(c[2]):""}</span><button type="button" class="btn" data-chord="${c[1].join(",")}">▶ Послушать</button></div>`}).join("")}</div></div>`}
 function gridHTML(g,id){
  const KN=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","O−","O+","TIE"];
- const bt=g.len===12?3:4;const nums=R(1,16).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.map((k,j)=>`<span class="num kn${j===15?" end":""}">${k}</span>`).join("");
- const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(1,16).map(i=>{
-   if(g.len&&i>g.len)return `<span class="cell off${(i-1)%4===0&&i>1?" q":""}" aria-hidden="true"></span>`;
-   const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>1?" q":"";
+ const bt=g.len===12?3:4;
+ const blk=(a,b)=>{const nums=R(a,b).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.slice(a-1,b).map((k,j)=>`<span class="num kn${j===b-a&&b===16?" end":""}">${k}</span>`).join("");
+ const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(a,b).map(i=>{
+   if(g.len&&i>g.len)return `<span class="cell off${(i-1)%4===0&&i>a?" q":""}" aria-hidden="true"></span>`;
+   const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>a?" q":"";
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
      return `<span class="cell ro${st?" on":hold?" hold":""}${q}" data-i="${i}" role="img" aria-label="${esc(r.n)}, шаг ${i}${st?", нота "+esc(st[3]||""):hold?", звучит":", тишина"}">${st&&st[3]?`<span class="tag" aria-hidden="true">${esc(st[3])}</span>`:""}</span>`}
    if(r.lvl){const v=r.v[i]??1;return `<button type="button" class="cell lvlcell${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-label="${esc(r.n)}, шаг ${i}, уровень ${Math.round(v*127)}"><span class="lvl" style="height:${Math.max(6,v*100)}%"></span></button>`}
@@ -1199,8 +1203,10 @@ function gridHTML(g,id){
    const inner=on&&v!=null&&v<1?`<span class="lvl" style="height:${v*100}%"></span>`:"";
    const tag=on&&sb?`<span class="tag" aria-hidden="true">×${sb}</span>`:on&&p?`<span class="tag" aria-hidden="true">${p}</span>`:"";
    return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}${on&&p?", вероятность "+p+"%":""}${on&&sb?", дробь ×"+sb:""}">${inner}${tag}</button>`}).join("")).join("");
+ return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
+ const split=typeof PHONE!=="undefined"&&PHONE.matches;
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
- <div class="seq-wrap"><div class="seq-grid"><span></span>${nums}${rows}</div></div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
+ <div class="seq-wrap${split?" split":""}">${split?blk(1,8)+blk(9,16):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null}
