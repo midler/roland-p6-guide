@@ -73,10 +73,9 @@ kbd .fn{opacity:.7;font-weight:500}
 /* start */
 .legend{display:grid;gap:10px;align-content:start}
 .legend div{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
-.plan{display:grid;gap:10px;counter-reset:wk}
-.plan .wk{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
-.plan .wk:first-child{border-top:0}
-.plan .wk b{font-family:var(--f-mono);font-size:var(--fs-sm);color:var(--accent);padding-top:2px}
+.plan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 20px}
+.plan .wk{display:grid;gap:4px;align-content:start;padding:10px 0 0;border-top:1px solid var(--line);font-size:var(--fs-sm)}
+.plan .wk b{font-size:var(--fs-base);color:var(--ink)}
 .chiplinks{display:flex;flex-wrap:wrap;gap:6px}
 .chiplinks a{font-size:var(--fs-sm);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--ink);background:var(--surface-2)}
 /* panel explorer */
@@ -240,7 +239,8 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .othergrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .othergrid .branch::before{display:none}
 footer{padding-block:24px 40px;color:var(--muted);font-size:var(--fs-sm);border-top:1px solid var(--line)}
-@media (max-width:560px){.plan .wk{grid-template-columns:1fr;gap:2px}.lesson>summary{grid-template-columns:auto 1fr}.lcount{grid-column:2}}
+@media (max-width:760px){.plan{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.plan{grid-template-columns:1fr;gap:0}.plan .wk{padding:10px 0}.lesson>summary{grid-template-columns:auto 1fr}.lcount{grid-column:2}}
 /* typography: readable measure, aligned labels, steady numbers */
 .goal,.secdesc,ol.steps label,.box p,.box li,.recipe>p,.hero .lede,.seq-note{max-width:68ch}
 .box h4,.box h3,th,.levelhead span,.dice .slot b,.zone>span,.lmeta,.lcount,.meta{line-height:var(--lh-ui)}
@@ -394,6 +394,11 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 
 <section class="view" id="v-start">
   <div class="resume" id="resumeStart"></div>
+  <div class="card">
+    <h2>Как проходить курс</h2>
+    <p class="muted small" style="margin:6px 0 10px">Темп выбираешь сам. У каждого урока написано, сколько занятий по 30 минут он займёт, а длинные уроки разбиты на части.</p>
+    <div class="plan" id="plan"></div>
+  </div>
   <div class="grid2">
     <div class="card legend">
       <h2>Как читать гайд</h2>
@@ -412,34 +417,6 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
       <div class="fact"><h3><span class="n">2</span>Сэмплы общие, паттерны свои</h3><p>48 сэмплов (8 банков × 6 пэдов) и их настройки одни на все 64 паттерна. Гранулярный пэд, мьюты и темп хранятся в паттерне.</p></div>
       <div class="fact"><h3><span class="n">3</span>Сначала бэкап</h3><p>Сброс к заводским настройкам не возвращает заводские сэмплы. Их можно только скачать с сайта Roland. Поэтому урок 0 — экспорт.</p></div>
       </div>
-    </div>
-  </div>
-  <div class="card">
-    <h2>Как проходить курс</h2>
-    <p class="muted small" style="margin:6px 0 10px">Темп выбираешь сам. У каждого урока написано, сколько занятий по 30 минут он займёт, а длинные уроки разбиты на части.</p>
-    <div class="plan" id="plan"></div>
-  </div>
-  <div class="card">
-    <h2>Что у прибора внутри</h2>
-    <div class="facts">
-      <div class="fact"><h3>Сэмплы</h3><p>48 шт. Максимум на сэмпл: 5,9 с (44,1 кГц, моно), 11,8 с (22 кГц), 17,8 с (14,7 кГц), 23,7 с (11 кГц). В стерео время вдвое меньше.</p></div>
-      <div class="fact"><h3>Паттерны</h3><p>64 (банки 1–4 × 16). В 1-01…1-16 заводские пресеты, остальные пустые. До 64 шагов в паттерне.</p></div>
-      <div class="fact"><h3>Голоса</h3><p>сэмплы — до 16 одновременно, гранулярный пэд — до 4.</p></div>
-      <div class="fact"><h3>Эффекты</h3><p>20 мульти-эффектов (5 на отдельных кнопках), плюс общие DELAY и REVERB.</p></div>
-    </div>
-  </div>
-  <div class="card">
-    <h2>Чего P-6 не умеет</h2>
-    <p class="muted small" style="margin:6px 0 10px">Об этом говорят почти все обзоры. Лучше знать заранее и не искать функцию, которой нет.</p>
-    <div class="facts">
-      <div class="fact"><h3>Нет карты памяти</h3><p>Всего 48 сэмплов. Старое выгружай на компьютер (урок 00), а 8–16 ударов можно уложить на один пэд (урок Б4).</p></div>
-      <div class="fact"><h3>Нет «ленивой» нарезки</h3><p>Нельзя ставить метки нажатиями на ходу. Есть только деление на равные части (Chop) и step sampling.</p></div>
-      <div class="fact"><h3>Пэды не чувствуют силу нажатия</h3><p>Громкость удара задаётся в шаге (урок 04) или параметром <span class="lcd">vELo</span> в меню. С MIDI-клавиатуры сила передаётся.</p></div>
-      <div class="fact"><h3>Нет режима песни</h3><p>Паттерны переключаются вручную, следующий начинается после текущего. Длинные треки удобно собирать в DAW по USB.</p></div>
-      <div class="fact"><h3>Настройки пэда общие</h3><p>Перекрутил бас в новом паттерне — он изменился и во всех старых. Для вариантов копируй пэд (урок К3).</p></div>
-      <div class="fact"><h3>Ручки CTRL не записываются</h3><p>Движения эффектов в паттерн не попадают, для этого ресемплируй. Нет и тап-темпа.</p></div>
-      <div class="fact"><h3>Нет встроенного динамика</h3><p>Нужны наушники, колонка или телефон по USB-C.</p></div>
-      <div class="fact"><h3>Реверс только на весь пэд</h3><p>Перевернуть один шаг нельзя. Нужен перевёрнутый удар — скопируй пэд и включи реверс на копии.</p></div>
     </div>
   </div>
 </section>
@@ -489,10 +466,36 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 </section>
 
 <section class="view" id="v-cheats" hidden>
-  <nav class="subnav" aria-label="Разделы справки"><a href="#cheats" aria-current="true">Шпаргалка</a><a href="#videos">Видео и источники</a></nav>
+  <nav class="subnav" aria-label="Разделы справки"><a href="#cheats" aria-current="true">Шпаргалка</a><a href="#about">О приборе</a><a href="#videos">Видео и источники</a></nav>
   <div class="levelhead"><h2>Шпаргалка</h2></div>
   <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, метроном, chop…" aria-label="Поиск по шпаргалке">
   <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
+</section>
+
+<section class="view" id="v-about" hidden>
+  <div class="card">
+    <h2>Что у прибора внутри</h2>
+    <div class="facts">
+      <div class="fact"><h3>Сэмплы</h3><p>48 шт. Максимум на сэмпл: 5,9 с (44,1 кГц, моно), 11,8 с (22 кГц), 17,8 с (14,7 кГц), 23,7 с (11 кГц). В стерео время вдвое меньше.</p></div>
+      <div class="fact"><h3>Паттерны</h3><p>64 (банки 1–4 × 16). В 1-01…1-16 заводские пресеты, остальные пустые. До 64 шагов в паттерне.</p></div>
+      <div class="fact"><h3>Голоса</h3><p>сэмплы — до 16 одновременно, гранулярный пэд — до 4.</p></div>
+      <div class="fact"><h3>Эффекты</h3><p>20 мульти-эффектов (5 на отдельных кнопках), плюс общие DELAY и REVERB.</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Чего P-6 не умеет</h2>
+    <p class="muted small" style="margin:6px 0 10px">Об этом говорят почти все обзоры. Лучше знать заранее и не искать функцию, которой нет.</p>
+    <div class="facts">
+      <div class="fact"><h3>Нет карты памяти</h3><p>Всего 48 сэмплов. Старое выгружай на компьютер (урок 00), а 8–16 ударов можно уложить на один пэд (урок Б4).</p></div>
+      <div class="fact"><h3>Нет «ленивой» нарезки</h3><p>Нельзя ставить метки нажатиями на ходу. Есть только деление на равные части (Chop) и step sampling.</p></div>
+      <div class="fact"><h3>Пэды не чувствуют силу нажатия</h3><p>Громкость удара задаётся в шаге (урок 04) или параметром <span class="lcd">vELo</span> в меню. С MIDI-клавиатуры сила передаётся.</p></div>
+      <div class="fact"><h3>Нет режима песни</h3><p>Паттерны переключаются вручную, следующий начинается после текущего. Длинные треки удобно собирать в DAW по USB.</p></div>
+      <div class="fact"><h3>Настройки пэда общие</h3><p>Перекрутил бас в новом паттерне — он изменился и во всех старых. Для вариантов копируй пэд (урок К3).</p></div>
+      <div class="fact"><h3>Ручки CTRL не записываются</h3><p>Движения эффектов в паттерн не попадают, для этого ресемплируй. Нет и тап-темпа.</p></div>
+      <div class="fact"><h3>Нет встроенного динамика</h3><p>Нужны наушники, колонка или телефон по USB-C.</p></div>
+      <div class="fact"><h3>Реверс только на весь пэд</h3><p>Перевернуть один шаг нельзя. Нужен перевёрнутый удар — скопируй пэд и включи реверс на копии.</p></div>
+    </div>
+  </div>
 </section>
 
 <section class="view" id="v-videos" hidden>
@@ -1459,7 +1462,7 @@ const vidGroups=[
 const allVids=vidGroups.flatMap(g=>g.items);
 document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("");
 
-const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Жанры","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Творческие задачи и кубики — когда хочется просто поиграть."]];
+const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Рецепты","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Задания и кубики — когда хочется просто поиграть."]];
 document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
 
 
@@ -1522,26 +1525,27 @@ function openLesson(n,step){const o=store.get("p6open",[]);if(!o.includes(n))o.p
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-open]");if(a){e.preventDefault();openLesson(a.dataset.open,a.dataset.step!=null?+a.dataset.step:null);return}
  const sc=e.target.closest("a[data-scroll]");if(sc){e.preventDefault();const h=sc.getAttribute("href");const go=()=>{const t=document.getElementById(sc.dataset.scroll);if(t)t.scrollIntoView({block:"start"})};if(location.hash!==h){location.hash=h;setTimeout(go,80)}else go()}});
 /* ---------------- ROUTING ---------------- */
-const views=["start","panel","lessons","recipes","challenges","cheats","videos"];
+const views=["start","panel","lessons","recipes","challenges","cheats","about","videos"];
 function route(){
   let h=(location.hash||"#start").slice(1);let br=null;
   if(h.startsWith("branch-")&&SECTIONS.some(x=>"branch-"+x.id===h&&x.id!=="base")){br=h.slice(7);h="branch"}
   else if(!views.includes(h))h="start";
   document.getElementById("v-branch").hidden=h!=="branch";
-  const help=h==="cheats"||h==="videos";
-  views.forEach(v=>{document.getElementById("v-"+v).hidden=help?!(v==="cheats"||v==="videos"):v!==h});
+  const HELP=["cheats","about","videos"],help=HELP.includes(h);
+  views.forEach(v=>{document.getElementById("v-"+v).hidden=help?!HELP.includes(v):v!==h});
   document.body.dataset.view=h;
   document.querySelectorAll(".subnav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"true":"false"));
   if(br)renderBranch(br);else curBranch=null;
-  const tab=h==="branch"?"lessons":h==="videos"?"cheats":h;
+  const tab=h==="branch"?"lessons":help?"cheats":h;
   document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+tab?"page":"false"));
   const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-(w.clientWidth-cur.offsetWidth)/2)}
-  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",videos:"vid"}[h];
+  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",about:"inFo",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
 }
-window.addEventListener("hashchange",()=>{route();if(location.hash==="#videos")document.getElementById("v-videos").scrollIntoView({block:"start"});else window.scrollTo(0,0)});
+function helpScroll(){const t={"#videos":"v-videos","#about":"v-about"}[location.hash];if(t){document.getElementById(t).scrollIntoView({block:"start",behavior:"instant"});return true}return false}
+window.addEventListener("hashchange",()=>{route();if(!helpScroll())window.scrollTo(0,0)});
 renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
-if(location.hash==="#videos")requestAnimationFrame(()=>document.getElementById("v-videos").scrollIntoView({block:"start"}));
+requestAnimationFrame(helpScroll);if(document.fonts)document.fonts.ready.then(()=>setTimeout(helpScroll,50));
 })();
 </script>
 <script>
