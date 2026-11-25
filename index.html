@@ -2137,10 +2137,13 @@ function gridHTML(g,id){const nb=nBars(g),cb=(g.curBar||0)%nb;
    return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}${on&&p?", вероятность "+p+"%":""}${on&&sb?", дробь ×"+sb:""}${on&&mt?", сдвиг "+(mt>0?"позже":"раньше")+" на "+Math.round(Math.abs(mt)*100)+"% шага":""}">${inner}${tag}</button>`}).join("")).join("");
  return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
  const split=typeof PHONE!=="undefined"&&PHONE.matches;
- return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM${g.scale&&g.scale!=="1_16"?" · шаг "+g.scale:""}</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
+ return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM${g.scale&&g.scale!=="1_16"?" · шаг "+g.scale:""}</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button>${g.edited&&GRID_SRC[id]?`<button type="button" class="btn" data-greset="${id}">Вернуть пример</button>`:""}</span></div>
  ${nb>1?`<div class="earrow gbars" role="group" aria-label="Какой такт показать"><span class="small muted" aria-live="polite">${seqPlaying===id?"Сейчас звучит":"Показан"} такт ${cb+1} из ${nb}</span>${R(1,nb).map(k=>`<button type="button" class="btn" data-gbar="${id}" data-b="${k-1}" aria-pressed="${k-1===cb}">Такт ${k}</button>`).join("")}</div>`:""}<div class="seq-wrap${split||g.len>16?" split":""}">${g.len>16&&g.len%16===0?R(1,g.len/16).map(k=>[16*k-15,16*k]).map(([a,b],k)=>`<p class="small" style="margin:0">Такт ${k+1} · шаги ${a}–${b} · страница ${k+1}</p>`+(split?blk(a,a+7)+blk(a+8,b):blk(a,b))).join(""):split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
-const gridState={};
-function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
+const gridState={},GRID_SRC={};let GRID_SAVED=store.get("p6grid",{});
+function useGrid(id,src){GRID_SRC[id]=src;if(!gridState[id]){const g=JSON.parse(JSON.stringify(src));if(GRID_SAVED[id]){try{GRID_SAVED[id].forEach((r,ri)=>{if(g.rows[ri]){g.rows[ri].s=r.s;if(r.v)g.rows[ri].v=r.v;else delete g.rows[ri].v;if(r.p)g.rows[ri].p=r.p;else delete g.rows[ri].p;if(r.sub)g.rows[ri].sub=r.sub;else delete g.rows[ri].sub;if(r.t)g.rows[ri].t=r.t;else delete g.rows[ri].t}});g.edited=1}catch(e){}}gridState[id]=g}return gridState[id]}
+function saveGrid(id){if(!GRID_SRC[id])return;const g=gridState[id];GRID_SAVED[id]=g.rows.map(r=>({s:r.s,v:r.v,p:r.p,sub:r.sub,t:r.t}));g.edited=1;store.set("p6grid",GRID_SAVED)}
+function resetGrid(id){delete GRID_SAVED[id];store.set("p6grid",GRID_SAVED);const pl=seqPlaying===id;if(pl)stopSeq();gridState[id]=JSON.parse(JSON.stringify(GRID_SRC[id]));refreshGrid(id)}
+function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;useGrid(id,g);return gridHTML(gridState[id],id)}).join("")}
 let seqNext=null;const MG={};
 function refreshGrid(id){const host=document.getElementById(id);if(!host||!gridState[id])return;const f=document.activeElement&&host.contains(document.activeElement)?document.activeElement.getAttribute("data-b"):null;host.outerHTML=gridHTML(gridState[id],id);if(seqPlaying===id){const pb=document.querySelector(`[data-play="${id}"]`);if(pb){pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}}if(f!=null){const b=document.querySelector(`[data-gbar="${id}"][data-b="${f}"]`);if(b)b.focus()}}
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;seqNext=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null;earBtns()}
@@ -2330,11 +2333,12 @@ document.addEventListener("click",e=>{
 document.addEventListener("click",e=>{
  const ch=e.target.closest("[data-chord]");if(ch){const c=ac();if(c){if(c.state==="suspended")c.resume();ch.dataset.chord.split(",").map(Number).forEach(n=>tone(c.currentTime+.02,1.2,60+n,.8,"tone"))}return}
  const hb=e.target.closest("[data-hit]");if(hb){const c=ac();if(c){if(c.state==="suspended")c.resume();hit(hb.dataset.hit,c.currentTime+.02,1)}return}
+ const gr=e.target.closest("[data-greset]");if(gr){const id=gr.dataset.greset;resetGrid(id);const pb=document.querySelector(`[data-play="${id}"]`);if(pb)pb.focus();return}
  const gb=e.target.closest("[data-gbar]");if(gb){const id=gb.dataset.gbar;gridState[id].curBar=+gb.dataset.b;refreshGrid(id);const b=document.querySelector(`[data-gbar="${id}"][data-b="${gb.dataset.b}"]`);if(b)b.focus();return}
  const pb=e.target.closest("[data-play]");if(pb){playSeq(pb.dataset.play);return}
  const cell=e.target.closest(".cell[data-g]");if(!cell||cell.disabled)return;const g=gridState[cell.dataset.g],r=g.rows[+cell.dataset.r],i=+cell.dataset.i;
  if(r.lvl){const v=r.v[i]??1;r.v[i]=v>=1?0:v<.28?.28:1}else{const at=r.s.indexOf(i);if(at>=0)r.s.splice(at,1);else{r.s.push(i);if(r.p)delete r.p[i];if(r.v)delete r.v[i];if(r.sub)delete r.sub[i];if(r.t)delete r.t[i]}if(!r.lvl&&r.k!=="bass"&&r.s.includes(i))hit(r.k,ac()?ac().currentTime:0,1)}
- const host=document.getElementById(cell.dataset.g);host.outerHTML=gridHTML(g,cell.dataset.g);
+ saveGrid(cell.dataset.g);const host=document.getElementById(cell.dataset.g);host.outerHTML=gridHTML(g,cell.dataset.g);{const c2=document.querySelector(`#${cell.dataset.g} .cell[data-r="${cell.dataset.r}"][data-i="${cell.dataset.i}"]`);if(c2)c2.focus()}
 });
 /* ---------------- LESSON RENDER ---------------- */
 let done=store.get("p6done",{});
@@ -2575,7 +2579,7 @@ function renderChallenges(){
   f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
   f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges();const nb=[...f.querySelectorAll("button")].find(x=>x.textContent===chFilter);if(nb)nb.focus()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
-  document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch${CH_GRIDS[c.t]?" wide":""}"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
+  document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch${CH_GRIDS[c.t]?" wide":""}"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;useGrid(id,CH_GRIDS[c.t]);return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
   const cnt=()=>{const n=Object.keys(chDone).filter(k=>challenges[k]).length,fn=list.filter(c=>chDone[c.i]).length;document.getElementById("chCount").textContent=chFilter==="Все"?`Сделано заданий: ${n} из ${challenges.length}`:`В этом фильтре сделано ${fn} из ${list.length} · всего ${n} из ${challenges.length}`};cnt();
   document.querySelectorAll("#chList input").forEach(cb=>{const card=cb.closest(".ch");card.classList.toggle("done",cb.checked);cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone);card.classList.toggle("done",cb.checked);cnt();announce(cb.checked?"Задание отмечено":"Отметка снята")}});
 }
@@ -2777,7 +2781,7 @@ const RECIPES=[
   task:"Трек на 1 минуту: интро из пэда и баса, дроп с брейком и саб-басом, сбивка через step loop, снова дроп."}
 ];
 function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES.map((r,ri)=>{
- const id="rc_"+r.id;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(r.grid));
+ const id="rc_"+r.id;useGrid(id,r.grid);
  return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)} в жанре</span>${(SECTIONS.find(x=>x.recipe===r.id)||0).id?`<a href="#branch-${SECTIONS.find(x=>x.recipe===r.id).id}">Пройти как ветку <span aria-hidden="true">→</span></a>`:""}</div>
  <p>${esc(relabel(r.mood))}</p><p class="small"><b>Послушать на приборе:</b> ${esc(relabel(r.ex))}</p>
  ${gridHTML(gridState[id],id)}
