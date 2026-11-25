@@ -336,6 +336,17 @@ kbd{font-size:max(.78em,12px)}
 .donecard .nextles{grid-column:1/-1;margin-top:6px}
 @media (prefers-reduced-motion:no-preference){.donecard{animation:donein .32s cubic-bezier(.2,.8,.2,1)}}
 @keyframes donein{from{opacity:0;transform:translateY(6px)}}
+
+/* adapt pass 2: phone key strip, larger hit areas */
+.keystrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#1c1e22;border-radius:14px;padding:10px}
+.keystrip .sk{position:relative;min-height:60px;display:grid;place-items:center;gap:3px;padding:16px 0 6px;border:1px solid #9aa0a8;border-radius:6px;background:#e9ebee;color:#202226;font-family:var(--f-mono);cursor:pointer}
+.keystrip .sk b{font-size:var(--fs-base);line-height:1}
+.keystrip .sk i{position:absolute;top:3px;left:5px;font-style:normal;font-size:var(--fs-xs);color:#6b717b;line-height:1}
+.keystrip .sk small{font-size:var(--fs-xs);line-height:1;color:#4a5058;white-space:nowrap}
+.keystrip .sk.dim{opacity:.25}
+.keystrip .sk.hot{outline:2px solid #5fb7cf;outline-offset:1px}
+.keystrip .sk[aria-pressed="true"]{outline:3px solid #5fb7cf;outline-offset:2px}
+.devwrap.split .el::after{content:"";position:absolute;inset:-9px}
 /* adapt pass: bottom tabs, split panel, sheet */
 nav.tabs svg{display:none}
 .subnav{display:flex;gap:6px;flex-wrap:wrap}
@@ -1037,17 +1048,19 @@ function devLayout(){const E=[];const add=(id,l,x,y,w,h,cls,sec,big)=>E.push({id
 const PHONE=matchMedia("(max-width:560px)");
 function renderDevice(){
   const dev=document.getElementById("device");const L=devLayout();
-  const half=(x0,W,cls,lbl)=>{const px=x=>((x-x0)/W*100).toFixed(3);
-   const html=L.filter(e=>e.x>=x0&&e.x<x0+W).map(e=>{
-   if(e.lab)return `<span class="lab${e.sec?" sec":""}" style="left:${px(e.x)}%;top:${e.y/10.8}%">${esc(e.lab)}</span>`;
+  const half=(x0,W,cls,lbl,H=1080)=>{const px=x=>((x-x0)/W*100).toFixed(3),py=y=>(y/H*100).toFixed(3);
+   const html=L.filter(e=>e.x>=x0&&e.x<x0+W&&e.y<H).map(e=>{
+   if(e.lab)return `<span class="lab${e.sec?" sec":""}" style="left:${px(e.x)}%;top:${py(e.y)}%">${esc(e.lab)}</span>`;
    const c=e.id?findCtrl(e.id):null;let cls="el "+e.cls;
    if(c&&curMode!=="none")cls+=c[curMode]?" hot":" dim";
-   const st=`left:${px(e.x-e.w/2)}%;top:${(e.y-e.h/2)/10.8}%;width:${(e.w/W*100).toFixed(3)}%;height:${e.h/10.8}%`;
-   const sec=e.sec?`<span class="lab sec" style="left:${px(e.sec[1])}%;top:${e.sec[2]/10.8}%">${esc(e.sec[0])}</span>`:"";
+   const st=`left:${px(e.x-e.w/2)}%;top:${py(e.y-e.h/2)}%;width:${(e.w/W*100).toFixed(3)}%;height:${(e.h/H*100).toFixed(3)}%`;
+   const sec=e.sec?`<span class="lab sec" style="left:${px(e.sec[1])}%;top:${py(e.sec[2])}%">${esc(e.sec[0])}</span>`:"";
    if(!c)return `<span class="${cls}" style="${st}">${esc(e.l)}</span>`;
    return `<button type="button" class="${cls}" style="${st}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}" aria-label="${esc(c.l)}">${esc(e.l)}</button>${sec}`}).join("");
-   return `<div class="dev2 ${cls}" role="group" aria-label="${lbl}" style="aspect-ratio:${W}/1080;--k:${(2000/W).toFixed(4)}">${html}</div>`};
-  const draw=PHONE.matches?`<div class="devwrap split">${half(0,1155,"half-a","Левая часть панели")}${half(1155,845,"half-b","Правая часть панели")}</div>`:`<div class="devwrap">${half(0,2000,"","Панель P-6")}</div>`;
+   return `<div class="dev2 ${cls}" role="group" aria-label="${lbl}" style="aspect-ratio:${W}/${H};--k:${(2000/W).toFixed(4)}">${html}</div>`};
+  const strip=()=>`<div class="keystrip" role="group" aria-label="16 кнопок-шагов">${KEYS.map((k,i)=>{const c=findCtrl(k[1]);let cls="sk";if(c&&curMode!=="none")cls+=c[curMode]?" hot":" dim";
+    return `<button type="button" class="${cls}" data-id="${k[1]}" aria-pressed="${curCtrl===k[1]}" aria-label="Шаг ${i+1}: ${esc(k[0])}, ${esc(k[2])}"><i aria-hidden="true">${i+1}</i><b>${esc(k[0])}</b><small>${esc(k[2])}</small></button>`}).join("")}</div>`;
+  const draw=PHONE.matches?`<div class="devwrap split">${half(0,1155,"half-a","Левая часть панели",900)}${half(1155,845,"half-b","Правая часть панели",900)}${strip()}</div>`:`<div class="devwrap">${half(0,2040,"","Панель P-6")}</div>`;
   const rear=zones.flatMap(z=>z.items).filter(c=>["usb","midi"].includes(c.id)).map(c=>`<button type="button" class="ctrl${curMode!=="none"?(c[curMode]?" hot":" dim"):""}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}">${esc(c.l)} <small>сзади</small></button>`).join("");
   dev.innerHTML=`${draw}<div class="rearrow">${rear}<span class="small" style="color:#8f98a5;align-self:center">Сзади ещё выключатель POWER.</span></div>`;
   dev.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{curCtrl=b.dataset.id;renderDevice();showCtrl(curCtrl)});
