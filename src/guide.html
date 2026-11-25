@@ -337,6 +337,20 @@ kbd{font-size:max(.78em,12px)}
 @media (prefers-reduced-motion:no-preference){.donecard{animation:donein .32s cubic-bezier(.2,.8,.2,1)}}
 @keyframes donein{from{opacity:0;transform:translateY(6px)}}
 
+
+/* layout pass 3: panel beside its description on wide screens */
+#v-panel>.card p{max-width:68ch}
+@media (min-width:1200px){
+ #v-panel{--pw:min(1248px,calc(100vw - 32px));width:var(--pw);margin-left:calc(50% - var(--pw)/2)}
+ .panelgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+ .panelgrid #detail{position:sticky;top:76px;max-height:calc(100vh - 96px);overflow:auto}
+}
+
+@media (max-width:1199px){
+ #detail.sheet{position:fixed;left:50%;transform:translateX(-50%);width:min(640px,calc(100vw - 32px));bottom:16px;z-index:15;max-height:46vh;overflow:auto;background:var(--surface);border:1px solid var(--ink);border-radius:14px;padding:12px 16px 16px;overscroll-behavior:contain}
+ #detail.sheet .sheetx{display:inline-flex;float:right;margin:-4px -8px 0 8px;min-height:44px;min-width:44px;justify-content:center;align-items:center;padding:0;border:0;background:transparent}
+ #v-panel{padding-bottom:46vh}
+}
 /* adapt pass 2: phone key strip, larger hit areas */
 .keystrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#1c1e22;border-radius:14px;padding:10px}
 .keystrip .sk{position:relative;min-height:60px;display:grid;place-items:center;gap:3px;padding:16px 0 6px;border:1px solid #9aa0a8;border-radius:6px;background:#e9ebee;color:#202226;font-family:var(--f-mono);cursor:pointer}
@@ -373,9 +387,7 @@ nav.tabs svg{display:none}
  .focusbar{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
  .focusbar .fpos{flex-basis:100%;margin-right:0}
  .focusbar [data-fnext]{flex:1;justify-content:center}
- #detail.sheet{position:fixed;left:8px;right:8px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:15;max-height:46vh;overflow:auto;background:var(--surface);border:1px solid var(--ink);border-radius:14px;padding:12px 16px 16px;overscroll-behavior:contain}
- #detail.sheet .sheetx{display:inline-flex;float:right;margin:-4px -8px 0 8px;min-height:44px;min-width:44px;justify-content:center;align-items:center;padding:0;border:0;background:transparent}
- #v-panel{padding-bottom:46vh}
+ #detail.sheet{left:8px;right:8px;width:auto;transform:none;bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 }
 /* onboard / layout / clarify / adapt / distill pass */
 p,li,label{text-wrap:pretty}
@@ -471,8 +483,10 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
     <p class="muted small" style="margin-top:6px">Схема повторяет раскладку настоящего P-6. Выбери, какую кнопку держишь, — подсветятся органы, у которых есть функция в этом сочетании. Нажми на любой орган, чтобы увидеть всё, что он умеет. USB и MIDI находятся на задней стороне, они под схемой.</p>
   </div>
   <div class="modes" role="group" aria-label="Что удерживаешь" id="modes"></div>
+  <div class="panelgrid">
   <div class="device" id="device"></div>
-  <div class="card detail" id="detail" aria-live="polite"><p class="muted">Нажми на кнопку, ручку или пэд на схеме выше.</p></div>
+  <div class="card detail" id="detail" aria-live="polite"><p class="muted">Нажми на кнопку, ручку или пэд на схеме, и здесь появится, что он делает.</p></div>
+  </div>
 </section>
 
 <section class="view" id="v-lessons" hidden>
@@ -1045,7 +1059,7 @@ function devLayout(){const E=[];const add=(id,l,x,y,w,h,cls,sec,big)=>E.push({id
  KEYS.forEach((k,i)=>{add(k[1],k[0],KX[i],975,95,105,"key");E.push({lab:k[2],x:KX[i],y:1050,sec:1})});
  E.push({lab:"SAMPLE EDIT",x:985,y:905,sec:1});E.push({lab:"PTN CLEAR",x:1530,y:905,sec:1});
  return E}
-const PHONE=matchMedia("(max-width:560px)");
+const PHONE=matchMedia("(max-width:560px)"),WIDE=matchMedia("(min-width:1200px)");
 function renderDevice(){
   const dev=document.getElementById("device");const L=devLayout();
   const half=(x0,W,cls,lbl,H=1080)=>{const px=x=>((x-x0)/W*100).toFixed(3),py=y=>(y/H*100).toFixed(3);
@@ -1072,12 +1086,14 @@ function showCtrl(id){
   const order=curMode!=="none"&&c[curMode]?[curMode,...keys.filter(k=>k!==curMode)]:keys;
   const ki=KEYS.findIndex(k=>k[1]===id);const stepInfo=ki>=0?`<p class="small muted">${fmt("Кнопка-шаг "+KEYS.filter(k=>k[1]===id).map(k=>KEYS.indexOf(k)+1).join(" и ")+" из 16. В режиме [KYBD] — клавиша "+KEYS.filter(k=>k[1]===id).map(k=>k[0]).join(" и ")+".")}</p>`:"";
   d.innerHTML=`<button type="button" class="btn sheetx" aria-label="Закрыть описание"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h3>${esc(c.l)}</h3>${stepInfo}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
-  d.classList.toggle("sheet",PHONE.matches);
+  d.classList.toggle("sheet",!WIDE.matches);
   d.querySelector(".sheetx").onclick=()=>{const was=curCtrl;curCtrl=null;d.classList.remove("sheet");d.innerHTML=DETAIL0;renderDevice();const b=document.querySelector(`#device [data-id="${was}"]`);if(b)b.focus()};
-  if(!PHONE.matches){const r=d.getBoundingClientRect();if(r.top>innerHeight*.7||r.bottom<0)d.scrollIntoView({block:"start",behavior:RM()?"auto":"smooth"})}
+  if(!WIDE.matches)requestAnimationFrame(()=>{const b=document.querySelector(`#device [data-id="${id}"][aria-pressed="true"]`);if(!b)return;const r=b.getBoundingClientRect(),limit=d.getBoundingClientRect().top-12;
+   if(r.bottom>limit)window.scrollBy({top:r.bottom-limit,behavior:"instant"});else if(r.top<8)window.scrollBy({top:r.top-16,behavior:"instant"})});
+
 }
 const DETAIL0=document.getElementById("detail").innerHTML;
-PHONE.addEventListener("change",()=>{renderDevice();const d=document.getElementById("detail");if(curCtrl)showCtrl(curCtrl);else d.classList.remove("sheet")});
+[PHONE,WIDE].forEach(m=>m.addEventListener("change",()=>{renderDevice();const d=document.getElementById("detail");if(curCtrl)showCtrl(curCtrl);else d.classList.remove("sheet")}));
 function RM(){return matchMedia("(prefers-reduced-motion:reduce)").matches}
 
 const GLOSS=`<div class="box"><h4>Словарик ударных</h4>
