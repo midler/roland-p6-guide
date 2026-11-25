@@ -782,15 +782,17 @@ const lessons=[
  "Пустой паттерн: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN].",
  "Выбери банк с ударными: например, F — нажми [B/F] дважды (кнопка мигает). Проверь, что [KYBD] не горит. Выбери пэд бочки без звука: держи [PATTERN] + пэд [1].",
  "Нажми шаги 1, 5, 9, 13: они загорятся. Повторное нажатие стирает ноту.",
- "Снейр (в банке F — пэд [4]): шаги 5 и 13. Хэт (пэд [2]): шаги 3, 7, 11, 15 или все нечётные.",
- "Нажми [▶] и продолжай вводить на ходу.",
- "Сохрани бит, пока не ушёл на перерыв: останови паттерн кнопкой [▶] и нажми [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]. Точка на дисплее исчезнет. Если паттерн играет, дисплей покажет ⟨StoP⟩ — сначала останови.",
- "Открой сохранённый бит: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN]. Нажми [▶]: звучит то, что ты сохранил.",
- "Акценты: держи шаг и нажми пэд — сила меняется ⟨StrG⟩ → ⟨MEdi⟩ → ⟨WEAK⟩ (100/75/50%). Тихие и громкие хэты на слух — упражнение «Какие удары хэта тише?» ниже.",
+ "Снейр (в банке F — пэд [4]): шаги 5 и 13.",
+ "Нажми [▶] и продолжай вводить на ходу. Бочка и снейр — это интро твоего трека.",
+ "Сохрани интро в 2-01, пока не ушёл на перерыв: останови паттерн кнопкой [▶] и нажми [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]. Точка на дисплее исчезнет. Если паттерн играет, дисплей покажет ⟨StoP⟩ — сначала останови.",
+ "Открой сохранённое интро: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN]. Нажми [▶]: звучит то, что ты сохранил.",
+ "Интро оставим как есть, а грув соберём в копии. Останови [▶] и скопируй 2-01 в 2-02: [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер 2-02 → [C♯ · ENTER]. Открой 2-02: [PATTERN] → шаг 2 → [PATTERN].",
+ "Выбери пэд хэта ([PATTERN] + пэд [2]) и нажми все нечётные шаги — 1, 3, 5 … 15.",
+ "Акценты: сделай тише каждый второй хэт — держи шаг 3 и нажимай пэд хэта, пока не увидишь ⟨WEAK⟩. Сила меняется ⟨StrG⟩ → ⟨MEdi⟩ → ⟨WEAK⟩ (100/75/50%). Повтори для шагов 7, 11, 15. Тихие и громкие хэты на слух — упражнение «Какие удары хэта тише?» ниже.",
  "Свинг: [SHIFT] + [D · SHUFFLE] → [TEMPO/VALUE] (10–16 звучат приятно) → [C · EXIT].",
- "Сохрани ещё раз с акцентами и свингом: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]."],
- check:"Паттерн 2-01 с бочкой, снейром и хэтом сохранён и звучит после перезагрузки.",
- task:"Скопируй паттерн в 2-02…2-04. Отдельной кнопки COPY нет: это кнопка старта [▶], подпись COPY стоит рядом с ней. Держи [SHIFT] и нажми [▶] → ⟨Ptn⟩ → [C♯ · ENTER] → выбери номер → [C♯ · ENTER]) и сделай три вариации: брейк, заполнение, раскачку."},
+ "Сохрани грув в 2-02: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]."],
+ check:"После перезагрузки звучат обе версии: 2-01 — интро из бочки и снейра, 2-02 — грув с хэтом и акцентами.",
+ task:"Скопируй грув 2-02 в свободные ячейки 2-10…2-12. Отдельной кнопки COPY нет: это кнопка старта [▶], подпись COPY стоит рядом с ней. Держи [SHIFT] и нажми [▶] → ⟨Ptn⟩ → [C♯ · ENTER] → выбери номер → [C♯ · ENTER]) и сделай три вариации: брейк, заполнение, раскачку."},
 {n:"05",tc:[["hRx6BIV11Sk", "01:47", "Случайные лиги при живой записи"], ["d3uRNdytUa0", "04:39", "Метроном и его громкость"]],lv:"L2",t:"Живая запись",time:"40 мин",page:"112171659114050955",
  goal:"Записать игру на пэдах в реальном времени с метрономом и квантизацией.",
  steps:[
@@ -969,23 +971,20 @@ const lessons=[
  check:"Твой WAV играет с пэда, а P-6 звучит в DAW по USB.",
  task:"Возьми на компьютере 6 коротких звуков (поле, голос, синт) и сделай из них банк E."},
 {n:"28",lv:"L4",t:"Короткая форма из своего бита",time:"30 мин",page:"112346123114022795",
- goal:"Из одного такта сделать три версии и вручную сыграть из них форму на восемь тактов. С этого начинается живая игра.",
+ goal:"Сыграть вживую восемь тактов из сохранённых версий сквозного трека. С этого начинается живая игра.",
  steps:[
- "Основной грув — сохранённый паттерн 2-01 из урока 04. Скопируй его в 2-02 и 2-03: остановись, [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер → [C♯ · ENTER].",
- "2-02 — вступление. Открой его: [PATTERN] → шаг 2 → [PATTERN]. Оставь только хэт и бочку на шаге 1, остальное сотри: выбери пэд ([PATTERN] + пэд) и нажми его горящие шаги.",
- "2-03 — сбивка. Открой его так же (шаг 3) и измени последние четыре шага, 13–16. Например, снейр на всех четырёх и без хэта.",
- "Сохрани: [SHIFT] + [TIE · WRITE] → ⟨Pt.AL⟩ → [C♯ · ENTER].",
- "Подготовь старт: нажми [PATTERN] (загорится) и шаг 2 — выбран 2-02. Не выходи из выбора паттернов: дальше шаги 1, 2, 3 — это номера паттернов 2-01, 2-02, 2-03.",
+ "Проверь, что версии на месте: 2-01 интро, 2-02 грув, 2-03 с басом, 2-05 сбивка (карта трека — в уроке 04). Какой-то нет — сделай копию 2-02 в эту ячейку: остановись, [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер → [C♯ · ENTER]. Для сбивки измени в копии последние четыре шага.",
+ "Подготовь старт: нажми [PATTERN] (загорится) и шаг 1 — выбран 2-01. Не выходи из выбора паттернов: дальше шаги 1–5 — это номера 2-01…2-05.",
  "Следующий паттерн начинается, когда доиграет текущий: его шаг мигает, пока ждёт. Поэтому жми номер в такте перед переходом — после его первой доли, но до конца такта. Карта ниже.",
  "Нажми [▶] и сыграй все восемь тактов без остановки. Не попал — не останавливайся, догоняй со следующего такта."],
- table:{cap:"Карта исполнения",head:["Такты","Паттерн","Что нажать"],rows:[["1–2","2-02 вступление","Во 2-м такте нажми шаг 1"],["3–6","2-01 основной грув","В 6-м такте нажми шаг 3"],["7","2-03 сбивка","В 7-м такте нажми шаг 1"],["8","2-01 основной грув","—"]]},
- check:"На третьем такте вступает полный бит, а после сбивки основной грув возвращается точно на первую долю.",
+ table:{cap:"Карта исполнения",head:["Такты","Версия","Что нажать"],rows:[["1–2","2-01 интро","Во 2-м такте нажми шаг 2"],["3–4","2-02 грув","В 4-м такте нажми шаг 3"],["5–6","2-03 с басом","В 6-м такте нажми шаг 5"],["7","2-05 сбивка","В 7-м такте нажми шаг 2"],["8","2-02 грув","—"]]},
+ check:"Интро звучит как в первом уроке, на третьем такте вступает хэт, а после сбивки грув возвращается точно на первую долю.",
  task:"Сыграй форму три раза подряд и запиши последний раз на телефон. Те же переходы пригодятся в итоговом сете (урок 15)."},
 {n:"15",tc:[["veNheHzqi8Y", "45:28", "Step loop и Effect Grab"], ["2JoKCge7QW8", "00:00", "Трек целиком на P-6"], ["V4JWVPrgjMg", "00:00", "Полный рабочий процесс (Jay Maculate)"]],lv:"L4",t:"Итог: живой сет на 5 минут",time:"2–3 занятия",page:"112346123114022795",
  goal:"Собрать и сыграть цельный номер только на P-6.",
  steps:[
  "Что понадобится: сохранённый бит (урок 04) и переходы из короткой формы (урок 28). Пригодятся, но не обязательны: свои записи (уроки 09–11), гранулярная подложка (урок 12), сайдчейн и лупер (уроки 17 и 18). Без них собери сет из заводских звуков.",
- "Сделай 4 паттерна в банке 3: интро (3-01), основной грув (3-02), брейк (3-03), кульминация (3-04). Копируй и меняй, а не начинай с нуля.",
+ "Сделай 4 паттерна в банке 3: интро (3-01), основной грув (3-02), брейк (3-03), кульминация (3-04). Копируй и меняй, а не начинай с нуля. Готовая основа — версии сквозного трека 2-01…2-05 (урок 28).",
  "Спланируй переходы: выбранный следующим паттерн начнётся, когда доиграет текущий. Режима песни (цепочки паттернов) в P-6 нет, переключаешь вручную.",
  "Чтобы на переходах не обрывались звучащие сэмплы: [SHIFT] + [OCT+ · MENU] → ⟨StoP⟩ → ⟨rEMn⟩. Для хвостов дилея и реверба — ⟨GL.d.r⟩ → ⟨On⟩ (урок 13).",
  "Отрепетируй «живые» приёмы: мьюты ([SHIFT] + пэд), эффекты удержанием ([PATTERN] + эффект), step loop ([SHIFT] + [PATTERN]).",
@@ -1450,6 +1449,44 @@ function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume
   const tt=(next-c.currentTime)*1000,el=document.getElementById(id),cid=id;
   setTimeout(()=>{if(seqPlaying!==cid||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
   next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=(g.loop||8)){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
+/* ---------------- THROUGH-LINE TRACK ---------------- */
+const TK={kick:{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]},sn:{n:"Снейр",pad:"",k:"snare",s:[5,13]},
+ hat:{n:"Хэт",pad:"",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},
+ bass:{n:"Бас",pad:"",k:"tone",bars:[[[1,2,45,"A"],[4,2,45,"A"],[7,2,48,"C"],[9,2,43,"G"],[11,2,40,"E"]]]},
+ perc:{n:"Перкуссия",pad:"",k:"clap",s:[14,16],v:{14:.6,16:.8}}};
+const TKCOPY="Как копировать: останови [▶], [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер новой версии → [C♯ · ENTER]. Открой её: [PATTERN] → номер → [PATTERN].";
+const TKSAVE="Сохрани: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER].";
+const TRACK=[
+ {id:"intro",n:"04",to:"2-01",role:"Интро",add:"Бочка на 1, 5, 9, 13 и снейр на 5 и 13",
+  do:"Шаги первого занятия этого урока.",ear:"Слышно только бочку и снейр: просторно, есть куда вступать.",
+  B:[TK.sn,TK.kick],hl:[5,13],hlr:0,overview:1},
+ {id:"groove",n:"04",from:"2-01",to:"2-02",role:"Основной грув",add:"Хэт восьмыми, каждый второй удар тише",
+  do:"Шаги второго занятия этого урока: копия интро, хэт и акценты.",ear:"Хэт качает: громкий удар на счёт, тихий между счётами.",
+  A:[TK.sn,TK.kick],B:[TK.hat,TK.sn,TK.kick],hl:R(1,15,2),hlr:0},
+ {id:"bass",n:"07",from:"2-02",to:"2-03",role:"Версия с басом",add:"Короткая басовая фраза с паузой на последней доле",
+  do:"Скопируй 2-02 в 2-03 и открой его. Выбери тональный пэд для баса и опусти [PITCH] или [OCT−]. Впиши ноты, как в этом уроке: шаг 1 — [A], 4 — [A], 7 — [C], 9 — [G], 11 — [E]. Шаги 13–16 оставь пустыми.",
+  ear:"Бас ходит под бочкой, а на последней доле замолкает.",
+  A:[TK.hat,TK.sn,TK.kick],B:[TK.bass,TK.hat,TK.sn,TK.kick],hl:[1,4,7,9,11],hlr:0},
+ {id:"var",n:"05",from:"2-03",to:"2-04",role:"Вариация",add:"Перкуссия вживую отвечает в паузе баса",
+  do:"Скопируй 2-03 в 2-04 (нет ещё басовой версии — возьми 2-02) и открой. Выбери пэд перкуссии, включи квантизацию и метроном, нажми [●] → [▶] и в последней доле такта сыграй два коротких удара. В примере они на шагах 14 и 16. [●] — конец записи.",
+  ear:"В паузе баса появляется ответ перкуссии.",
+  A:[TK.bass,TK.hat,TK.sn,TK.kick],B:[TK.perc,TK.bass,TK.hat,TK.sn,TK.kick],hl:[14,16],hlr:0},
+ {id:"fill",n:"06",from:"2-04",to:"2-05",role:"Сбивка",add:"Двойной хэт в конце такта",
+  do:"Скопируй 2-04 в 2-05 и открой. Выбери пэд хэта, держи шаг 15 и нажимай [GRANULAR] до сабстепа. Не отпуская шаг, крути [TEMPO/VALUE], пока шаг не разделится на две части.",
+  ear:"В конце такта хэт бьёт дважды — слышно, что сейчас будет переход.",
+  A:[TK.perc,TK.bass,TK.hat,TK.sn,TK.kick],B:[TK.perc,TK.bass,Object.assign({},TK.hat,{sub:{15:2}}),TK.sn,TK.kick],hl:[15],hlr:2},
+ {id:"motion",n:"08",from:"2-05",to:"2-05",role:"Сбивка",add:"Фильтр хэта закрывается к концу такта",
+  do:"Открой 2-05. Пэду хэта включи фильтр: [SHIFT] + [G♯ · FILTER] → [PITCH] → ⟨LPF⟩. Остановись, нажми [●], выбери шаг 13 и в том же меню поверни [START] (срез) чуть ниже. На шагах 14, 15 и 16 — ещё ниже. На шаге 1 верни срез вверх, иначе фильтр останется закрытым в следующих тактах. [●] — конец правки.",
+  ear:"Хэт в сбивке темнеет и глохнет, а с новым тактом снова яркий."}];
+function trkHTML(t){const id=t.id,has=!!t.B;
+ if(has){gridState[`trk_${id}_A`]={bpm:96,rows:t.A||[],loop:16};gridState[`trk_${id}_B`]={bpm:96,rows:t.B,loop:16};gridState[`trk_${id}_g`]={t:`${t.to} · ${t.role}`,bpm:96,rows:JSON.parse(JSON.stringify(t.B)),hl:t.hl,hlr:t.hlr,note:"Рамкой отмечено то, что добавилось."}}
+ const btn=(v,l)=>`<button type="button" class="btn" data-earv="trk_${id}_${v}" data-lbl="${l}" aria-pressed="false" aria-label="Пример «${l}»">▶ ${l}</button>`;
+ const ov=t.overview?`${tableHTML({cap:"Карта сквозного трека: каждая версия — отдельный паттерн",head:["Версия","Урок","Что добавляется","Роль"],rows:TRACK.map(x=>[x.to,"урок "+x.n,x.add,x.role])})}${tableHTML({cap:"Финал (урок 28): восемь тактов из сохранённых версий",head:["Такты","Версия"],rows:[["1–2","2-01 интро"],["3–4","2-02 грув"],["5–6","2-03 с басом"],["7","2-05 сбивка"],["8","2-02 грув"]]})}<p class="small">Поэтому сохраняй каждую версию в свою ячейку, даже простое интро: в финале ты будешь переключать их вживую.</p>`:"";
+ return `<div class="seq ear trk" id="trk_${id}"><div class="seq-head"><h4>Сквозной трек · ${t.to} · ${esc(t.role)}</h4>${has?`<span class="ctl"><span>96 BPM</span>${t.A?btn("A","До"):""}${btn("B","После")}</span>`:""}</div>
+ ${ov}<p><b>Начни с:</b> ${t.from?`версии ${t.from}`:"пустого паттерна"}. <b>Добавь:</b> ${esc(t.add[0].toLowerCase()+t.add.slice(1))}. <b>Сохрани в:</b> ${t.to}.</p>
+ <p>${fmt(t.do)}${t.from&&t.from!==t.to&&t.n!=="04"?" "+fmt(TKCOPY):""} ${fmt(TKSAVE)}</p>
+ ${has?gridHTML(gridState[`trk_${id}_g`],`trk_${id}_g`):""}
+ <p class="small"><b>Проверка на слух.</b> ${esc(t.ear)}</p></div>`}
 /* ---------------- TALLY (+/− per bar, two series) ---------------- */
 const TALLY={};
 function tallyHTML(key){const T=TALLY[key]||(TALLY[key]=[Array(8).fill(0),Array(8).fill(0)]);const sym=["·","+","−"],say=["не отмечен","хлопок был","хлопка не было"];
@@ -1527,7 +1564,7 @@ const EARS={
    B:[{n:"Хэт",pad:"",k:"hat",s:R(1,15,2),sub:{[x]:2}},{n:"Снейр",pad:"",k:"snare",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
    p6:`Собери A: хэт на шагах 1, 3, 5 … 15, снейр на 5 и 13, бочка на 1, 5, 9, 13. Выбери пэд хэта, держи шаг ${x} и нажимай [GRANULAR] до последнего пункта по кругу — сабстепа. Не отпуская шаг, крути [TEMPO/VALUE], пока шаг не разделится на две части. Потом убери дробь и поставь её на другой шаг: послушай, как меняется грув. Ещё один пример с дробями — сетка «Вероятность и сабстепы» в начале урока.`}))}
 };const earState={};
-function earBtns(){document.querySelectorAll("[data-earv]").forEach(b=>{const on=(seqNext||seqPlaying)===b.dataset.earv;b.setAttribute("aria-pressed",on);b.classList.toggle("primary",on);b.textContent=(on?"■ ":"▶ ")+b.dataset.earv.slice(-1)})}
+function earBtns(){document.querySelectorAll("[data-earv]").forEach(b=>{const on=(seqNext||seqPlaying)===b.dataset.earv;b.setAttribute("aria-pressed",on);b.classList.toggle("primary",on);b.textContent=(on?"■ ":"▶ ")+(b.dataset.lbl||b.dataset.earv.slice(-1))})}
 function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math.floor(Math.random()*E.vars.length),ans:null,show:false}),V=E.vars[st.v];
  gridState[`ear_${eid}_A`]={bpm:E.bpm,rows:E.A,loop:16};gridState[`ear_${eid}_B`]={bpm:E.bpm,rows:V.B,loop:16};
  const opts=E.pick==="step"?R(1,16).map(i=>`<button type="button" class="btn" data-earans="${eid}" data-a="${i}" aria-pressed="${st.ans===i}" aria-label="Шаг ${i}">${i}</button>`).join("")
@@ -1572,7 +1609,7 @@ const LINKS={
  manual:["Руководство Roland P-6","https://static.roland.com/manuals/p-6/en-US/index.html","Официальное онлайн-руководство, источник всех нажатий в гайде."],
  factory:["Заводские сэмплы и паттерны","https://www.roland.com/global/support/by_product/p-6/updates_drivers/e56e996e-88d3-4132-a778-d399ed68901b/","Архив Roland, чтобы вернуть заводские звуки после сброса."],
  ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
-function tableHTML(t){return `<div class="tablewrap"><table><caption class="small" style="text-align:left;padding-bottom:4px">${esc(t.cap)}</caption><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${fmt(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
+function tableHTML(t){return `<div class="tablewrap"><table><caption class="small" style="text-align:left;padding-bottom:4px">${esc(relabel(t.cap))}</caption><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${fmt(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
 function extBox(x){const r=x.filter(e=>e[2]==="roland"),c=x.filter(e=>e[2]==="com");const a=e=>`<a href="${e[1]}" target="_blank" rel="noopener">${esc(e[0])} <span aria-hidden="true">↗</span></a>`;
   return `<div class="box"><h4>Не из руководства</h4>${r.length?`<p class="small">Справка Roland: ${r.map(a).join(", ")}.</p>`:""}${c.length?`<p class="small">Совет с форума Elektronauts, проверь на своём приборе: ${c.map(a).join(", ")}.</p>`:""}</div>`}
 const LESSON_LINKS={"23":["freesound","pixabay","n99","akwf","audacity","digichain","sampletool"],"19":["digichain","audacity","sampletool"],"16":["akwf","digichain"],"14":["sampletool","factory"],"00":["factory"],"27":["factory"],"22":["ableton"]};
@@ -1604,7 +1641,7 @@ ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>${l.table?tableHTML(l.table):""}
 <div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
-${l.ear?l.ear.map(earHTML).join(""):""}${l.diag?l.diag.map(diagHTML).join(""):""}
+${TRACK.filter(t=>t.n===l.n).map(trkHTML).join("")}${l.ear?l.ear.map(earHTML).join(""):""}${l.diag?l.diag.map(diagHTML).join(""):""}
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
 ${l.ext?extBox(l.ext):""}
