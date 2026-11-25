@@ -55,6 +55,8 @@ Every button press is checked against the official Roland P-6 online manual (sys
 - Official Roland P-6 online manual (Ver. 1.02), read in full; source for all presses.
 - Roland factory sample and pattern archive, analysed to map kicks, snares and hats per bank (lesson 04 table).
 - Subtitles of 31 YouTube tutorials (Russian and English) and a notes digest, used for marked techniques and timestamped links.
+- Roland support knowledge-base articles on the P-6 (firmware update, factory restore, quantize, per-step limits, troubleshooting) and Roland's «Getting to Know P-6» article; used for troubleshooting and marked with their source.
+- Community tips from the Elektronauts P-6 thread and the Sound On Sound review; shown only in a separate, clearly labelled «Советы сообщества» block with links.
 - The author's own photo of the P-6 panel, used for the panel layout and step-key mapping.
 - No testimonials, user counts or reviews exist; do not fabricate them.
 
