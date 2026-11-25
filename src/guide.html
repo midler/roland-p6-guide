@@ -309,7 +309,7 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 .focusmode .lbody>.nextles,.focusmode .lbody>.donecard{display:none}
 .srcs ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .srcs li{line-height:var(--lh-ui)}
-.srcs a{display:inline-block;padding-block:3px}
+.srcs a{padding-block:3px}
 /* harden pass: reset zone, undo, code errors */
 .resetzone{display:grid;gap:10px;justify-items:start;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
 .btn.quiet{background:transparent;border-color:transparent;color:var(--muted);padding-inline:0}
@@ -325,7 +325,7 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 kbd{font-size:max(.78em,12px)}
 .lcd{font-size:max(.84em,12px)}
 /* clarify pass: inline terms */
-.term{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:help;text-decoration:underline dashed;text-decoration-color:var(--muted);text-underline-offset:3px}
+.term{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;margin:-4px -2px;cursor:help;text-decoration:underline dashed;text-decoration-color:var(--muted);text-underline-offset:3px}
 .term[aria-expanded="true"]{text-decoration-color:var(--accent)}
 .termlook{cursor:default;align-self:center}
 .termdef{display:block;margin:6px 0 8px;padding:8px 12px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);font-size:var(--fs-sm);line-height:var(--lh-text);color:var(--ink);font-weight:400;letter-spacing:0;text-transform:none;font-family:var(--f-body)}
@@ -342,6 +342,20 @@ kbd{font-size:max(.78em,12px)}
 
 
 
+
+/* final pass: chevrons, filters row, offline note, returning start */
+.dev2 .lab{font-size:max(calc(.95cqw*var(--k,1)),11px)}
+@media (min-width:561px){.dev2 .el{font-size:max(calc(1.25cqw*var(--k,1)),11px)}.dev2 .el.sm{font-size:max(calc(.95cqw*var(--k,1)),10px)}}
+#v-videos .card p,#v-about .card p{max-width:68ch}
+.lesson>summary{position:relative;padding-right:40px}
+.lesson>summary::after{content:"";position:absolute;right:16px;top:50%;width:.5em;height:.5em;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);transition:transform .15s ease}
+.lesson[open]>summary::after{transform:translateY(-30%) rotate(225deg)}
+@media (max-width:560px){.lesson>summary{padding-right:28px}.lesson>summary::after{right:4px}
+ .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+ .filters .btn{flex:none}
+ body.returning[data-view="start"] .hero .lede{display:none}}
+.offnote{margin:0;padding:10px 14px;border:1px solid var(--warn);border-radius:10px;background:color-mix(in srgb,var(--warn) 8%,var(--surface));font-size:var(--fs-sm)}
+@media (prefers-reduced-motion:reduce){.lesson>summary::after{transition:none}}
 /* polish pass 3: phones keep notebook rows, not cards */
 @media (max-width:560px){
  .fork .branch,.othergrid .branch{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 0 14px}
@@ -385,7 +399,7 @@ nav.tabs svg{display:none}
 .ch .seq{background:transparent;border:0;padding:0}
 .devwrap.split{display:grid;gap:8px;overflow:visible}
 .devwrap.split .dev2{min-width:0}
-.devwrap.split .dev2 .lab{font-size:max(calc(.95cqw*var(--k,1)),9px);letter-spacing:-.03em}
+.devwrap.split .dev2 .lab{font-size:max(calc(.95cqw*var(--k,1)),10px);letter-spacing:-.03em}
 .devwrap.split .dev2 .el{font-size:max(calc(1.25cqw*var(--k,1)),9px)}
 .devwrap.split .dev2 .el.pad{font-size:calc(2.6cqw*var(--k,1))}
 .devwrap.split .dev2 .el.disp{font-size:calc(3cqw*var(--k,1))}
@@ -543,11 +557,12 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
     <div><button class="btn primary" id="roll" type="button">Бросить кубики</button></div>
   </div>
   <div class="filters" id="chFilters" role="group" aria-label="Фильтр заданий"></div>
+  <p class="small muted" id="chCount" aria-live="polite"></p>
   <div class="grid2" id="chList"></div>
 </section>
 
 <section class="view" id="v-cheats" hidden>
-  <div class="levelhead"><h2>Шпаргалка</h2></div>
+  <h2 class="vh">Шпаргалка</h2>
   <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, chop…" aria-label="Поиск по шпаргалке">
   <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
 </section>
@@ -579,6 +594,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 </section>
 
 <section class="view" id="v-videos" hidden>
+  <p class="offnote" id="offNote" role="status" hidden>Сейчас нет сети. Ролики откроются, когда она появится, а уроки, панель и шпаргалка работают и без неё.</p>
   <div class="card">
     <h2>Видео и источники</h2>
     <p class="muted small" style="margin-top:6px">Ссылки на подходящие ролики есть и внизу каждого урока. Ролики привязаны к урокам по расшифровкам их субтитров. Внутри уроков есть ссылки сразу на нужную минуту. Нажатия в старых видео могут отличаться, если прошивка старше 1.02. Сверяй со шпаргалкой.</p>
@@ -1289,9 +1305,9 @@ function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l)
 function earlierNote(r){const base=SECTIONS[0],idx=base.order.indexOf(r.l.n),upto=idx<0?base.order.length:idx;
  const e=base.order.slice(0,upto).map(lessonByN).find(l=>l&&doneCnt(l)<act(l).length);if(!e)return "";const i=act(e).find(k=>!done[e.n+"-"+k]);
  return `<p class="also">В уроке ${lbl(e.n)} остались шаги: <a href="#lessons" data-open="${e.n}" data-step="${i}">вернуться к ним <span aria-hidden="true">→</span></a></p>`}
-function renderResume(){const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
+function renderResume(){document.body.classList.toggle("returning",Object.keys(done).length>0);const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
- :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Урок занимает одно-два занятия по 30 минут. Прибор держи под рукой.</p>`
+ :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Первый урок на 15 минут: сохраняем заводские звуки, чтобы дальше смело экспериментировать. Прибор держи под рукой.</p>`
  :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a>${earlierNote(r)}<p>${progressLine()}</p>`;
  const s=document.getElementById("resumeStart");if(s)s.innerHTML=html;const l=document.getElementById("resumeLessons");if(l)l.innerHTML=html.replace(/<p>[^<]*<\/p>$/,"")}
 function progressLine(){const total=lessons.reduce((a,l)=>a+act(l).length,0),n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
@@ -1445,7 +1461,8 @@ function renderChallenges(){
   f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
   document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch${CH_GRIDS[c.t]?" wide":""}"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
-  document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone)});
+  const cnt=()=>{const n=Object.keys(chDone).filter(k=>challenges[k]).length;document.getElementById("chCount").textContent=`Сделано заданий: ${n} из ${challenges.length}`};cnt();
+  document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone);cnt()});
 }
 
 /* ---------------- TERMS: tap a dashed word to see what it means ---------------- */
@@ -1548,8 +1565,10 @@ const cheats=[
  ["MIDI-каналы 15 / 11 / 4 / 16","Нотами выбранного пэда / все 48 пэдов / гранулярный пэд / смена паттернов","20"]
 ];
 function renderCheats(q){
-  q=(q||"").toLowerCase().trim();
-  const rows=cheats.filter(r=>!q||r.join(" ").toLowerCase().includes(q));
+  const N=t=>t.toLowerCase().replace(/ё/g,"е");q=N(q||"").trim();
+  const SYN={свинг:["shuffle","шаффл"],шаффл:["shuffle","свинг"],shuffle:["свинг","шаффл"],копир:["copy"],copy:["копир"],сохран:["write"],write:["сохран"],удал:["delete","clear","стер"],стер:["clear","delete","удал"],метроном:["mtro","m.ply"],темп:["tempo","bpm"],эффект:["mfx","fx"],нарез:["chop"],chop:["нарез"],запис:["rec","●","sampl"],громк:["level","vol"],откат:["rl."],паттерн:["ptn","pattern"]};
+  const words=q.split(/\s+/).filter(Boolean).map(w=>{const st=w.length>5?w.slice(0,w.length-2):w;const k=Object.keys(SYN).find(x=>st.startsWith(x)||x.startsWith(st));return [st,...(k?SYN[k]:[])]});
+  const rows=cheats.filter(r=>{if(!words.length)return true;const t=N(r.join(" "));return words.every(alts=>alts.some(a=>t.includes(a)))});
   document.getElementById("cheatBody").innerHTML=rows.length?rows.map(r=>`<tr><td>${fmt(r[0])}</td><td>${fmt(r[1])}</td><td><a href="#lessons" data-open="${r[2]}">${lbl(r[2])}</a></td></tr>`).join(""):`<tr><td colspan="3" class="muted">Ничего не нашлось. Попробуй другое слово: «запись», «копир», «эффект».</td></tr>`;
   bindOpenLinks(document.getElementById("cheatBody"));
 }
@@ -1599,7 +1618,7 @@ const vidGroups=[
   ["Официальное руководство Roland P-6 (онлайн)","https://static.roland.com/manuals/p-6/en-US/index.html","Первоисточник всех нажатий в этом гайде. Версия 1.02.",[]]]}
 ];
 const allVids=vidGroups.flatMap(g=>g.items);
-document.getElementById("vidList").innerHTML=`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("")+vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("");
+document.getElementById("vidList").innerHTML=vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("")+`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("");
 
 const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Рецепты","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Задания и кубики — когда хочется просто поиграть."]];
 document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
@@ -1633,7 +1652,7 @@ const RECIPES=[
 ];
 function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES.map((r,ri)=>{
  const id="rc_"+r.id;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(r.grid));
- return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)}</span></div>
+ return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)} в жанре</span></div>
  <p>${esc(relabel(r.mood))}</p><p class="small"><b>Послушать на приборе:</b> ${esc(relabel(r.ex))}</p>
  ${gridHTML(gridState[id],id)}
  <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(relabel(r.pads))}</p></div>
@@ -1666,6 +1685,8 @@ function openLesson(n,step){const o=store.get("p6open",[]);if(!o.includes(n))o.p
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-open]");if(a){e.preventDefault();openLesson(a.dataset.open,a.dataset.step!=null?+a.dataset.step:null);return}
  const sc=e.target.closest("a[data-scroll]");if(sc){e.preventDefault();const h=sc.getAttribute("href");const go=()=>{const t=document.getElementById(sc.dataset.scroll);if(t)t.scrollIntoView({block:"start"})};if(location.hash!==h){location.hash=h;setTimeout(go,80)}else go()}});
 
+function netNote(){const n=document.getElementById("offNote");if(n)n.hidden=navigator.onLine!==false}
+addEventListener("online",netNote);addEventListener("offline",netNote);netNote();
 /* keyboard: step mode and Escape */
 document.addEventListener("keydown",e=>{
  if(e.key==="Escape"){const d=document.getElementById("detail");
