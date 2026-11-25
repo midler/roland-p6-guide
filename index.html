@@ -85,20 +85,19 @@ kbd .fn{opacity:.7;font-weight:500}
 .modes button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .devwrap{overflow-x:auto;border-radius:14px}
-.dev2{position:relative;aspect-ratio:2000/1080;min-width:640px;background:#1c1e22;border-radius:14px;container-type:inline-size;color:#d7dbe1;font-family:var(--f-mono)}
+.dev2{--lit:#5fb7cf;--lit-ink:#0d1316;position:relative;aspect-ratio:2000/1080;min-width:640px;background:#1c1e22;border-radius:14px;container-type:inline-size;color:#d7dbe1;font-family:var(--f-mono)}
 .dev2 .el{position:absolute;display:grid;place-items:center;border:1px solid #3c424b;background:#2a2e35;color:#eef0f3;border-radius:calc(.6cqw*var(--k,1));font-size:calc(1.25cqw*var(--k,1));font-weight:700;cursor:pointer;padding:0;line-height:1.05;text-align:center}
 .dev2 .el.key{background:#e9ebee;color:#202226;border-color:#9aa0a8}
 .dev2 .el.pad{background:#f2f3f5;color:#202226;font-size:calc(2.6cqw*var(--k,1));border-radius:calc(.8cqw*var(--k,1))}
 .dev2 .el.knob,.dev2 .el.round{border-radius:50%;background:#2f3338}
 .dev2 .el.knob{border:calc(.35cqw*var(--k,1)) solid #555b63}
-.dev2 .el.ctrlk{border-color:#c9b31d}
 .dev2 .el.jack{border-radius:50%;background:#111;border:calc(.3cqw*var(--k,1)) solid #444}
 .dev2 .el.disp{background:#140806;color:#ff5a36;font-size:calc(3cqw*var(--k,1));letter-spacing:calc(.3cqw*var(--k,1));border-color:#333;cursor:default}
 .dev2 .el.samp{border:calc(.4cqw*var(--k,1)) solid #d22;background:#e9ebee;color:#202226;font-size:calc(1.1cqw*var(--k,1))}
 .dev2 .el.sm{font-size:calc(.95cqw*var(--k,1));white-space:pre-line}
 .dev2 .el.dim{opacity:.25}
-.dev2 .el.hot{outline:calc(.35cqw*var(--k,1)) solid #ff6a45;outline-offset:calc(.1cqw*var(--k,1))}
-.dev2 .el[aria-pressed="true"]{outline:calc(.45cqw*var(--k,1)) solid var(--accent);outline-offset:calc(.2cqw*var(--k,1))}
+.dev2 .el.hot{outline:calc(.3cqw*var(--k,1)) solid var(--lit);outline-offset:calc(.15cqw*var(--k,1))}
+.dev2 .el[aria-pressed="true"]{outline:calc(.55cqw*var(--k,1)) solid var(--lit);outline-offset:calc(.3cqw*var(--k,1))}
 .dev2 .lab{position:absolute;font-size:calc(.95cqw*var(--k,1));color:#b9c0ca;text-align:center;white-space:nowrap;transform:translateX(-50%);pointer-events:none;letter-spacing:.02em}
 .dev2 .lab.sec{color:#8f98a5}
 .dev2 .lab.big{font-size:calc(1.3cqw*var(--k,1));color:#e6e9ee;font-weight:700}
@@ -112,9 +111,9 @@ kbd .fn{opacity:.7;font-weight:500}
 .ctrl.pad{min-width:58px;padding:14px 8px;background:#30353d}
 .ctrl small{display:block;font-weight:500;color:#9aa3b2;font-size:var(--fs-xs)}
 .ctrl.dim{opacity:.28}
-.ctrl.hot{border-color:#ff6a45;box-shadow:0 0 0 1px #ff6a45 inset}
-.ctrl[aria-pressed="true"]{background:#ff6a45;color:#140806;border-color:#ff6a45}
-.ctrl[aria-pressed="true"] small{color:#3a130b}
+.ctrl.hot{border-color:#5fb7cf;box-shadow:0 0 0 1px #5fb7cf inset}
+.ctrl[aria-pressed="true"]{background:#5fb7cf;color:#0d1316;border-color:#5fb7cf}
+.ctrl[aria-pressed="true"] small{color:#1d3540}
 .toprow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .detail{min-height:120px}
 .detail ul{margin:8px 0 0;padding-left:18px;display:grid;gap:6px}
@@ -188,7 +187,7 @@ td:first-child{white-space:normal;min-width:190px}
 .cell.on.prob{background:var(--accent-soft);border-color:var(--accent)}.cell.on.prob .tag{color:var(--ink)}
 .cell.ro{cursor:default}
 .cell.off{opacity:.18;cursor:default}
-.cell.now{outline:2px solid var(--lcd-ink);outline-offset:1px}
+.cell.now{outline:2px solid var(--ink);outline-offset:1px}
 .seq-note{font-size:var(--fs-xs);color:var(--muted)}
 .secdesc{color:var(--muted);font-size:var(--fs-sm);margin:-4px 0 4px}
 ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4px;padding-top:10px;font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding-top:6px;grid-template-columns:none}
@@ -357,6 +356,7 @@ details.ptools>summary::after{content:"";width:.45em;height:.45em;border-right:2
 details.ptools[open]>summary::after{transform:rotate(225deg)}
 details.ptools>div{display:grid;gap:10px;padding-top:4px}
 .modes .more{border-style:dashed}
+.modehint{flex-basis:100%;margin:2px 0 0}
 body:not([data-view="start"]) .hero{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding-block:14px 12px}
 body:not([data-view="start"]) .hero .meta,body:not([data-view="start"]) .hero .lede{display:none}
 body:not([data-view="start"]) .hero h1{font-size:var(--fs-lg)}
@@ -966,7 +966,7 @@ let curMode="none", curCtrl=null, allModes=false;
 function renderModes(){
   const box=document.getElementById("modes");
   const all=allModes||modes.findIndex(m=>m[0]===curMode)>3;
-  box.innerHTML=(all?modes:modes.slice(0,4)).map(([id,l])=>`<button type="button" data-m="${id}" aria-pressed="${id===curMode}">${l}</button>`).join("")+(all?"":`<button type="button" class="more" data-more="1">Ещё: MFX, SAMPLING, при включении</button>`);
+  box.innerHTML=(all?modes:modes.slice(0,4)).map(([id,l])=>`<button type="button" data-m="${id}" aria-pressed="${id===curMode}">${l}</button>`).join("")+(all?"":`<button type="button" class="more" data-more="1">Ещё: MFX, SAMPLING, при включении</button>`)+(curMode!=="none"?`<p class="small muted modehint">В бирюзовой рамке органы, у которых есть функция в этом режиме. Остальные притушены.</p>`:"");
   box.querySelectorAll("button[data-m]").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl)});
   const mb=box.querySelector("[data-more]");if(mb)mb.onclick=()=>{allModes=true;renderModes();const f=box.querySelector('[data-m="mfx"]');if(f)f.focus()};
 }
