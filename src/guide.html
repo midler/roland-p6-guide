@@ -195,6 +195,7 @@ th{font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;let
 .earopts .btn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .earfb{font-weight:600}.earfb.ok{color:var(--done)}.earfb.no{color:var(--warn)}
 .earrow{display:flex;flex-wrap:wrap;gap:6px}
+.drill{margin:8px 0;padding-left:1.4em;display:grid;gap:6px}
 .seq-note{font-size:var(--fs-xs);color:var(--muted)}
 .secdesc{color:var(--muted);font-size:var(--fs-sm);margin:-4px 0 4px}
 ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4px;padding-top:10px;font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding-top:6px;grid-template-columns:none}
@@ -846,7 +847,7 @@ const lessons=[
  "Для ресемплинга не нужен особый режим: P-6 всегда слышит собственный звук. После записи петли включи на пэде [LOOP], и она зациклится ровно по длине."],
  check:"На пэде лежит петля из твоего же паттерна, и поверх неё можно играть дальше.",
  task:"«Матрёшка»: ресемплируй бит, пропусти через эффект, ресемплируй снова — три круга, пока звук не станет неузнаваемым."},
-{n:"11",tc:[["OgHoQyyOL1o", "15:03", "Chop и step sampling (Roland)"], ["FKXzYbeyAwI", "01:06", "Step sampling с порогом (SPVIDZ)"], ["MF4EohXfTEo", "00:41", "Chop"], ["NFZsxg4q75Y", "20:28", "Выключить Chop и играть одним звуком"]],lv:"L3",t:"Нарезка: step sampling и Chop",time:"45 мин",page:"112489355114020747",
+{n:"11",tc:[["OgHoQyyOL1o", "15:03", "Chop и step sampling (Roland)"], ["FKXzYbeyAwI", "01:06", "Step sampling с порогом (SPVIDZ)"], ["MF4EohXfTEo", "00:41", "Chop"], ["NFZsxg4q75Y", "20:28", "Выключить Chop и играть одним звуком"], ["bqO9pEgdo_c", "02:03", "Проверка нарезки на двух срезах (Jay Maculate)"]],lv:"L3",t:"Нарезка: step sampling и Chop",time:"45 мин",page:"112489355114020747",
  goal:"Положить много кусочков на один пэд и играть их с клавиатуры.",
  steps:[
  "Step sampling: в режиме [SAMPLING] держи [SHIFT] и крути [PITCH] → ⟨S. 8⟩ (2–64 кусочка). [START] задаёт длину одного кусочка.",
@@ -859,7 +860,18 @@ const lessons=[
  "Нужен один звук из нарезки, чтобы играть им по нотам? Поставь ⟨ChoP⟩ → ⟨OFF⟩, выдели звук ручками [START] и [END] и включи [KYBD]. Число кусочков запомни, его легко забыть: удобно писать его в имени файла.",
  "Chop делит строго поровну, а сдвиг [START] или [END] двигает границы всех кусочков сразу. Звуки разной длины перед загрузкой разложи на равные отрезки (урок 19)."],
  check:"Одна фраза или петля разрезана, и ты переставляешь кусочки клавишами.",
- task:"«Перепиши фразу»: скажи в микрофон предложение, нарежь на 8 частей и собери новое — смешное или бессмысленное."},
+ task:"«Перепиши фразу»: скажи в микрофон предложение, нарежь на 8 частей и собери новое — смешное или бессмысленное.",
+ drill:{t:"Поменяй слоги местами",goal:"Из одной записи голоса собрать две фразы и на слух проверить, точно ли нарезаны слоги. Нужен только P-6 со встроенным микрофоном.",
+  steps:[
+  "Метроном: держи [PATTERN] + [●] → ⟨M.PLY⟩. Поставь темп 80 ([TEMPO/VALUE]) и нажми [▶]. Повторяй под щелчки «та — ка — ти — ки», по слогу на щелчок, пока не станет ровно.",
+  "Запись: освободи пэд (урок 09), нажми [SAMPLING], поставь [START] → ⟨FREE⟩ и [END] → ⟨t.OFF⟩, нажми пустой пэд. Нажми [SAMPLING], произнеси четыре слога под щелчки и снова нажми [SAMPLING]. Дождись ⟨donE⟩.",
+  "Подгони запись под такт: ручкой [START] убери тишину перед «та», ручкой [END] — хвост после «ки». Промежутки между слогами должны остаться равными.",
+  "Проверка на двух половинах: [SHIFT] + [G · VOICE] → ⟨ChoP⟩ → [C♯ · ENTER] → [TEMPO/VALUE] до 2 → [C · EXIT] дважды. Нажми [KYBD] и сыграй [C] и [C♯]: вторая половина должна начинаться ровно с «ти».",
+  "Слышен хвост «ка» или пропала согласная у «ти»? Подвинь [START] или [END] (границы всех кусочков двигаются вместе) и послушай половины снова. Не выходит — перезапиши, произнося ровнее.",
+  "Нарежь на четыре: тем же путём поставь ⟨ChoP⟩ → 4. Кусочки сядут на клавиши [C] «та», [C♯] «ка», [D] «ти», [D♯] «ки». Сыграй их по одному.",
+  "Схема на два такта в пустом паттерне (урок 04): длина 32 шага — [SHIFT] + [D♯ · LAST] → 32 → [C · EXIT]. Впиши ноты (урок 07). Такт 1, шаги 1, 5, 9, 13: [C] [C♯] [D] [D♯] — «та — ка — ти — ки». Такт 2, шаги 17, 21, 25, 29: [C] [D] [C♯] [D♯] — «та — ти — ка — ки». Шаги 17–32 открывает [SHIFT] + [F · PAGE▶].",
+  "Выключи метроном (держи [PATTERN] и нажми [●], на дисплее ⟨M.OFF⟩), нажми [▶] и слушай оба такта подряд. Темп и длительности одинаковые, поменялся только порядок слогов."],
+  check:"В двух тактах подряд слышно, как «ка» и «ти» поменялись местами, и каждый слог начинается со своей согласной."}},
 {n:"12",tc:[["Z-i_7HeJrfw", "11:24", "G.Ky.F = 0 для аккордов (Sunwarper)"], ["veNheHzqi8Y", "30:38", "Все параметры гранул (Vladislav CREW)"], ["OgHoQyyOL1o", "21:01", "Granular (Roland)"]],lv:"L3",t:"Гранулярный пэд",time:"45 мин",page:"124689675124716299",
  goal:"Превращать короткий звук в текстуры, пэды и дроны.",
  steps:[
@@ -1487,6 +1499,7 @@ ${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
+${l.drill?`<div class="box task"><h4>Упражнение · ${esc(l.drill.t)}</h4><p>${fmt(l.drill.goal)}</p><ol class="drill">${l.drill.steps.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol><p><b>Самопроверка.</b> ${fmt(l.drill.check)}</p></div>`:""}
 <div class="box srcs"><h4>Источники</h4><ul class="small"><li><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a></li>${allVids.filter(v=>v[3].includes(l.n)).map(v=>`<li><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></div>
 </div>
 ${complete?doneHTML(l):nextHTML(l)}
