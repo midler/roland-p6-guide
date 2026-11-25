@@ -1157,7 +1157,7 @@ const lessons=[
  "Шаг — это шестнадцатая нота: четыре шага на счёт. Каждый второй шаг (1, 3, 5…) — восьмые: «раз-и-два-и». Смотри сетку выше и послушай разницу.",
  "Сильные доли — «раз» и «три» (шаги 1 и 9): там обычно бочка. Слабые — «два» и «четыре» (шаги 5 и 13): там снейр. Это основа почти любого бита.",
  "Свинг сдвигает каждую вторую шестнадцатую чуть позже, и бит начинает «качаться». На P-6 это SHUFFLE (урок 04).",
- "Триоли — три удара на счёт вместо двух или четырёх. На P-6 размер шага ⟨16t⟩ (держи [PATTERN] + крути [TEMPO/VALUE]): тогда 12 шагов — один такт.",
+ "Триоли — три удара на счёт вместо двух или четырёх. На P-6 размер шага ⟨8t⟩ (держи [PATTERN] + крути [TEMPO/VALUE]): три шага на счёт, и 12 шагов — один такт. При ⟨16t⟩ на счёт приходится шесть шагов, и такт занимает 24 шага.",
  "Больше одного такта: 32 шага дают 2 такта, 64 шага дают 4 такта (урок 06)."],
  check:"Ты считаешь такт вслух под метроном и знаешь, на какие шаги ставить бочку, снейр и хэт.",
  task:"Включи заводской паттерн и посчитай вслух: на какие счёты падает бочка, а на какие снейр?"},
@@ -1392,9 +1392,11 @@ function chordsHTML(list){return `<div class="box"><h4>Схемы аккордо
  const w=whites.map(n=>`<span class="w${on.has(n)?" on":""}"><span>${NOTE_N[n]}</span></span>`).join("");
  const b=blacks.map(n=>`<span class="bk${on.has(n)?" on":""}" style="left:calc(${bpos[n]}*100%/7 - 100%/7*.3);width:calc(100%/7*.6)"></span>`).join("");
  return `<div class="chord"><b>${esc(c[0])}</b><div class="piano">${w}${b}</div><span class="notes">${c[1].map(n=>NOTE_N[n]).join(" – ")}${c[2]?" · "+esc(c[2]):""}</span><button type="button" class="btn" data-chord="${c[1].join(",")}">▶ Послушать</button></div>`}).join("")}</div></div>`}
+const SPB={"1_8":2,"1_16":4,"1_32":8,"8t":3,"16t":6,"32t":12};
+function spb(g){return SPB[g.scale||"1_16"]}
 function gridHTML(g,id){
  const KN=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","O−","O+","TIE"];
- const bt=g.len===12?3:4;
+ const bt={3:3,6:6}[spb(g)]||4;
  const blk=(a,b)=>{const nums=R(a,b).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.slice(a-1,b).map((k,j)=>`<span class="num kn${j===b-a&&b===16?" end":""}">${k}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(a,b).map(i=>{
    if(g.len&&i>g.len)return `<span class="cell off${(i-1)%bt===0&&i>a?" q":""}" aria-hidden="true"></span>`;
@@ -1408,14 +1410,14 @@ function gridHTML(g,id){
    return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}${on&&p?", вероятность "+p+"%":""}${on&&sb?", дробь ×"+sb:""}${on&&mt?", сдвиг "+(mt>0?"позже":"раньше")+" на "+Math.round(Math.abs(mt)*100)+"% шага":""}">${inner}${tag}</button>`}).join("")).join("");
  return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
  const split=typeof PHONE!=="undefined"&&PHONE.matches;
- return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
+ return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM${g.scale&&g.scale!=="1_16"?" · шаг "+g.scale:""}</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
  <div class="seq-wrap${split?" split":""}">${split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
 let seqNext=null;
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;seqNext=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null;earBtns()}
 function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
- if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;let g=gridState[id];const stepDur=60/g.bpm/4;let step=0,next=c.currentTime+.05,bars=0;
+ if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;let g=gridState[id];const stepDur=60/g.bpm/spb(g);let step=0,next=c.currentTime+.05,bars=0;
  {const pb=document.querySelector(`[data-play="${id}"]`);if(pb){pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}}earBtns()
  seqTimer=setInterval(()=>{while(next<c.currentTime+.12){if(step===0&&seqNext){id=seqNext;seqNext=null;g=gridState[id];seqPlaying=id;bars=0;earBtns()}const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
   g.rows.forEach((r,ri)=>{
@@ -1743,7 +1745,7 @@ const CH_GRIDS={
  "Бит без барабанов":{t:"Ритм из тональных звуков",bpm:96,note:"Короткие ноты и аккорды вместо ударных: GATE включена, END короткий.",rows:[
    {n:"Стаб",pad:"аккорд",k:"tone",vol:.7,bars:[[[1,1,[60,64,69],"Am"],[4,1,[60,64,69]],[7,1,[60,64,69]],[11,1,[60,65,69],"F"],[14,1,[60,65,69]]]]},
    {n:"Бас",pad:"нота",k:"tone",vol:1,bars:[[[1,2,45,"A"],[9,2,41,"F"]]]}]},
- "Нечётная петля":{t:"12 шагов в триолях",bpm:90,len:12,note:"Длина 12 шагов и размер шага 16t: в каждом счёте три шага вместо четырёх, бит «катится». Шаги 13–16 выключены.",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:R(1,12),v:{2:.4,3:.6,5:.4,6:.6,8:.4,9:.6,11:.4,12:.6}},{n:"Снейр",pad:"F-4",k:"snare",s:[4,10]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,7,9]}]},
+ "Нечётная петля":{t:"12 шагов в триолях",bpm:90,len:12,scale:"8t",note:"Длина 12 шагов и размер шага 8t: в каждом счёте три шага вместо четырёх, бит «катится». Шаги 13–16 выключены.",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:R(1,12),v:{2:.4,3:.6,5:.4,6:.6,8:.4,9:.6,11:.4,12:.6}},{n:"Снейр",pad:"F-4",k:"snare",s:[4,10]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,7,9]}]},
  "Никогда не повторяйся":{t:"Бит с вероятностями",bpm:94,note:"Бледные клетки звучат не каждый раз. Нажми «Слушать» несколько раз подряд.",rows:[{n:"Хэт",pad:"F-2",k:"hat",s:R(1,16),p:{2:50,4:70,6:40,8:70,10:50,12:70,14:40,16:60}},{n:"Призрак",pad:"F-4",k:"snare",s:[8,15],v:{8:.35,15:.35},p:{8:30,15:50}},{n:"Снейр",pad:"F-4",k:"snare",s:[5,13]},{n:"Бочка",pad:"F-1",k:"kick",s:[1,11],p:{11:60}}]},
  "Бит из кухни":{t:"Кухонный бит",bpm:90,note:"Подставь свои звуки: что гулко — в бочку, что звонко — в хэт, что хлёстко — в снейр.",rows:[{n:"Ложка",pad:"пэд 3",k:"hat",s:R(1,15,2)},{n:"Пачка",pad:"пэд 2",k:"snare",s:[5,13]},{n:"Чашка",pad:"пэд 4",k:"clap",s:[8,16],v:{8:.6,16:.6}},{n:"Крышка",pad:"пэд 1",k:"kick",s:[1,7,9]}]},
  "Голосовая драм-машина":{t:"Битбокс по шагам",bpm:88,note:"«Бум» — бочка, «к» — снейр, «ц» — хэт. Сначала отстучи ртом, потом набери.",rows:[{n:"«Ц»",pad:"пэд 3",k:"hat",s:[3,7,11,15]},{n:"«К»",pad:"пэд 2",k:"snare",s:[5,13]},{n:"«Бум»",pad:"пэд 1",k:"kick",s:[1,4,9,11]}]},
