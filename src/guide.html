@@ -697,7 +697,7 @@ const SECTIONS=[
  {id:"g-amb",genre:1,recipe:"ambient",name:"Жанр · Эмбиент",span:"по порядку",desc:"Пьеса на две минуты из записи места, голоса и редких нот. Как удержать внимание, когда событий мало.",order:["34","35","36","37"]},
  {id:"g-dnb",genre:1,recipe:"dnb",name:"Жанр · Драм-н-бейс",span:"по порядку",desc:"Двухшаговый бит на 172 BPM, ответ брейка, саб-бас и первый дроп — трек примерно на минуту.",order:["38","39","40","41"]},
  {id:"g-house",genre:1,name:"Жанр · Хаус",span:"по порядку",desc:"Минутный трек на 124 BPM: бочка на каждую долю, бас между ударами, короткий аккорд и форма на 32 такта.",order:["42","43","44"]},
- {id:"g-dub",genre:1,name:"Жанр · Даб",span:"по порядку",desc:"Сухой грув на 72 BPM и его даб-версия руками: эхо на одном ударе, партии уходят и возвращаются.",order:["45","46","47"]},
+ {id:"g-dub",genre:1,name:"Жанр · Даб",span:"по порядку",desc:"Сухой грув на 72 BPM и его даб-версия руками: эхо на одном ударе, партии уходят и возвращаются.",order:["45","46","47","57"]},
  {id:"g-ukg",genre:1,name:"Жанр · UK garage / 2-step",span:"по порядку",desc:"Двухтактовый грув на 132 BPM, где короткой вокальной фразе отвечает бас.",order:["48","49","50"]},
  {id:"g-min",genre:1,name:"Жанр · Минимал-техно",span:"по порядку",desc:"Один короткий мотив на 32 такта: подъём, пауза и возврат без новых звуков.",order:["51","52","53"]},
  {id:"g-disco",genre:1,name:"Жанр · Диско-фанк",span:"по порядку",desc:"Три варианта басового грува: как длина нот и затакт подводят к первой доле.",order:["54","55","56"]},
@@ -1099,6 +1099,29 @@ GENRE_LESSONS.push(
  "Сохрани в 4-04."],
  check:"Ты играешь четырёхтактовую фразу и показываешь, какой нотой подводишь слушателя к первой доле.",
  task:"Запиши четыре такта на телефон и дай послушать: где слушатель начинает кивать?"});
+const TW={house:[{n:"Перкуссия",pad:"",k:"clap",s:[]},{n:"Аккорд",pad:"",k:"tone",vol:.5,bars:[[[10,1,[57,60,64,67],"Am7"]]]},{n:"Бас",pad:"",k:"tone",vol:1,bars:[[[3,2,45,"A"],[7,2,45,"A"],[11,2,48,"C"],[15,2,43,"G"]]]},{n:"Хэт",pad:"",k:"hat",s:[3,7,11,15]},{n:"Снейр",pad:"",k:"snare",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
+ dub:[{n:"Перкуссия",pad:"",k:"clap",s:[16],echo:{t:3,fb:.6,n:5}},{n:"Аккорд",pad:"",k:"tone",vol:.45,bars:[[[3,1,[57,60,64],"Am"],[7,1,[57,60,64],"Am"],[11,1,[57,60,64],"Am"],[15,1,[57,60,64],"Am"]]]},{n:"Бас",pad:"",k:"tone",vol:1,bars:[[[1,3,45,"A"],[5,1,48,"C"],[7,2,52,"E"],[11,3,50,"D"]]]},{n:"Хэт",pad:"",k:"hat",s:R(1,15,2),v:{3:.6,7:.6,11:.6,15:.6}},{n:"Снейр",pad:"",k:"snare",s:[9]},{n:"Бочка",pad:"",k:"kick",s:[9]}]};
+const BLIND_EAR={t:"Слепое прослушивание: какой пример — хаус?",bpm:0,
+  intro:"Оба примера собраны из одних и тех же шести звуков. Какой из них какой — выпадает случайно.",
+  q:"Какой пример — хаус?",opts:["Пример A","Пример B"],
+  hint:"Слушай бочку: бьёт ли она на каждую долю и быстро ли идёт счёт.",
+  vars:[{ans:0,A:TW.house,bpmA:124,B:TW.dub,bpmB:72,gt:"B — даб по шагам",gnote:"Бочка и снейр только на третьей доле, бас занимает место, перкуссия на шаге 16 уходит в эхо.",hl:[16],hlr:0,why:"A — хаус: ровная бочка на каждую долю и хэт между ударами, 124 BPM. B — даб: медленно, бочка только на третьей доле, а в паузе звучит эхо."},
+        {ans:1,A:TW.dub,bpmA:72,B:TW.house,bpmB:124,gt:"B — хаус по шагам",gnote:"Бочка на каждую долю, хэт между ударами, бас между ударами бочки, перкуссии нет.",hl:[1,5,9,13],hlr:5,why:"B — хаус: ровная бочка на каждую долю и хэт между ударами, 124 BPM. A — даб: медленно, бочка только на третьей доле, а в паузе звучит эхо."}],
+  p6pre:"Сначала ответь на слух — здесь появится, как собрать обе версии на P-6.",
+  p6:"Собери обе версии по таблице пэдов этого урока в 4-10 (хаус, 124 BPM) и 4-11 (даб, 72 BPM): темп хранится в паттерне. Запиши их под названиями A и B и устрой такое же слепое прослушивание другу."};
+GENRE_LESSONS.push(
+{n:"57",lv:"L4",ear:["blind"],t:"Один набор звуков, два трека",time:"45 мин",page:"121803531122845323",
+ goal:"Собрать хаус и даб из одних и тех же шести сэмплов и проверить, узнаёт ли слушатель жанр.",
+ table:{cap:"Один набор: свободный банк, например H",head:["Пэд","Звук","Хаус (4-10)","Даб (4-11)"],rows:[["H-1","Бочка","1, 5, 9, 13","9"],["H-2","Снейр","5, 13","9"],["H-3","Хэт","3, 7, 11, 15","все нечётные, тише на 3, 7, 11, 15"],["H-4","Басовая нота","3, 7, 11, 15: A A C G","1, 5, 7, 11: A C E D"],["H-5","Аккорд","Am7 на 10","Am на 3, 7, 11, 15"],["H-6","Перкуссия","—","16, с посылом на дилей"]]},
+ steps:[
+ "Собери набор из шести звуков в свободный банк (урок 21): бочка, снейр, хэт, басовая нота, аккорд, короткая перкуссия. Карта пэдов — в таблице.",
+ "Хаус-версия в 4-10: темп 124, ровная бочка и хэт между долями, бас между ударами бочки, аккорд на шаге 10 (уроки 42–43).",
+ "Даб-версия в 4-11: темп 72, бочка и снейр на третьей доле, бас занимает место, перкуссия на шаге 16 с посылом на дилей (уроки 45–46).",
+ "Помни: настройки пэда общие для обоих паттернов (упражнение урока 21). Поэтому эхо дай перкуссии, которой нет в хаус-версии: посыл на дилей не испортит хаус.",
+ "Запиши обе версии на телефон под нейтральными названиями A и B.",
+ "Дай послушать другому человеку: пусть назовёт жанр, отметит момент, где узнал, и объяснит выбор через слышимый признак. Потом покажи разбор — сетки обеих версий."],
+ check:"У тебя две записи из одного набора, и слушатель различает их по слышимым признакам: бочке, темпу, эху.",
+ task:"Сделай третью версию из того же набора в любом другом жанре ветки."});
 const lessons=[
 {n:"00",lv:"L1",t:"Страховка: бэкап до экспериментов",time:"15 мин",page:"124639499124688139",
  goal:"Сохранить заводские сэмплы и паттерны на компьютер, чтобы смело удалять и перезаписывать.",
@@ -1868,9 +1891,9 @@ function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;g
 let seqNext=null;const MG={};
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;seqNext=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null;earBtns()}
 function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
- if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;let g=gridState[id];const stepDur=60/g.bpm/spb(g);let step=0,next=c.currentTime+.05,bars=0;
+ if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;let g=gridState[id];let stepDur=60/g.bpm/spb(g);let step=0,next=c.currentTime+.05,bars=0;
  {const pb=document.querySelector(`[data-play="${id}"]`);if(pb){pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}}earBtns()
- seqTimer=setInterval(()=>{while(next<c.currentTime+.12){if(step===0&&seqNext){id=seqNext;seqNext=null;g=gridState[id];seqPlaying=id;bars=0;earBtns()}const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
+ seqTimer=setInterval(()=>{while(next<c.currentTime+.12){if(step===0&&seqNext){id=seqNext;seqNext=null;g=gridState[id];stepDur=60/g.bpm/spb(g);seqPlaying=id;bars=0;earBtns()}const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
   g.rows.forEach((r,ri)=>{
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[bars%r.bars.length];bar.filter(x=>x[0]===i).forEach(x=>{if(x[4]&&Math.random()*100>x[4])return;(Array.isArray(x[2])?x[2]:[x[2]]).forEach(m=>tone(tn,x[1]*stepDur,m,r.vol||1,r.k))});return}
    if(!r.s.includes(i))return;
@@ -2021,18 +2044,18 @@ const EARS={
   vars:[{ans:1,hl:[3,6,9],hlr:0,why:"В B мелодия сдвинута на два шага: первая бочка звучит одна, а фраза вступает чуть позже и звучит с оттяжкой. В A мелодия вступает вместе с бочкой и звучит устойчиво.",
    B:[{n:"Мелодия",pad:"",k:"tone",bars:[[[3,1,69,"A"],[6,1,72,"C"],[9,1,76,"E"]]]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
    p6:"Собери A: бочка на шагах 1, 5, 9, 13, тональный пэд с нотами [A], [C], [E] на шагах 1, 4, 7 (ввод нот — шаги этого урока). Скопируй паттерн в свободную ячейку ([SHIFT] + [▶ · COPY] → ⟨Ptn⟩) и в копии перенеси ноты на шаги 3, 6, 9: сотри старые, впиши те же клавиши на новые шаги. Послушай обе версии по кругу и выбери вступление для своего трека."}]}
-};const earState={};
+};EARS.blind=BLIND_EAR;const earState={};
 function earBtns(){const L=id=>{const b=document.querySelector(`[data-earv="${id}"]`);return b?(b.dataset.lbl||id.slice(-1)):""};
  document.querySelectorAll("[data-earv]").forEach(b=>{const id=b.dataset.earv,lb=b.dataset.lbl||id.slice(-1),pl=seqPlaying===id,q=seqNext===id;b.setAttribute("aria-pressed",pl);b.classList.toggle("primary",pl);b.classList.toggle("queued",q);b.textContent=(pl?"♪ ":q?"→ ":"▶ ")+lb});
  document.querySelectorAll("[data-earstop]").forEach(x=>{const g=x.dataset.earstop,on=!!seqPlaying&&seqPlaying.startsWith(g);x.hidden=!on;const st=document.getElementById(g+"st");if(st)st.textContent=on?`Звучит ${L(seqPlaying)}`+(seqNext&&seqNext.startsWith(g)?`, с нового такта — ${L(seqNext)}`:""):""})}
 function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math.floor(Math.random()*E.vars.length),ans:null,show:false}),V=E.vars[st.v];
- gridState[`ear_${eid}_A`]={bpm:E.bpm,rows:E.A,loop:16};gridState[`ear_${eid}_B`]={bpm:E.bpm,rows:V.B,loop:16};
+ gridState[`ear_${eid}_A`]={bpm:V.bpmA||E.bpm,rows:V.A||E.A,loop:16};gridState[`ear_${eid}_B`]={bpm:V.bpmB||E.bpm,rows:V.B,loop:16};
  const opts=E.pick==="step"?R(1,16).map(i=>`<button type="button" class="btn" data-earans="${eid}" data-a="${i}" aria-pressed="${st.ans===i}" aria-label="Шаг ${i}">${i}</button>`).join("")
   :E.opts.map((o,i)=>`<button type="button" class="btn" data-earans="${eid}" data-a="${i}" aria-pressed="${st.ans===i}">${esc(o)}</button>`).join("");
  const ok=st.ans!=null&&st.ans===V.ans;
  const fb=st.ans==null?"":ok?`<p class="earfb ok">Верно. ${fmt(V.why)}</p>`:`<p class="earfb no">Пока нет. ${fmt(E.pick==="step"?`Двойной удар звучит ${st.ans<V.ans?"позже":"раньше"} шага ${st.ans}.`:E.hint)} Послушай A и B ещё раз.</p>`;
- if(st.show){gridState[`ear_${eid}_g`]={t:"Пример B по шагам",bpm:E.bpm,rows:JSON.parse(JSON.stringify(V.B)),hl:V.hl,hlr:V.hlr??0,note:"Рамкой отмечены шаги, которые отличаются от A."}}
- return `<div class="seq ear" id="ear_${eid}"><div class="seq-head"><h4>${esc(E.t)}</h4><span class="ctl"><span>${E.bpm} BPM</span>${["A","B"].map(v=>`<button type="button" class="btn" data-earv="ear_${eid}_${v}" aria-pressed="false" aria-label="Пример ${v}">▶ ${v}</button>`).join("")}<button type="button" class="btn" data-earstop="ear_${eid}_" hidden>■ Стоп</button></span></div><p class="small muted earstat" id="ear_${eid}_st" aria-live="polite"></p>
+ if(st.show){gridState[`ear_${eid}_g`]={t:V.gt||"Пример B по шагам",bpm:V.bpmB||E.bpm,rows:JSON.parse(JSON.stringify(V.B)),hl:V.hl,hlr:V.hlr??0,note:V.gnote||"Рамкой отмечены шаги, которые отличаются от A."}}
+ return `<div class="seq ear" id="ear_${eid}"><div class="seq-head"><h4>${esc(E.t)}</h4><span class="ctl">${E.bpm?`<span>${E.bpm} BPM</span>`:""}${["A","B"].map(v=>`<button type="button" class="btn" data-earv="ear_${eid}_${v}" aria-pressed="false" aria-label="Пример ${v}">▶ ${v}</button>`).join("")}<button type="button" class="btn" data-earstop="ear_${eid}_" hidden>■ Стоп</button></span></div><p class="small muted earstat" id="ear_${eid}_st" aria-live="polite"></p>
  <p class="small">${fmt(E.intro)} Включи A, потом выбери B прямо во время игры: текущий такт доиграет, и с первой доли следующего зазвучит B. Обратно — так же.</p>
  <p><b>${esc(E.q)}</b></p><div class="earopts${E.pick==="step"?" steps16":""}" role="group" aria-label="${esc(E.q)}">${opts}</div><div aria-live="polite">${fb}</div>
  <p class="earrow"><button type="button" class="btn" data-earshow="${eid}" aria-expanded="${st.show}">${st.show?"Скрыть шаги":"Показать шаги"}</button>${E.vars.length>1?`<button type="button" class="btn" data-earnew="${eid}">Другое задание</button>`:""}</p>
