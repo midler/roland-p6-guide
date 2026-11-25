@@ -302,6 +302,18 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 
 
 
+
+/* harden pass: reset zone, undo, code errors */
+.resetzone{display:grid;gap:10px;justify-items:start;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--muted);padding-inline:0}
+.btn.quiet[aria-expanded="true"]{color:var(--ink)}
+.warnnote{border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 8%,var(--surface));border-radius:10px;padding:12px 14px;display:grid;gap:10px;max-width:68ch}
+.warnnote p{margin:0;font-size:var(--fs-sm)}
+.btn.danger{color:var(--warn);border-color:var(--warn);background:var(--surface)}
+.donenote{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--surface);font-size:var(--fs-sm)}
+.codemsg{color:var(--muted)}
+.codemsg.err{color:var(--warn);font-weight:700}
+#codeText[aria-invalid="true"]{border-color:var(--warn);outline:1px solid var(--warn)}
 /* polish: chip text never below 12px */
 kbd{font-size:max(.78em,12px)}
 .lcd{font-size:max(.84em,12px)}
@@ -448,12 +460,19 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
   <div class="resume" id="resumeLessons"></div>
   <div class="card progress"><div class="bar" role="progressbar" aria-label="Пройдено шагов" id="pbarWrap" aria-valuemin="0"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span></div>
   <details class="ptools"><summary>Перенести прогресс на другое устройство</summary><div>
-  <div class="lrow"><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить прогресс</button></div>
-  <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small muted" id="codeMsg"></span></div></div>
-  <p class="small muted" id="resetConfirm" hidden>Стереть все отметки в этом браузере? Вернуть их можно только кодом прогресса, если ты его сохранил. <button class="btn" id="resetYes" type="button">Стереть отметки</button> <button class="btn" id="resetNo" type="button">Оставить</button></p>
+  <div class="lrow"><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button></div>
+  <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small codemsg" id="codeMsg" role="status" aria-live="polite"></span></div></div>
   </div></details>
   <div id="lessonList" style="display:grid;gap:10px"></div>
   <div id="forkBox"></div>
+  <div class="resetzone">
+   <button class="btn quiet" id="resetProgress" type="button" aria-expanded="false" aria-controls="resetConfirm">Сбросить прогресс…</button>
+   <div class="warnnote" id="resetConfirm" hidden>
+    <p><b>Стереть все отметки уроков в этом браузере?</b> Сразу после сброса их можно вернуть кнопкой «Вернуть». Чтобы перенести их на другое устройство, сначала скопируй код прогресса.</p>
+    <div class="lrow"><button class="btn danger" id="resetYes" type="button">Стереть отметки</button><button class="btn" id="resetNo" type="button">Оставить</button></div>
+   </div>
+   <div class="donenote" id="undoNote" role="status" hidden><span id="undoText">Отметки стёрты.</span><button class="btn primary" id="undoReset" type="button">Вернуть</button></div>
+  </div>
 </section>
 
 <section class="view" id="v-branch" hidden>
@@ -1217,7 +1236,7 @@ function renderResume(){const r=resumePoint();const all=lessons.length,dl=lesson
 function progressLine(){const total=lessons.reduce((a,l)=>a+act(l).length,0),n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const st=`${n} ${plural(n,"шаг","шага","шагов")} из ${total}`;
  if(dl)return `Пройдено ${dl} ${plural(dl,"урок","урока","уроков")} из ${lessons.length} · ${st}`;
- const cur=lessons.find(l=>doneCnt(l)>0);return n?`Сделано ${st}${cur?` · урок ${lbl(cur.n)} в процессе`:""}`:`Впереди ${lessons.length} уроков и ${total} шагов`}
+ const r=resumePoint(),cur=r&&doneCnt(r.l)>0?r.l:null;return n?`Сделано ${st}${cur?` · урок ${lbl(cur.n)} в процессе`:""}`:`Впереди ${lessons.length} уроков и ${total} шагов`}
 function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const dn=ls.filter(l=>doneCnt(l)===act(l).length).length;
  const steps=ls.reduce((a,l)=>a+act(l).length,0),sd=ls.reduce((a,l)=>a+doneCnt(l),0);
@@ -1227,14 +1246,14 @@ function branchTile(sec,showList){const st=secStats(sec);
  return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname"><span class="bt">${esc(sec.name.replace("Ветка · ",""))}</span><span class="go">Открыть <span aria-hidden="true">→</span></span></span>
  <span class="bdesc">${esc(relabel(sec.desc))}</span>
  ${showList?`<span class="bles">${st.ls.map(l=>`${lbl(l.n)} · ${esc(l.t)}`).join("<br>")}</span>`:""}
- <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
+ <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
 function bindDetails(box){box.querySelectorAll("details").forEach(d=>{d.addEventListener("toggle",saveOpen);if(focus[d.dataset.n]!=null)placeFocus(d.dataset.n)})}
 function saveOpen(){const o=new Set(store.get("p6open",[]));document.querySelectorAll("details.lesson").forEach(d=>{if(d.open)o.add(d.dataset.n);else o.delete(d.dataset.n)});store.set("p6open",[...o])}
 function renderLessons(){
   const box=document.getElementById("lessonList");
   const open=store.get("p6open",[]);
   const base=SECTIONS[0],st=secStats(base);
-  let html=`<div class="levelhead"><h2>${base.name}</h2><span>${base.span} · пройдено уроков ${st.dn} из ${st.ls.length}</span></div><p class="secdesc">${esc(base.desc)}</p>`;
+  let html=`<div class="levelhead"><h2>${base.name}</h2><span id="baseStat">${base.span} · пройдено уроков ${st.dn} из ${st.ls.length}</span></div><p class="secdesc">${esc(base.desc)}</p>`;
   st.ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
   box.innerHTML=html;bindDetails(box);
   document.getElementById("forkBox").innerHTML=`<div class="forkhead"><span class="node"></span><h2>Ветки</h2></div><p class="secdesc" style="margin:4px 0 0 24px">После базы выбирай любую ветку, порядок не важен. Каждая открывается отдельной страницей.</p>
@@ -1245,7 +1264,7 @@ function renderLessons(){
 let curBranch=null;
 function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
  document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.</p>
- <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
+ <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
  document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
 function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done);store.set("p6last",k.slice(0,k.lastIndexOf("-")))}
@@ -1254,8 +1273,9 @@ function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}
  if(cnt===tot&&!was){const nl=det.querySelector(".lbody > div > .nextles, .lbody .nextles");if(nl&&!nl.closest(".donecard"))nl.outerHTML=doneHTML(l);announce(`Урок ${lbl(n)} пройден. ${(det.querySelector(".donecard .nextles a")||{}).textContent||""}`.replace(/[→↓]/g,"").trim())}
  else if(cnt<tot&&was){const dc=det.querySelector(".donecard");if(dc)dc.outerHTML=nextHTML(l)}
  updateProgress();refreshTiles()}
-function refreshTiles(){const fb=document.querySelector("#forkBox .fork");if(fb)fb.innerHTML=SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("");
- if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
+function refreshTiles(){const bs=document.getElementById("baseStat");if(bs){const b=SECTIONS[0],t=secStats(b);bs.textContent=`${b.span} · пройдено уроков ${t.dn} из ${t.ls.length}`}
+ const bo=document.querySelector("#branchOther .othergrid");if(bo&&curBranch)bo.innerHTML=SECTIONS.slice(1).filter(x=>x.id!==curBranch).map(x=>branchTile(x,false)).join("");const fb=document.querySelector("#forkBox .fork");if(fb)fb.innerHTML=SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("");
+ if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
 function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);const a=act(l);let i=focus[n];
  if(!a.includes(i)){i=a.find(k=>k>=i);if(i==null)i=a[0];focus[n]=i;saveFocus()}
  det.querySelectorAll("li.cur,li.curtip").forEach(x=>x.classList.remove("cur","curtip"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
@@ -1288,9 +1308,15 @@ function updateProgress(){
   document.getElementById("ptext").textContent=progressLine();
   renderResume();
 }
-document.getElementById("resetProgress").onclick=()=>{document.getElementById("resetConfirm").hidden=false};
-document.getElementById("resetNo").onclick=()=>{document.getElementById("resetConfirm").hidden=true};
-document.getElementById("resetYes").onclick=()=>{done={};store.set("p6done",done);document.getElementById("resetConfirm").hidden=true;renderLessons()};
+const rBtn=document.getElementById("resetProgress"),rBox=document.getElementById("resetConfirm"),uNote=document.getElementById("undoNote");
+function closeReset(){rBox.hidden=true;rBtn.setAttribute("aria-expanded","false")}
+rBtn.onclick=()=>{if(!rBox.hidden){closeReset();return}rBox.hidden=false;rBtn.setAttribute("aria-expanded","true");uNote.hidden=true;document.getElementById("codeBox").hidden=true;document.getElementById("resetNo").focus()};
+document.getElementById("resetNo").onclick=()=>{closeReset();rBtn.focus()};
+document.getElementById("resetYes").onclick=()=>{const n=Object.keys(done).length;store.set("p6undo",{d:done,f:focus,last:store.get("p6last",null)});
+ done={};focus={};store.set("p6done",done);saveFocus();closeReset();renderLessons();
+ document.getElementById("undoText").textContent=`Отметки стёрты (${n} ${plural(n,"шаг","шага","шагов")}).`;uNote.hidden=false;document.getElementById("undoReset").focus()};
+document.getElementById("undoReset").onclick=()=>{const u=store.get("p6undo",null);if(!u)return;done=Object.assign({},u.d,done);focus=u.f||{};store.set("p6done",done);saveFocus();if(u.last)store.set("p6last",u.last);
+ store.set("p6undo",null);uNote.hidden=true;renderLessons();announce("Отметки возвращены");rBtn.focus()};
 
 /* ---------------- CHALLENGES ---------------- */
 const challenges=[
@@ -1552,15 +1578,17 @@ function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES
 function makeCode(){const o={d:Object.keys(done),c:Object.keys(chDone)};return "P6:"+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
 function readCode(t){t=t.trim();if(!t.startsWith("P6:"))throw 0;const o=JSON.parse(decodeURIComponent(escape(atob(t.slice(3)))));if(!o||!Array.isArray(o.d))throw 0;return o}
 const cbx=document.getElementById("codeBox"),ctx=document.getElementById("codeText"),cmsg=document.getElementById("codeMsg");
-document.getElementById("copyCode").onclick=()=>{const c=makeCode();cbx.hidden=false;document.getElementById("codeApply").hidden=true;
+function setCodeErr(on){cmsg.classList.toggle("err",on);if(on)ctx.setAttribute("aria-invalid","true");else ctx.removeAttribute("aria-invalid")}
+ctx.setAttribute("aria-describedby","codeHint codeMsg");
+document.getElementById("copyCode").onclick=()=>{const c=makeCode();closeReset();setCodeErr(false);cbx.hidden=false;document.getElementById("codeApply").hidden=true;
  document.getElementById("codeHint").textContent="Это твой прогресс. Скопируй код и вставь его на другом устройстве через «Загрузить код». Нигде на сервере он не хранится.";
  ctx.value=c;cmsg.textContent="";const sel=()=>{ctx.focus();ctx.select();cmsg.textContent="Автоматически скопировать не вышло. Код выделен: скопируй его вручную."};
  try{navigator.clipboard.writeText(c).then(()=>{cmsg.textContent="Скопировано."},sel)}catch(e){sel()}};
-document.getElementById("loadCodeBtn").onclick=()=>{cbx.hidden=false;document.getElementById("codeApply").hidden=false;ctx.value="";cmsg.textContent="";
+document.getElementById("loadCodeBtn").onclick=()=>{closeReset();setCodeErr(false);cbx.hidden=false;document.getElementById("codeApply").hidden=false;ctx.value="";cmsg.textContent="";
  document.getElementById("codeHint").textContent="Вставь код с другого устройства. Отметки сложатся с теми, что уже есть здесь: ничего не сотрётся.";ctx.focus()};
 document.getElementById("codeClose").onclick=()=>{cbx.hidden=true};
 document.getElementById("codeApply").onclick=()=>{try{const o=readCode(ctx.value);let n=0;o.d.forEach(k=>{if(!done[k]){done[k]=1;n++}});(o.c||[]).forEach(k=>{chDone[k]=1});
- store.set("p6done",done);store.set("p6chd",chDone);renderLessons();renderChallenges();cmsg.textContent="Загружено, новых отметок: "+n+"."}catch(e){cmsg.textContent="Код не подошёл. Скопируй его целиком, он начинается с P6:"}};
+ store.set("p6done",done);store.set("p6chd",chDone);renderLessons();renderChallenges();setCodeErr(false);cmsg.textContent="Загружено, новых отметок: "+n+"."}catch(e){setCodeErr(true);cmsg.textContent="Код не подошёл. Скопируй его целиком, он начинается с P6:";ctx.focus()}};
 function lessonHash(n){const sec=SECTIONS.find(x=>x.order.includes(n));return !sec||sec.id==="base"?"lessons":"branch-"+sec.id}
 function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>a.setAttribute("href","#"+lessonHash(a.dataset.open)))}
 function openLesson(n,step){const o=store.get("p6open",[]);if(!o.includes(n))o.push(n);store.set("p6open",o);
