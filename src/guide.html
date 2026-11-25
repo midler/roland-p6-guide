@@ -184,6 +184,17 @@ th{font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;let
 .cell.ro{cursor:default}
 .cell.off{opacity:.18;cursor:default}
 .cell.now{outline:2px solid var(--ink);outline-offset:1px}
+.cell.hl{box-shadow:0 0 0 2px var(--warn)}
+.ear .ctl .btn{min-width:56px}
+.ear p{margin:0}
+.earopts{display:flex;flex-wrap:wrap;gap:6px}
+.earopts .btn{white-space:normal;text-align:left}
+.earopts.steps16{display:grid;grid-template-columns:repeat(8,minmax(0,1fr))}
+.earopts.steps16 .btn{text-align:center;padding-inline:0;font-family:var(--f-mono)}
+@media (min-width:700px){.earopts.steps16{grid-template-columns:repeat(16,minmax(0,1fr))}}
+.earopts .btn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.earfb{font-weight:600}.earfb.ok{color:var(--done)}.earfb.no{color:var(--warn)}
+.earrow{display:flex;flex-wrap:wrap;gap:6px}
 .seq-note{font-size:var(--fs-xs);color:var(--muted)}
 .secdesc{color:var(--muted);font-size:var(--fs-sm);margin:-4px 0 4px}
 ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4px;padding-top:10px;font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--accent);padding-top:6px;grid-template-columns:none}
@@ -738,7 +749,7 @@ const lessons=[
  "Нажми [KYBD] ещё раз, чтобы вернуть кнопкам роль шагов."],
  check:"Ты сыграл простую мелодию из 4–8 нот и пару аккордов одним сэмплом.",
  task:"Подбери по слуху мелодию из 5 нот (детская песня, рингтон) на заводском сэмпле."},
-{n:"04",gloss:1,tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
+{n:"04",gloss:1,ear:["hat"],tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
  goal:"Собрать бит на пустом паттерне, добавить акценты и свинг, сохранить.",
  steps:[
  "Пустой паттерн: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN].",
@@ -1328,40 +1339,76 @@ function gridHTML(g,id){
  const blk=(a,b)=>{const nums=R(a,b).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.slice(a-1,b).map((k,j)=>`<span class="num kn${j===b-a&&b===16?" end":""}">${k}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(a,b).map(i=>{
    if(g.len&&i>g.len)return `<span class="cell off${(i-1)%bt===0&&i>a?" q":""}" aria-hidden="true"></span>`;
-   const on=(r.s||[]).includes(i),q=(i-1)%bt===0&&i>a?" q":"";
+   const on=(r.s||[]).includes(i),q=((i-1)%bt===0&&i>a?" q":"")+(g.hl&&g.hl.includes(i)&&(g.hlr==null||g.hlr===ri)?" hl":"");
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
      return `<span class="cell ro${st?" on":hold?" hold":""}${q}" data-i="${i}" role="img" aria-label="${esc(r.n)}, шаг ${i}${st?", нота "+esc(st[3]||""):hold?", звучит":", тишина"}">${st&&st[3]?`<span class="tag" aria-hidden="true">${esc(st[3])}</span>`:""}</span>`}
    if(r.lvl){const v=r.v[i]??1;return `<button type="button" class="cell lvlcell${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-label="${esc(r.n)}, шаг ${i}, уровень ${Math.round(v*127)}"><span class="lvl" style="height:${Math.max(6,v*100)}%"></span></button>`}
-   const p=r.p&&r.p[i],sb=r.sub&&r.sub[i],v=r.v&&r.v[i];
+   const p=r.p&&r.p[i],sb=r.sub&&r.sub[i],v=r.v&&r.v[i],mt=r.t&&r.t[i];
    const inner=on&&v!=null&&v<1?`<span class="lvl" style="height:${v*100}%"></span>`:"";
-   const tag=on&&sb?`<span class="tag" aria-hidden="true">×${sb}</span>`:on&&p?`<span class="tag" aria-hidden="true">${p}</span>`:"";
-   return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}${on&&p?", вероятность "+p+"%":""}${on&&sb?", дробь ×"+sb:""}">${inner}${tag}</button>`}).join("")).join("");
+   const tag=on&&mt?`<span class="tag" aria-hidden="true">${mt>0?"+":"−"}${Math.round(Math.abs(mt)*100)}</span>`:on&&sb?`<span class="tag" aria-hidden="true">×${sb}</span>`:on&&p?`<span class="tag" aria-hidden="true">${p}</span>`:"";
+   return `<button type="button" class="cell${on&&!(v!=null&&v<1)?" on":""}${on&&p?" on prob":""}${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-pressed="${on}" aria-label="${esc(r.n)}, шаг ${i}${on&&p?", вероятность "+p+"%":""}${on&&sb?", дробь ×"+sb:""}${on&&mt?", сдвиг "+(mt>0?"позже":"раньше")+" на "+Math.round(Math.abs(mt)*100)+"% шага":""}">${inner}${tag}</button>`}).join("")).join("");
  return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
  const split=typeof PHONE!=="undefined"&&PHONE.matches;
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
  <div class="seq-wrap${split?" split":""}">${split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
-function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null}
+let seqNext=null;
+function stopSeq(){clearInterval(seqTimer);seqTimer=null;seqNext=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null;earBtns()}
 function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
- if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;const g=gridState[id];const stepDur=60/g.bpm/4;let step=0,next=c.currentTime+.05,bars=0;
- {const pb=document.querySelector(`[data-play="${id}"]`);pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}
- seqTimer=setInterval(()=>{while(next<c.currentTime+.12){const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
+ if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;let g=gridState[id];const stepDur=60/g.bpm/4;let step=0,next=c.currentTime+.05,bars=0;
+ {const pb=document.querySelector(`[data-play="${id}"]`);if(pb){pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}}earBtns()
+ seqTimer=setInterval(()=>{while(next<c.currentTime+.12){if(step===0&&seqNext){id=seqNext;seqNext=null;g=gridState[id];seqPlaying=id;bars=0;earBtns()}const i=step+1,tn=next+((g.swing&&i%2===0)?g.swing*stepDur:0);
   g.rows.forEach((r,ri)=>{
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[bars%r.bars.length];bar.filter(x=>x[0]===i).forEach(x=>{if(x[4]&&Math.random()*100>x[4])return;(Array.isArray(x[2])?x[2]:[x[2]]).forEach(m=>tone(tn,x[1]*stepDur,m,r.vol||1,r.k))});return}
    if(!r.s.includes(i))return;
    if(r.k==="bass"){bassNote(tn,stepDur,r.v?r.v[i]??1:1);return}
    if(r.p&&r.p[i]&&Math.random()*100>r.p[i])return;
-   const n=r.sub&&r.sub[i]||1,v=r.v&&r.v[i]!=null?r.v[i]:1;for(let k=0;k<n;k++)hit(r.k,tn+k*stepDur/n,v)});
-  const tt=(next-c.currentTime)*1000,el=document.getElementById(id);
-  setTimeout(()=>{if(seqPlaying!==id||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
-  next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=8){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
+   const n=r.sub&&r.sub[i]||1,v=r.v&&r.v[i]!=null?r.v[i]:1;const tm=tn+(r.t&&r.t[i]||0)*stepDur;for(let k=0;k<n;k++)hit(r.k,tm+k*stepDur/n,v)});
+  const tt=(next-c.currentTime)*1000,el=document.getElementById(id),cid=id;
+  setTimeout(()=>{if(seqPlaying!==cid||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
+  next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=(g.loop||8)){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
+/* ---------------- EAR TRAINING (A/B) ---------------- */
+const EARS={
+ hat:{t:"На слух: какие удары хэта тише?",bpm:96,
+  intro:"Бочка, клэп и темп в A и B одинаковые, меняется только хэт.",
+  q:"Где в примере B хэт тише?",opts:["На долях: шаги 1, 5, 9, 13","Между долями, на «и»: шаги 3, 7, 11, 15"],
+  hint:"Сосчитай вслух «раз-и-два-и» и слушай, на каком слоге хэт проседает.",
+  A:[{n:"Хэт",pad:"",k:"hat",s:R(1,15,2)},{n:"Клэп",pad:"",k:"clap",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
+  vars:[{ans:1,hl:[3,7,11,15],why:"Тише удары на «и» между долями: шаги 3, 7, 11 и 15. На сетке у них столбик ниже.",
+   B:[{n:"Хэт",pad:"",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},{n:"Клэп",pad:"",k:"clap",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}]}],
+  p6:"Собери A по этому уроку: хэт на шагах 1, 3, 5 … 15, клэп на 5 и 13, бочка на 1, 5, 9, 13. Выбери пэд хэта, держи шаг 3 и нажимай этот пэд, пока не увидишь ⟨WEAK⟩ (50%). Повтори для шагов 7, 11 и 15 и сравни с примером B."}
+};const earState={};
+function earBtns(){document.querySelectorAll("[data-earv]").forEach(b=>{const on=(seqNext||seqPlaying)===b.dataset.earv;b.setAttribute("aria-pressed",on);b.classList.toggle("primary",on);b.textContent=(on?"■ ":"▶ ")+b.dataset.earv.slice(-1)})}
+function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math.floor(Math.random()*E.vars.length),ans:null,show:false}),V=E.vars[st.v];
+ gridState[`ear_${eid}_A`]={bpm:E.bpm,rows:E.A,loop:16};gridState[`ear_${eid}_B`]={bpm:E.bpm,rows:V.B,loop:16};
+ const opts=E.pick==="step"?R(1,16).map(i=>`<button type="button" class="btn" data-earans="${eid}" data-a="${i}" aria-pressed="${st.ans===i}" aria-label="Шаг ${i}">${i}</button>`).join("")
+  :E.opts.map((o,i)=>`<button type="button" class="btn" data-earans="${eid}" data-a="${i}" aria-pressed="${st.ans===i}">${esc(o)}</button>`).join("");
+ const ok=st.ans!=null&&st.ans===V.ans;
+ const fb=st.ans==null?"":ok?`<p class="earfb ok">Верно. ${fmt(V.why)}</p>`:`<p class="earfb no">Пока нет. ${fmt(E.pick==="step"?`Двойной удар звучит ${st.ans<V.ans?"позже":"раньше"} шага ${st.ans}.`:E.hint)} Послушай A и B ещё раз.</p>`;
+ if(st.show){gridState[`ear_${eid}_g`]={t:"Пример B по шагам",bpm:E.bpm,rows:JSON.parse(JSON.stringify(V.B)),hl:V.hl,hlr:V.hlr??0,note:"Рамкой отмечены шаги, которые отличаются от A."}}
+ return `<div class="seq ear" id="ear_${eid}"><div class="seq-head"><h4>${esc(E.t)}</h4><span class="ctl"><span>${E.bpm} BPM</span>${["A","B"].map(v=>`<button type="button" class="btn" data-earv="ear_${eid}_${v}" aria-pressed="false" aria-label="Пример ${v}">▶ ${v}</button>`).join("")}</span></div>
+ <p class="small">${fmt(E.intro)} Включи A, потом B: пример сменится с начала такта, бит не остановится.</p>
+ <p><b>${esc(E.q)}</b></p><div class="earopts${E.pick==="step"?" steps16":""}" role="group" aria-label="${esc(E.q)}">${opts}</div><div aria-live="polite">${fb}</div>
+ <p class="earrow"><button type="button" class="btn" data-earshow="${eid}" aria-expanded="${st.show}">${st.show?"Скрыть шаги":"Показать шаги"}</button>${E.vars.length>1?`<button type="button" class="btn" data-earnew="${eid}">Другое задание</button>`:""}</p>
+ ${st.show?gridHTML(gridState[`ear_${eid}_g`],`ear_${eid}_g`):""}
+ <div class="box task"><h4>Повтори на P-6</h4><p>${fmt(V.p6||E.p6)}</p></div></div>`}
+function earRender(eid,focusSel){const el=document.getElementById("ear_"+eid);if(!el)return;el.outerHTML=earHTML(eid);earBtns();if(focusSel){const f=document.querySelector(`#ear_${eid} ${focusSel}`);if(f)f.focus()}}
+document.addEventListener("click",e=>{
+ const v=e.target.closest("[data-earv]");if(v){const id=v.dataset.earv,c=ac();if(!c)return;if(c.state==="suspended")c.resume();
+  const cur=seqNext||seqPlaying;if(cur===id){stopSeq();return}
+  if(seqPlaying&&seqPlaying.slice(0,-1)===id.slice(0,-1)){seqNext=seqPlaying===id?null:id;earBtns();return}
+  playSeq(id);return}
+ const a=e.target.closest("[data-earans]");if(a){const eid=a.dataset.earans,st=earState[eid];st.ans=+a.dataset.a;if(st.ans===EARS[eid].vars[st.v].ans)st.show=true;earRender(eid,`[data-a="${a.dataset.a}"]`);return}
+ const sh=e.target.closest("[data-earshow]");if(sh){const eid=sh.dataset.earshow;earState[eid].show=!earState[eid].show;earRender(eid,"[data-earshow]");return}
+ const nw=e.target.closest("[data-earnew]");if(nw){const eid=nw.dataset.earnew,st=earState[eid],n=EARS[eid].vars.length;if(seqPlaying&&seqPlaying.startsWith(`ear_${eid}_`))stopSeq();st.v=(st.v+1+Math.floor(Math.random()*(n-1)))%n;st.ans=null;st.show=false;earRender(eid,"[data-earnew]");return}
+});
 document.addEventListener("click",e=>{
  const ch=e.target.closest("[data-chord]");if(ch){const c=ac();if(c){if(c.state==="suspended")c.resume();ch.dataset.chord.split(",").map(Number).forEach(n=>tone(c.currentTime+.02,1.2,60+n,.8,"tone"))}return}
  const hb=e.target.closest("[data-hit]");if(hb){const c=ac();if(c){if(c.state==="suspended")c.resume();hit(hb.dataset.hit,c.currentTime+.02,1)}return}
  const pb=e.target.closest("[data-play]");if(pb){playSeq(pb.dataset.play);return}
  const cell=e.target.closest(".cell[data-g]");if(!cell||cell.disabled)return;const g=gridState[cell.dataset.g],r=g.rows[+cell.dataset.r],i=+cell.dataset.i;
- if(r.lvl){const v=r.v[i]??1;r.v[i]=v>=1?0:v<.28?.28:1}else{const at=r.s.indexOf(i);if(at>=0)r.s.splice(at,1);else{r.s.push(i);if(r.p)delete r.p[i];if(r.v)delete r.v[i];if(r.sub)delete r.sub[i]}if(!r.lvl&&r.k!=="bass"&&r.s.includes(i))hit(r.k,ac()?ac().currentTime:0,1)}
+ if(r.lvl){const v=r.v[i]??1;r.v[i]=v>=1?0:v<.28?.28:1}else{const at=r.s.indexOf(i);if(at>=0)r.s.splice(at,1);else{r.s.push(i);if(r.p)delete r.p[i];if(r.v)delete r.v[i];if(r.sub)delete r.sub[i];if(r.t)delete r.t[i]}if(!r.lvl&&r.k!=="bass"&&r.s.includes(i))hit(r.k,ac()?ac().currentTime:0,1)}
  const host=document.getElementById(cell.dataset.g);host.outerHTML=gridHTML(g,cell.dataset.g);
 });
 /* ---------------- LESSON RENDER ---------------- */
@@ -1408,6 +1455,7 @@ ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
 <div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
+${l.ear?l.ear.map(earHTML).join(""):""}
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
 ${l.ext?extBox(l.ext):""}
