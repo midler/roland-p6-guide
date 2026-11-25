@@ -86,22 +86,22 @@ kbd .fn{opacity:.7;font-weight:500}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .devwrap{overflow-x:auto;border-radius:14px}
 .dev2{position:relative;aspect-ratio:2000/1080;min-width:640px;background:#1c1e22;border-radius:14px;container-type:inline-size;color:#d7dbe1;font-family:var(--f-mono)}
-.dev2 .el{position:absolute;display:grid;place-items:center;border:1px solid #3c424b;background:#2a2e35;color:#eef0f3;border-radius:.6cqw;font-size:1.25cqw;font-weight:700;cursor:pointer;padding:0;line-height:1.05;text-align:center}
+.dev2 .el{position:absolute;display:grid;place-items:center;border:1px solid #3c424b;background:#2a2e35;color:#eef0f3;border-radius:calc(.6cqw*var(--k,1));font-size:calc(1.25cqw*var(--k,1));font-weight:700;cursor:pointer;padding:0;line-height:1.05;text-align:center}
 .dev2 .el.key{background:#e9ebee;color:#202226;border-color:#9aa0a8}
-.dev2 .el.pad{background:#f2f3f5;color:#202226;font-size:2.6cqw;border-radius:.8cqw}
+.dev2 .el.pad{background:#f2f3f5;color:#202226;font-size:calc(2.6cqw*var(--k,1));border-radius:calc(.8cqw*var(--k,1))}
 .dev2 .el.knob,.dev2 .el.round{border-radius:50%;background:#2f3338}
-.dev2 .el.knob{border:.35cqw solid #555b63}
+.dev2 .el.knob{border:calc(.35cqw*var(--k,1)) solid #555b63}
 .dev2 .el.ctrlk{border-color:#c9b31d}
-.dev2 .el.jack{border-radius:50%;background:#111;border:.3cqw solid #444}
-.dev2 .el.disp{background:#140806;color:#ff5a36;font-size:3cqw;letter-spacing:.3cqw;border-color:#333;cursor:default}
-.dev2 .el.samp{border:.4cqw solid #d22;background:#e9ebee;color:#202226;font-size:1.1cqw}
-.dev2 .el.sm{font-size:.95cqw;white-space:pre-line}
+.dev2 .el.jack{border-radius:50%;background:#111;border:calc(.3cqw*var(--k,1)) solid #444}
+.dev2 .el.disp{background:#140806;color:#ff5a36;font-size:calc(3cqw*var(--k,1));letter-spacing:calc(.3cqw*var(--k,1));border-color:#333;cursor:default}
+.dev2 .el.samp{border:calc(.4cqw*var(--k,1)) solid #d22;background:#e9ebee;color:#202226;font-size:calc(1.1cqw*var(--k,1))}
+.dev2 .el.sm{font-size:calc(.95cqw*var(--k,1));white-space:pre-line}
 .dev2 .el.dim{opacity:.25}
-.dev2 .el.hot{outline:.35cqw solid #ff6a45;outline-offset:.1cqw}
-.dev2 .el[aria-pressed="true"]{outline:.45cqw solid var(--accent);outline-offset:.2cqw}
-.dev2 .lab{position:absolute;font-size:.95cqw;color:#b9c0ca;text-align:center;white-space:nowrap;transform:translateX(-50%);pointer-events:none;letter-spacing:.02em}
+.dev2 .el.hot{outline:calc(.35cqw*var(--k,1)) solid #ff6a45;outline-offset:calc(.1cqw*var(--k,1))}
+.dev2 .el[aria-pressed="true"]{outline:calc(.45cqw*var(--k,1)) solid var(--accent);outline-offset:calc(.2cqw*var(--k,1))}
+.dev2 .lab{position:absolute;font-size:calc(.95cqw*var(--k,1));color:#b9c0ca;text-align:center;white-space:nowrap;transform:translateX(-50%);pointer-events:none;letter-spacing:.02em}
 .dev2 .lab.sec{color:#8f98a5}
-.dev2 .lab.big{font-size:1.3cqw;color:#e6e9ee;font-weight:700}
+.dev2 .lab.big{font-size:calc(1.3cqw*var(--k,1));color:#e6e9ee;font-weight:700}
 .rearrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .device{background:var(--key-edge);border-radius:14px;padding:10px;display:grid;gap:8px;color:#d7dbe1}
 .zone{display:grid;gap:8px}
@@ -110,7 +110,7 @@ kbd .fn{opacity:.7;font-weight:500}
 .ctrl{font-family:var(--f-mono);font-size:var(--fs-xs);font-weight:700;border:1px solid #3c424b;background:#24282e;color:#e8ebef;border-radius:7px;padding:7px 9px;cursor:pointer;min-width:44px;text-align:center;transition:opacity .15s,background .15s}
 .ctrl.knob{border-radius:999px}
 .ctrl.pad{min-width:58px;padding:14px 8px;background:#30353d}
-.ctrl small{display:block;font-weight:500;color:#9aa3b2;font-size:.66rem}
+.ctrl small{display:block;font-weight:500;color:#9aa3b2;font-size:var(--fs-xs)}
 .ctrl.dim{opacity:.28}
 .ctrl.hot{border-color:#ff6a45;box-shadow:0 0 0 1px #ff6a45 inset}
 .ctrl[aria-pressed="true"]{background:#ff6a45;color:#140806;border-color:#ff6a45}
@@ -305,6 +305,36 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
  .dice .slot{background:transparent;padding:6px 0;border-bottom:1px solid var(--line);min-height:0;border-radius:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* adapt pass: bottom tabs, split panel, sheet */
+nav.tabs svg{display:none}
+.subnav{display:flex;gap:6px;flex-wrap:wrap}
+.subnav a{font-size:var(--fs-sm);font-weight:700;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px;min-height:36px;display:inline-flex;align-items:center}
+.subnav a[aria-current="true"]{color:var(--accent);border-color:var(--accent)}
+.devwrap.split{display:grid;gap:8px;overflow:visible}
+.devwrap.split .dev2{min-width:0}
+.devwrap.split .dev2 .lab{font-size:max(calc(.95cqw*var(--k,1)),9px);letter-spacing:-.03em}
+.devwrap.split .dev2 .el{font-size:max(calc(1.25cqw*var(--k,1)),9px)}
+.devwrap.split .dev2 .el.pad{font-size:calc(2.6cqw*var(--k,1))}
+.devwrap.split .dev2 .el.disp{font-size:calc(3cqw*var(--k,1))}
+.sheetx{display:none}
+@media (max-width:560px){
+ nav.tabs{position:fixed;top:auto;left:0;right:0;bottom:0;z-index:20;border-bottom:0;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+ nav.tabs .wrap{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;overflow:visible;padding:4px 4px;-webkit-mask-image:none;mask-image:none;scroll-snap-type:none}
+ nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;padding:4px 0;font-size:var(--fs-xs);line-height:1.2;border-radius:10px;scroll-snap-align:none}
+ nav.tabs a svg{display:block;width:22px;height:22px;padding:3px 14px;border-radius:999px;box-sizing:content-box}
+ nav.tabs a[aria-current="page"]{background:transparent;color:var(--accent)}
+ nav.tabs a[aria-current="page"] svg{background:var(--accent-soft)}
+ body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+ html{scroll-padding-top:12px}
+ details.lesson,.recipe,.seq{scroll-margin-top:12px}
+ .focusbar{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+ .focusbar .fpos{flex-basis:100%;margin-right:0}
+ .focusbar [data-fnext]{flex:1;justify-content:center}
+ #detail.sheet{position:fixed;left:8px;right:8px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:15;max-height:46vh;overflow:auto;background:var(--surface);border:1px solid var(--ink);border-radius:14px;padding:12px 16px 16px;overscroll-behavior:contain}
+ #detail.sheet .sheetx{display:inline-flex;float:right;margin:-4px -8px 0 8px;min-height:44px;min-width:44px;justify-content:center;align-items:center;padding:0;border:0;background:transparent}
+ #v-panel{padding-bottom:46vh}
+}
 /* onboard / layout / clarify / adapt / distill pass */
 p,li,label{text-wrap:pretty}
 .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -351,12 +381,12 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 
 <nav class="tabs" aria-label="Разделы">
   <div class="wrap">
-    <a href="#start">Старт</a>
-    <a href="#lessons">Уроки</a>
-    <a href="#panel">Панель</a>
-    <a href="#recipes">Рецепты</a>
-    <a href="#challenges">Задания</a>
-    <a href="#cheats">Справка</a>
+    <a href="#start"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg><span>Старт</span></a>
+    <a href="#lessons"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="m9 10 2 2 4-4"/></svg><span>Уроки</span></a>
+    <a href="#panel"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 14h1M9 14h1M12 14h1M15 14h1M18 14h1"/><rect x="5.5" y="8.5" width="5" height="2.5" rx=".5"/></svg><span>Панель</span></a>
+    <a href="#recipes"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg><span>Рецепты</span></a>
+    <a href="#challenges"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg><span>Задания</span></a>
+    <a href="#cheats"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5"/></svg><span>Справка</span></a>
   </div>
 </nav>
 
@@ -459,6 +489,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 </section>
 
 <section class="view" id="v-cheats" hidden>
+  <nav class="subnav" aria-label="Разделы справки"><a href="#cheats" aria-current="true">Шпаргалка</a><a href="#videos">Видео и источники</a></nav>
   <div class="levelhead"><h2>Шпаргалка</h2></div>
   <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, метроном, chop…" aria-label="Поиск по шпаргалке">
   <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
@@ -961,18 +992,22 @@ function devLayout(){const E=[];const add=(id,l,x,y,w,h,cls,sec,big)=>E.push({id
  KEYS.forEach((k,i)=>{add(k[1],k[0],KX[i],975,95,105,"key");E.push({lab:k[2],x:KX[i],y:1050,sec:1})});
  E.push({lab:"SAMPLE EDIT",x:985,y:905,sec:1});E.push({lab:"PTN CLEAR",x:1530,y:905,sec:1});
  return E}
+const PHONE=matchMedia("(max-width:560px)");
 function renderDevice(){
-  const dev=document.getElementById("device");
-  const html=devLayout().map(e=>{
-   if(e.lab)return `<span class="lab${e.sec?" sec":""}" style="left:${e.x/20}%;top:${e.y/10.8}%">${esc(e.lab)}</span>`;
+  const dev=document.getElementById("device");const L=devLayout();
+  const half=(x0,W,cls,lbl)=>{const px=x=>((x-x0)/W*100).toFixed(3);
+   const html=L.filter(e=>e.x>=x0&&e.x<x0+W).map(e=>{
+   if(e.lab)return `<span class="lab${e.sec?" sec":""}" style="left:${px(e.x)}%;top:${e.y/10.8}%">${esc(e.lab)}</span>`;
    const c=e.id?findCtrl(e.id):null;let cls="el "+e.cls;
    if(c&&curMode!=="none")cls+=c[curMode]?" hot":" dim";
-   const st=`left:${(e.x-e.w/2)/20}%;top:${(e.y-e.h/2)/10.8}%;width:${e.w/20}%;height:${e.h/10.8}%`;
-   const sec=e.sec?`<span class="lab sec" style="left:${e.sec[1]/20}%;top:${e.sec[2]/10.8}%">${esc(e.sec[0])}</span>`:"";
+   const st=`left:${px(e.x-e.w/2)}%;top:${(e.y-e.h/2)/10.8}%;width:${(e.w/W*100).toFixed(3)}%;height:${e.h/10.8}%`;
+   const sec=e.sec?`<span class="lab sec" style="left:${px(e.sec[1])}%;top:${e.sec[2]/10.8}%">${esc(e.sec[0])}</span>`:"";
    if(!c)return `<span class="${cls}" style="${st}">${esc(e.l)}</span>`;
    return `<button type="button" class="${cls}" style="${st}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}" aria-label="${esc(c.l)}">${esc(e.l)}</button>${sec}`}).join("");
+   return `<div class="dev2 ${cls}" role="group" aria-label="${lbl}" style="aspect-ratio:${W}/1080;--k:${(2000/W).toFixed(4)}">${html}</div>`};
+  const draw=PHONE.matches?`<div class="devwrap split">${half(0,1155,"half-a","Левая часть панели")}${half(1155,845,"half-b","Правая часть панели")}</div>`:`<div class="devwrap">${half(0,2000,"","Панель P-6")}</div>`;
   const rear=zones.flatMap(z=>z.items).filter(c=>["usb","midi"].includes(c.id)).map(c=>`<button type="button" class="ctrl${curMode!=="none"?(c[curMode]?" hot":" dim"):""}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}">${esc(c.l)} <small>сзади</small></button>`).join("");
-  dev.innerHTML=`<div class="devwrap"><div class="dev2">${html}</div></div><div class="rearrow">${rear}<span class="small" style="color:#8f98a5;align-self:center">Сзади ещё выключатель POWER.</span></div>`;
+  dev.innerHTML=`${draw}<div class="rearrow">${rear}<span class="small" style="color:#8f98a5;align-self:center">Сзади ещё выключатель POWER.</span></div>`;
   dev.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{curCtrl=b.dataset.id;renderDevice();showCtrl(curCtrl)});
 }
 function findCtrl(id){for(const z of zones)for(const c of z.items)if(c.id===id)return c}
@@ -981,9 +1016,13 @@ function showCtrl(id){
   const keys=["base","shift","pattern","kybd","mfx","sampling","power"].filter(k=>c[k]);
   const order=curMode!=="none"&&c[curMode]?[curMode,...keys.filter(k=>k!==curMode)]:keys;
   const ki=KEYS.findIndex(k=>k[1]===id);const stepInfo=ki>=0?`<p class="small muted">${fmt("Кнопка-шаг "+KEYS.filter(k=>k[1]===id).map(k=>KEYS.indexOf(k)+1).join(" и ")+" из 16. В режиме [KYBD] — клавиша "+KEYS.filter(k=>k[1]===id).map(k=>k[0]).join(" и ")+".")}</p>`:"";
-  d.innerHTML=`<h3>${esc(c.l)}</h3>${stepInfo}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
-  const r=d.getBoundingClientRect();if(r.top>innerHeight*.7||r.bottom<0)d.scrollIntoView({block:"start",behavior:RM()?"auto":"smooth"});
+  d.innerHTML=`<button type="button" class="btn sheetx" aria-label="Закрыть описание"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h3>${esc(c.l)}</h3>${stepInfo}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
+  d.classList.toggle("sheet",PHONE.matches);
+  d.querySelector(".sheetx").onclick=()=>{const was=curCtrl;curCtrl=null;d.classList.remove("sheet");d.innerHTML=DETAIL0;renderDevice();const b=document.querySelector(`#device [data-id="${was}"]`);if(b)b.focus()};
+  if(!PHONE.matches){const r=d.getBoundingClientRect();if(r.top>innerHeight*.7||r.bottom<0)d.scrollIntoView({block:"start",behavior:RM()?"auto":"smooth"})}
 }
+const DETAIL0=document.getElementById("detail").innerHTML;
+PHONE.addEventListener("change",()=>{renderDevice();const d=document.getElementById("detail");if(curCtrl)showCtrl(curCtrl);else d.classList.remove("sheet")});
 function RM(){return matchMedia("(prefers-reduced-motion:reduce)").matches}
 
 const GLOSS=`<div class="box"><h4>Словарик ударных</h4>
@@ -1492,6 +1531,7 @@ function route(){
   const help=h==="cheats"||h==="videos";
   views.forEach(v=>{document.getElementById("v-"+v).hidden=help?!(v==="cheats"||v==="videos"):v!==h});
   document.body.dataset.view=h;
+  document.querySelectorAll(".subnav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"true":"false"));
   if(br)renderBranch(br);else curBranch=null;
   const tab=h==="branch"?"lessons":h==="videos"?"cheats":h;
   document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+tab?"page":"false"));
@@ -1501,6 +1541,7 @@ function route(){
 }
 window.addEventListener("hashchange",()=>{route();if(location.hash==="#videos")document.getElementById("v-videos").scrollIntoView({block:"start"});else window.scrollTo(0,0)});
 renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
+if(location.hash==="#videos")requestAnimationFrame(()=>document.getElementById("v-videos").scrollIntoView({block:"start"}));
 })();
 </script>
 <script>
