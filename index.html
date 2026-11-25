@@ -843,7 +843,15 @@ const lessons=[
  "Операции с шагом: держи [KYBD] + [OCT+] → ⟨COPY⟩, ⟨PStE⟩ (вставить), ⟨Insr⟩ (пустой шаг), ⟨DUPL⟩ (удвоить паттерн) → [C♯ · ENTER].",
  "Закончи правку: нажми [●] ещё раз, чтобы ⟨St.⟩ пропал с дисплея."],
  check:"В паттерне есть басовая линия или мелодия с разными нотами.",
- task:"«Бас из чего угодно»: возьми не басовый звук, опусти [PITCH] и впиши 8-шаговую басовую линию."},
+ task:"«Бас из чего угодно»: возьми не басовый звук, опусти [PITCH] и впиши 8-шаговую басовую линию.",
+ drill:{t:"Сделай свою версию",goal:"Самому выбрать, как закончится басовая фраза сквозного трека. Готовой сетки здесь нет: решаешь ты.",
+  steps:[
+  "Барабаны не трогай. Скопируй 2-03 в свободную ячейку 2-13: остановись, [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → 2-13 → [C♯ · ENTER].",
+  "Версия 1, в 2-03: закончи последнюю ноту баса так, чтобы перед бочкой на шаге 1 следующего такта осталась пауза. На каком шаге оборвать — реши сам. Длину ноты меняют лиги [TIE] (шаги этого урока) или длина ⟨G.⟩: держи шаг и нажимай [GRANULAR] до ⟨G.⟩ (урок 06).",
+  "Версия 2, в 2-13: протяни последнюю ноту до самой бочки. Нажми [●], выбирай по очереди следующие шаги до 16-го и на каждом жми [TIE]. [●] — конец правки.",
+  "Слушай обе по кругу в одном темпе: нажми [PATTERN] и переключай шаги 3 и 13 (версии 2-03 и 2-13). Следи за переходом к началу такта: пауза даёт бочке «вздохнуть», протянутый бас подталкивает её.",
+  "Выбери концовку. Если это версия 2, скопируй 2-13 обратно в 2-03, чтобы сквозной трек шёл дальше с ней. Сохрани."],
+  check:"Ты слышишь разницу, сохранил выбранную концовку в 2-03 и можешь сказать, почему выбрал её. Обе подходят для продолжения курса."}},
 {n:"08",tc:[["D9hKUrkjH0U", "05:31", "Посыл на дилей только на одном ударе"], ["pLBiwzziB0I", "23:06", "Параметры меню в шагах"], ["d3uRNdytUa0", "07:00", "Удалить автоматизацию одной ручки"]],lv:"L2",t:"Моушены: записанные движения ручек",time:"30 мин",page:"119046795122846987",
  goal:"Заставить звук меняться внутри паттерна.",
  steps:[
@@ -1450,8 +1458,8 @@ function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume
   setTimeout(()=>{if(seqPlaying!==cid||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
   next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=(g.loop||8)){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
 /* ---------------- THROUGH-LINE TRACK ---------------- */
-const TK={kick:{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]},sn:{n:"Снейр",pad:"",k:"snare",s:[5,13]},
- hat:{n:"Хэт",pad:"",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},
+const TK={kick:{n:"Бочка",pad:"",p6:"[1]",k:"kick",s:[1,5,9,13]},sn:{n:"Снейр",pad:"",p6:"[4]",k:"snare",s:[5,13]},
+ hat:{n:"Хэт",pad:"",p6:"[2]",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},
  bass:{n:"Бас",pad:"",k:"tone",bars:[[[1,2,45,"A"],[4,2,45,"A"],[7,2,48,"C"],[9,2,43,"G"],[11,2,40,"E"]]]},
  perc:{n:"Перкуссия",pad:"",k:"clap",s:[14,16],v:{14:.6,16:.8}}};
 const TKCOPY="Как копировать: останови [▶], [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер новой версии → [C♯ · ENTER]. Открой её: [PATTERN] → номер → [PATTERN].";
@@ -1463,7 +1471,7 @@ const TRACK=[
  {id:"groove",n:"04",from:"2-01",to:"2-02",role:"Основной грув",add:"Хэт восьмыми, каждый второй удар тише",
   do:"Шаги второго занятия этого урока: копия интро, хэт и акценты.",ear:"Хэт качает: громкий удар на счёт, тихий между счётами.",
   A:[TK.sn,TK.kick],B:[TK.hat,TK.sn,TK.kick],hl:R(1,15,2),hlr:0},
- {id:"bass",n:"07",from:"2-02",to:"2-03",role:"Версия с басом",add:"Короткая басовая фраза с паузой на последней доле",
+ {id:"bass",n:"07",start:1,from:"2-02",to:"2-03",role:"Версия с басом",add:"Короткая басовая фраза с паузой на последней доле",
   do:"Скопируй 2-02 в 2-03 и открой его. Выбери тональный пэд для баса и опусти [PITCH] или [OCT−]. Впиши ноты, как в этом уроке: шаг 1 — [A], 4 — [A], 7 — [C], 9 — [G], 11 — [E]. Шаги 13–16 оставь пустыми.",
   ear:"Бас ходит под бочкой, а на последней доле замолкает.",
   A:[TK.hat,TK.sn,TK.kick],B:[TK.bass,TK.hat,TK.sn,TK.kick],hl:[1,4,7,9,11],hlr:0},
@@ -1478,6 +1486,12 @@ const TRACK=[
  {id:"motion",n:"08",from:"2-05",to:"2-05",role:"Сбивка",add:"Фильтр хэта закрывается к концу такта",
   do:"Открой 2-05. Пэду хэта включи фильтр: [SHIFT] + [G♯ · FILTER] → [PITCH] → ⟨LPF⟩. Остановись, нажми [●], выбери шаг 13 и в том же меню поверни [START] (срез) чуть ниже. На шагах 14, 15 и 16 — ещё ниже. На шаге 1 верни срез вверх, иначе фильтр останется закрытым в следующих тактах. [●] — конец правки.",
   ear:"Хэт в сбивке темнеет и глохнет, а с новым тактом снова яркий."}];
+function trkStart(t){const g=gridState[`trk_${t.id}_A`]||{bpm:96,rows:t.A};const rows=g.rows.filter(r=>r.s);
+ const line=r=>{const weak=r.v?Object.keys(r.v).filter(i=>r.v[i]<1).map(Number):[];return [`${r.n} — пэд ${r.p6||""}`,r.s.join(", "),weak.length?`тише (⟨WEAK⟩): ${weak.join(", ")}`:"—"]};
+ return `<div class="box start-card"><h4>Начать с этого урока</h4><p class="small">Нет сохранённой версии ${t.from} или пришёл сразу сюда? Собери основу по карточке: темп ${g.bpm} BPM, длина ${g.len||16} шагов, банк F.</p>
+ <p class="earrow"><button type="button" class="btn" data-earv="trk_${t.id}_A" data-lbl="Послушать основу" aria-pressed="false">▶ Послушать основу</button></p>
+ ${tableHTML({cap:"Основа: барабаны",head:["Партия","Шаги","Акценты"],rows:rows.map(line)})}
+ <ol class="drill"><li>${fmt(`Пустой паттерн ${t.to}: [PATTERN] → держи [PATTERN] и нажми шаг 2 → отпусти → шаг ${+t.to.split("-")[1]} → [PATTERN]. Темп: крути [TEMPO/VALUE] до ${g.bpm}.`)}</li><li>${fmt("Банк F: нажми [B/F] дважды (кнопка мигает), [KYBD] не горит.")}</li><li>${fmt("Для каждой партии: выбери пэд без звука ([PATTERN] + пэд) и нажми шаги из таблицы. Акцент: держи шаг и нажимай пэд до ⟨WEAK⟩.")}</li><li>${fmt("Нажми [▶] и сверь с кнопкой «Послушать основу». Совпадает — переходи к басу.")}</li></ol></div>`}
 function trkHTML(t){const id=t.id,has=!!t.B;
  if(has){gridState[`trk_${id}_A`]={bpm:96,rows:t.A||[],loop:16};gridState[`trk_${id}_B`]={bpm:96,rows:t.B,loop:16};gridState[`trk_${id}_g`]={t:`${t.to} · ${t.role}`,bpm:96,rows:JSON.parse(JSON.stringify(t.B)),hl:t.hl,hlr:t.hlr,note:"Рамкой отмечено то, что добавилось."}}
  const btn=(v,l)=>`<button type="button" class="btn" data-earv="trk_${id}_${v}" data-lbl="${l}" aria-pressed="false" aria-label="Пример «${l}»">▶ ${l}</button>`;
@@ -1638,7 +1652,7 @@ function lessonHTML(l,open){
 <div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
 ${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
 ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
-<ol class="steps">${stepsHTML(l)}</ol>${l.table?tableHTML(l.table):""}
+${TRACK.filter(t=>t.n===l.n&&t.start).map(trkStart).join("")}<ol class="steps">${stepsHTML(l)}</ol>${l.table?tableHTML(l.table):""}
 <div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
 ${TRACK.filter(t=>t.n===l.n).map(trkHTML).join("")}${l.ear?l.ear.map(earHTML).join(""):""}${l.diag?l.diag.map(diagHTML).join(""):""}
