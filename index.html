@@ -1347,7 +1347,7 @@ function lessonHTML(l,open){
 ${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
 ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
-<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter или → готово, ← назад</span></div>
+<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
@@ -1768,8 +1768,9 @@ document.addEventListener("keydown",e=>{
  let det=t.closest&&t.closest("details.focusmode");
  if(!det){const v=[...document.querySelectorAll("details.focusmode")].filter(x=>x.offsetParent);if(v.length===1)det=v[0]}
  if(!det)return;
- if((e.key==="Enter"&&!t.closest("button,a,summary"))||e.key==="ArrowRight"){const b=det.querySelector("[data-fnext]");if(b){b.click();e.preventDefault()}}
- else if(e.key==="ArrowLeft"){const b=det.querySelector("[data-fprev]");if(b){b.click();e.preventDefault()}}});
+ if(e.key==="Enter"&&!t.closest("button,a,summary")){const b=det.querySelector("[data-fnext]");if(b){b.click();e.preventDefault()}}
+ else if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=det.dataset.n,a=act(lessonByN(n)),p=a.indexOf(focus[n]),q=p+(e.key==="ArrowRight"?1:-1);
+  if(q>=0&&q<a.length){focus[n]=a[q];saveFocus();placeFocus(n,true)}e.preventDefault()}});
 /* ---------------- DEVICE MENUS (from the Roland P-6 online manual, Ver. 1.02) ---------------- */
 // item: [display, name, values, description, knob]
 const MENUS=[
