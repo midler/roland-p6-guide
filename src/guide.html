@@ -196,6 +196,12 @@ th{font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;let
 .earfb{font-weight:600}.earfb.ok{color:var(--done)}.earfb.no{color:var(--warn)}
 .earrow{display:flex;flex-wrap:wrap;gap:6px}
 .tally{display:grid;gap:8px;margin:8px 0}.tallyrow{display:grid;gap:4px}.earopts.steps8{display:grid;grid-template-columns:repeat(8,minmax(0,1fr))}.earopts.steps8 .btn{padding-inline:0;justify-content:center;font-family:var(--f-mono);font-size:var(--fs-md);font-weight:700}
+.clips{margin:10px 0;display:grid;gap:4px}.clips figcaption{margin-bottom:2px}
+.cl-row{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;align-items:center}.cl-row .cl-note{grid-column:2}
+.cl-name{font-size:var(--fs-sm);color:var(--muted)}.cl-lane{position:relative;height:28px;border-left:1px solid var(--line);border-right:1px solid var(--line);background:linear-gradient(to right,transparent calc(50% - .5px),var(--line) calc(50% - .5px),var(--line) calc(50% + .5px),transparent calc(50% + .5px))}
+.cl-head .cl-lane{height:auto;border:0;background:none;min-height:18px}.cl-bar{position:absolute;top:0;font-size:var(--fs-xs);font-family:var(--f-mono);color:var(--muted);padding-left:4px}
+.cl-clip{position:absolute;top:3px;bottom:3px;border-radius:4px;background:var(--accent-soft);border:1px solid var(--accent);font-size:var(--fs-xs);padding:0 6px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;color:var(--ink)}
+.cl-clip.bad{border-style:dashed;border-color:var(--warn);background:transparent}
 .drill{margin:8px 0;padding-left:1.4em;display:grid;gap:6px}
 .seq-note{font-size:var(--fs-xs);color:var(--muted)}
 .secdesc{color:var(--muted);font-size:var(--fs-sm);margin:-4px 0 4px}
@@ -1874,7 +1880,18 @@ const lessons=[
  "Оставляй пару тактов в конце записи, чтобы не обрезать хвосты реверба и гранул.",
  "Громкость записи не зависит от ручки VOLUME, если в меню задать ⟨USb.d⟩ (1–127)."],
  check:"В Ableton лежит запись P-6, а [▶] в Ableton запускает паттерн в нужном темпе.",
- warn:"Названия пунктов меню Ableton зависят от версии. Здесь только общий путь, нажатия на P-6 сверены с руководством Roland."}
+ warn:"Названия пунктов меню Ableton зависят от версии. Здесь только общий путь, нажатия на P-6 сверены с руководством Roland.",
+ drill:{t:"Три партии совпадают по тактам",goal:"Записать бочку, бас и хэт отдельными проходами и собрать их в Ableton так, чтобы они совпали с контрольным миксом.",
+  steps:[
+  "Паттерн на два такта (32 шага), без вероятностей и эффектов. Бочка на 1, 5, 9, 13 и 17, 21, 25, 29. Бас: в первом такте пауза на первой доле, ноты с шага 5. Хэт на нечётных шагах и двойной хэт (сабстеп на два удара) на шаге 32.",
+  "Ableton: общий темп и запуск от Ableton (шаги этого урока). Поставь курсор на начало такта 1 — все проходы пишутся от этой позиции.",
+  "Контрольный микс: запиши все партии вместе на дорожку «Микс», два такта.",
+  "Проход 1: на P-6 заглуши бас и хэт ([SHIFT] + пэд), запиши дорожку «Бочка» от той же позиции. Проход 2 — только бас, проход 3 — только хэт.",
+  "Все клипы начинаются с начала такта 1, даже басовый: тишина первой доли — часть клипа, не обрезай её.",
+  "Выключи дорожку «Микс», послушай три дорожки вместе, потом по очереди сравни с миксом."],
+  clips:[{t:"Правильно: все клипы от начала такта 1",rows:[["Микс",[[0,2,"все партии"]]],["Бочка",[[0,2,"бочка"]]],["Бас",[[0,2,"пауза · бас"]],"Пауза в начале — внутри клипа"],["Хэт",[[0,2,"хэт · ц-ц в конце"]]]]},
+   {t:"Ошибка: басовый клип обрезан и сдвинут к первой ноте",rows:[["Бочка",[[0,2,"бочка"]]],["Бас",[[0,1.75,"бас раньше на долю",1]]," Бас вступает на долю раньше, чем в миксе"],["Хэт",[[0,2,"хэт · ц-ц в конце"]]]]}],
+  check:"Вступление баса осталось на месте, а двойной хэт слышен только в конце второго такта — так же, как в контрольном миксе."}}
 ];
 lessons.push(...GENRE_LESSONS);
 const plan_old=[
@@ -2316,6 +2333,8 @@ const LINKS={
  manual:["Руководство Roland P-6","https://static.roland.com/manuals/p-6/en-US/index.html","Официальное онлайн-руководство, источник всех нажатий в гайде."],
  factory:["Заводские сэмплы и паттерны","https://www.roland.com/global/support/by_product/p-6/updates_drivers/e56e996e-88d3-4132-a778-d399ed68901b/","Архив Roland, чтобы вернуть заводские звуки после сброса."],
  ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
+function clipsHTML(c){const lane=(name,clips,note)=>`<div class="cl-row"><span class="cl-name">${esc(name)}</span><div class="cl-lane">${clips.map(([a,b,lab,bad])=>`<span class="cl-clip${bad?" bad":""}" style="left:${a/2*100}%;width:${(b-a)/2*100}%">${esc(lab)}</span>`).join("")}</div>${note?`<span class="cl-note small">${esc(note)}</span>`:""}</div>`;
+ return c.map(v=>`<figure class="clips"><figcaption class="small"><b>${esc(v.t)}</b></figcaption><div class="cl-row cl-head"><span class="cl-name"></span><div class="cl-lane"><span class="cl-bar" style="left:0">Такт 1</span><span class="cl-bar" style="left:50%">Такт 2</span></div></div>${v.rows.map(r=>lane(r[0],r[1],r[2])).join("")}</figure>`).join("")}
 function tableHTML(t){return `<div class="tablewrap"><table><caption class="small" style="text-align:left;padding-bottom:4px">${esc(relabel(t.cap))}</caption><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${fmt(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
 function extBox(x){const r=x.filter(e=>e[2]==="roland"),c=x.filter(e=>e[2]==="com"),id=x.filter(e=>e[2]==="idea");const a=e=>`<a href="${e[1]}" target="_blank" rel="noopener">${esc(e[0])} <span aria-hidden="true">↗</span></a>`;
   return `<div class="box"><h4>Не из руководства</h4>${r.length?`<p class="small">Справка Roland: ${r.map(a).join(", ")}.</p>`:""}${c.length?`<p class="small">Совет с форума Elektronauts, проверь на своём приборе: ${c.map(a).join(", ")}.</p>`:""}${id.length?`<p class="small">Идея упражнения: ${id.map(a).join(", ")}.</p>`:""}</div>`}
@@ -2359,7 +2378,7 @@ ${l.fixes?`<div class="box"><h4>Как исправить ошибку</h4><ul c
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
-${l.drill?[].concat(l.drill).map(d=>`<div class="box task"><h4>Упражнение · ${esc(d.t)}</h4><p>${fmt(d.goal)}</p><ol class="drill">${d.steps.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol>${d.table?tableHTML(d.table):""}${d.tally?tallyHTML(l.n+"_"+d.tally):""}<p><b>Самопроверка.</b> ${fmt(d.check)}</p></div>`).join(""):""}
+${l.drill?[].concat(l.drill).map(d=>`<div class="box task"><h4>Упражнение · ${esc(d.t)}</h4><p>${fmt(d.goal)}</p><ol class="drill">${d.steps.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol>${d.table?tableHTML(d.table):""}${d.clips?clipsHTML(d.clips):""}${d.tally?tallyHTML(l.n+"_"+d.tally):""}<p><b>Самопроверка.</b> ${fmt(d.check)}</p></div>`).join(""):""}
 <div class="box srcs"><h4>Источники</h4><ul class="small"><li><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a></li>${allVids.filter(v=>v[3].includes(l.n)).map(v=>`<li><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></div>
 </div>
 ${complete?doneHTML(l):nextHTML(l)}
