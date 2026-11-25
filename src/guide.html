@@ -738,7 +738,14 @@ const lessons=[
  "Осторожно с [TEMPO/VALUE]: если случайно вышел из меню на главный экран, эта же ручка меняет темп. Ручки стоят тесно, при быстрой игре легко задеть соседнюю.",
  "Быстрый откат всего несохранённого: выключи и включи питание. Вернётся последнее сохранение."],
  check:"Ты сделал из заводского сэмпла заметно другой звук и сохранил его.",
- task:"«Один звук — четыре роли». Скопируй сэмпл на пустые пэды: держи пэд + [SHIFT] + [▶ · COPY] → ⟨COPY⟩ → [C♯ · ENTER] → мигающий пустой пэд → [C♯ · ENTER]. Сделай из копий бочку (ниже и короче), подъём (реверс и петля), стаб (GATE) и лоу-фай вариант. Поменять два сэмпла местами: тот же путь, но ⟨EXCG⟩. Ноты в паттернах при этом остаются на прежних пэдах."},
+ task:"«Один звук — четыре роли». Скопируй сэмпл на пустые пэды: держи пэд + [SHIFT] + [▶ · COPY] → ⟨COPY⟩ → [C♯ · ENTER] → мигающий пустой пэд → [C♯ · ENTER]. Сделай из копий бочку (ниже и короче), подъём (реверс и петля), стаб (GATE) и лоу-фай вариант. Поменять два сэмпла местами: тот же путь, но ⟨EXCG⟩. Ноты в паттернах при этом остаются на прежних пэдах.",
+ drill:{t:"Найди начало по слову «кот»",goal:"Минутный опыт: услышать, как положение [START] меняет атаку звука.",
+  steps:[
+  "Запиши на свободный пэд слово «кот» с короткой паузой перед ним: [SAMPLING] → нажми пустой пэд → [SAMPLING] (запись пошла) → пауза на счёт «раз» → «кот» → [SAMPLING]. Дождись ⟨donE⟩. Свободного пэда нет — освободи (урок 09).",
+  "Предскажи, что пропадёт первым, если сдвигать начало вправо: пауза или звук «к»?",
+  "Поворачивай [START] вправо маленькими шагами и после каждого нажимай пэд. Отметь два момента: исчезла пауза, а потом вместо «кот» прозвучало «от».",
+  "Понемногу возвращай [START] влево, пока «к» не вернётся целиком. Получилось — сохрани: [SHIFT] + [TIE · WRITE] → ⟨PAd⟩ → [C♯ · ENTER]."],
+  check:"При нажатии пэда сразу слышно «к», без паузы, и слово звучит целиком."}},
 {n:"03",lv:"L1",t:"Мелодии на кнопках-шагах",time:"30 мин",page:"120749195120823307",
  goal:"Играть выбранный сэмпл по нотам и аккордами.",
  steps:[
@@ -1544,7 +1551,7 @@ ${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
-${l.drill?`<div class="box task"><h4>Упражнение · ${esc(l.drill.t)}</h4><p>${fmt(l.drill.goal)}</p><ol class="drill">${l.drill.steps.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol>${l.drill.map?`<div class="tablewrap"><table><caption class="small" style="text-align:left;padding-bottom:4px">Карта исполнения</caption><thead><tr><th>Такты</th><th>Паттерн</th><th>Что нажать</th></tr></thead><tbody>${l.drill.map.map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td><td>${fmt(r[2])}</td></tr>`).join("")}</tbody></table></div>`:""}<p><b>Самопроверка.</b> ${fmt(l.drill.check)}</p></div>`:""}
+${l.drill?[].concat(l.drill).map(d=>`<div class="box task"><h4>Упражнение · ${esc(d.t)}</h4><p>${fmt(d.goal)}</p><ol class="drill">${d.steps.map(x=>`<li>${fmt(x)}</li>`).join("")}</ol>${d.map?`<div class="tablewrap"><table><caption class="small" style="text-align:left;padding-bottom:4px">Карта исполнения</caption><thead><tr><th>Такты</th><th>Паттерн</th><th>Что нажать</th></tr></thead><tbody>${d.map.map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td><td>${fmt(r[2])}</td></tr>`).join("")}</tbody></table></div>`:""}<p><b>Самопроверка.</b> ${fmt(d.check)}</p></div>`).join(""):""}
 <div class="box srcs"><h4>Источники</h4><ul class="small"><li><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a></li>${allVids.filter(v=>v[3].includes(l.n)).map(v=>`<li><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a></li>`).join("")}</ul></div>
 </div>
 ${complete?doneHTML(l):nextHTML(l)}
