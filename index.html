@@ -683,7 +683,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 const M="https://static.roland.com/manuals/p-6/en-US/";
 /* text formatter: [KEY · FN] -> kbd, ⟨TXT⟩ -> lcd, + between -> plus */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-const PREFIX={beats:"Б",sound:"С",live:"Ж",comp:"К"};let _LBL=null;
+const PREFIX={beats:"Б",sound:"С",live:"Ж",comp:"К","g-lofi":"ЛФ"};let _LBL=null;
 function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>{let t=0,b=0;sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?(id[0]==="T"?"T"+(++t):String(b++).padStart(2,"0")):PREFIX[sec.id]+(i+1)})})}return _LBL[n]||n}
 function relabel(t){return t.replace(/([Уу]рок(?:а|у|е|ом|и|ов|ам|ах)?\s+)((?:\d\d|T\d)(?:\s*(?:[–-]|,|и)\s*(?:\d\d|T\d))*)/g,(m,pre,list)=>pre+list.replace(/\d\d|T\d/g,x=>lbl(x)))}
 function fmt(s){s=relabel(s);
@@ -707,10 +707,74 @@ const SECTIONS=[
  {id:"beats",name:"Ветка · Биты",span:"в любом порядке",desc:"Свои звуки и нарезка: из чего собирать бит.",order:["09","10","11","19","23","24"]},
  {id:"sound",name:"Ветка · Саунд-дизайн",span:"в любом порядке",desc:"Гранулы, синты из сэмплов, эффекты. Для эмбиента и текстур.",order:["12","16","13","25"]},
  {id:"live",name:"Ветка · Живая игра",span:"в любом порядке",desc:"Как играть паттернами вживую и записывать сет.",order:["28","17","18","26","15"]},
+ {id:"g-lofi",genre:1,recipe:"lofi",name:"Жанр · Лоу-фай хип-хоп",span:"по порядку",desc:"Трек на 84 BPM по слоям: грув, аккорды, «пыль» и форма на 1–2 минуты.",order:["30","31","32","33"]},
  {id:"comp",name:"Ветка · Компьютер и порядок",span:"в любом порядке",desc:"Импорт, MIDI, Ableton и как не запутаться в 48 сэмплах.",order:["14","20","21","22","27"]}];
 const PARTS={"23":[4],"02":[5],"04":[6],"06":[5],"08":[6],"09":[4],"10":[3],"11":[3],"12":[6],"13":[6],"14":[4],"15":[2,5],"16":[4],"19":[4],"20":[4],"07":[6],"08":[4],"24":[5],"25":[6],"26":[5],"27":[5]};
 const SES={"00":"≈ 15 минут","21":"≈ 20 минут"};
 const GL={"23":"Какой пак собрать под жанр","04":"Как бит строится в лоу-фае и драм-н-бейсе","06":"Сабстепы и вероятность в драм-н-бейсе","11":"Нарезка брейка для драм-н-бейса","12":"Гранулы в эмбиенте","13":"Эффекты для лоу-фая и эмбиента","T2":"Аккорды для каждого жанра","16":"Синт-пэд для эмбиента"};
+
+/* ---------------- GENRE BRANCHES ---------------- */
+const R=(a,b,st=1)=>{const o=[];for(let i=a;i<=b;i+=st)o.push(i);return o};
+const RX=(a,n)=>{const o=[];for(let k=0;k<n;k++)a.forEach(x=>o.push(x+16*k));return o};
+const LF={kick:{n:"Бочка",pad:"",p6:"C-5",k:"kick",s:[1,8,11]},sn:{n:"Снейр",pad:"",p6:"C-6",k:"snare",s:[5,13]},hat:{n:"Хэт",pad:"",p6:"D-5",k:"hat",s:R(1,15,2)},
+ hatA:{n:"Хэт",pad:"",p6:"D-5",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},
+ chords:{n:"Аккорды",pad:"",k:"pad",vol:.8,bars:[[[1,16,[60,64,67,69],"Am7"],[17,16,[60,62,65,69],"Dm7"],[33,16,[62,65,67,71],"G7"],[49,16,[60,64,67,71],"Cmaj7"]]]}};
+LF.kick4=Object.assign({},LF.kick,{s:RX(LF.kick.s,4)});LF.sn4=Object.assign({},LF.sn,{s:RX(LF.sn.s,4)});LF.hat4=Object.assign({},LF.hatA,{s:RX(LF.hatA.s,4),v:Object.fromEntries(RX([3,7,11,15],4).map(x=>[x,.5]))});
+const GENRE_LESSONS=[
+{n:"30",lv:"L4",t:"Лоу-фай: грув на 84 BPM",time:"30 мин",page:"112172811114051723",
+ goal:"Собрать ленивый грув лоу-фая и услышать, что ему даёт тихий хэт, а что — свинг.",
+ stage:{id:"lf1",track:"lofi",bpm:84,overview:1,to:"4-01",role:"Грув",add:"Бочка на 1, 8, 11, снейр на 5 и 13, хэт восьмыми с тихими долями и свингом",
+  final:{cap:"Финал (урок 33): около 80 секунд при 84 BPM",head:["Такты","Версия"],rows:[["1–4","4-03 вступление: только аккорды"],["5–12","4-02 полный грув"],["13–16","4-04 брейк"],["17–24","4-02 возврат грува"],["25–28","4-03 финал"]]},
+  do:"Шаги этого урока.",ear:"В «После» хэт на «и» тише, а чётные шестнадцатые чуть запаздывают — бит качается.",
+  A:[LF.hat,LF.sn,LF.kick],B:[LF.hatA,LF.sn,LF.kick],swingB:.14,hl:[3,7,11,15],hlr:0,nocopy:1},
+ steps:[
+ "Послушай, куда идёшь: в «Рецептах» сетка «Бит и аккорды» лоу-фая — это и есть будущий трек.",
+ "Пустой паттерн 4-01: [PATTERN] → держи [PATTERN] и нажми шаг 4 (банк 4) → отпусти → шаг 1 → [PATTERN]. Темп 84: крути [TEMPO/VALUE]. Банк 4 занят — сохрани старое (урок 00) или возьми другой.",
+ "Ударные — пэды C-5 (бочка), C-6 (снейр), D-5 (хэт) или банк F: F-1, F-4, F-2. Бочка на шагах 1, 8, 11, снейр на 5 и 13, хэт на всех нечётных. Сыграй ровно.",
+ "Ослабь каждый второй хэт: держи шаг 3 и нажимай пэд хэта до ⟨WEAK⟩, так же шаги 7, 11, 15. Послушай.",
+ "Отдельно попробуй свинг: [SHIFT] + [D · SHUFFLE] → [TEMPO/VALUE] 10–16 → [C · EXIT]. Сравни на слух, что даёт больше «качания» — тихие доли или свинг. Оставь оба.",
+ "Сохрани грув в 4-01: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]."],
+ check:"Грув звучит лениво и качается, и ты можешь сказать, что добавили тихие доли, а что — свинг.",
+ task:"Сравни свинг 10 и 16 на одном и том же груве и выбери свой."},
+{n:"31",lv:"L4",t:"Лоу-фай: четыре аккорда",time:"40 мин",page:"112348555114054795",
+ goal:"Положить на грув четыре септаккорда по одному на такт.",
+ stage:{id:"lf2",track:"lofi",bpm:84,start:1,bank:"банк 4",bankHow:"Ударные: пэды C-5, C-6, D-5 или банк F (F-1, F-4, F-2), [KYBD] не горит.",from:"4-01",to:"4-02",role:"Грув с аккордами",add:"Am7 → Dm7 → G7 → Cmaj7, по аккорду на такт, паттерн 64 шага",
+  do:"Шаги этого урока.",ear:"В «После» на тот же бит ложатся аккорды, по одному на такт. Заглуши ударные на приборе — и услышишь аккорды отдельно.",
+  A:[LF.hatA,LF.sn,LF.kick],B:[LF.chords,LF.hat4,LF.sn4,LF.kick4],lenB:64,swingA:.14,swingB:.14,hl:[1,17,33,49],hlr:0},
+ steps:[
+ "Скопируй 4-01 в 4-02 и открой его: [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → 4-02 → [C♯ · ENTER], затем [PATTERN] → шаг 2 → [PATTERN].",
+ "Растяни паттерн до четырёх тактов вместе с битом: [●] → держи [KYBD] + [OCT+] → ⟨DUPL⟩ → [C♯ · ENTER] (стало 32 шага), повтори (64). [●] — выход. Страницы листай [SHIFT] + [F · PAGE▶] и [SHIFT] + [E · PAGE◀].",
+ "Тональный пэд с длинным звуком (клавиши, синт, свой голос) в ⟨PoLy⟩: [SHIFT] + [GATE] → ⟨PoLy⟩. [GATE] выключи — аккорд прозвучит на всю длину сэмпла.",
+ "Впиши аккорды (урок 07): [●], ручкой [TEMPO/VALUE] выбери шаг, [KYBD], нажми клавиши, погаси [KYBD]. Шаг 1 — Am7: [C] [E] [G] [A]. Шаг 17 — Dm7: [C] [D] [F] [A]. Шаг 33 — G7: [D] [F] [G] [B]. Шаг 49 — Cmaj7: [C] [E] [G] [B]. [●] — выход.",
+ "Послушай аккорды отдельно: заглуши бочку, снейр и хэт ([SHIFT] + пэд). Потом верни их и послушай вместе.",
+ "Сохрани в 4-02: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]."],
+ check:"Четыре такта: аккорд меняется в начале каждого, бит под ним не меняется.",
+ task:"Замени Cmaj7 на Fmaj7 ([C] [E] [F] [A]) и послушай, как меняется возврат к началу."},
+{n:"32",lv:"L4",t:"Лоу-фай: «пыль» на аккордах",time:"30 мин",page:"119765515144757003",
+ goal:"Дать аккордам звук старой пластинки или кассеты, оставив бочку плотной.",
+ stage:{id:"lf3",track:"lofi",from:"4-02",to:"4-02",role:"Грув с «пылью»",add:"Vinyl Sim или Cassette Sim на аккордах, бочка сухая",
+  do:"Шаги этого урока.",ear:"Аккорды тёплые, с треском и лёгким «плаванием», а бочка звучит так же плотно, как раньше."},
+ steps:[
+ "Открой 4-02. Выведи бочку из-под эффектов: [MFX] + пэд бочки → ⟨BUS.A⟩. Аккорды оставь на ⟨EFX⟩.",
+ "Выбери Vinyl Sim: держи [MFX] и крути [TEMPO/VALUE] до ⟨vny⟩, нажми [MFX] — эффект включён. Вместо него можно Cassette Sim ⟨CSt⟩.",
+ "Ручки Vinyl Sim: [CTRL1] — FREQUENCY, [CTRL2] — NOISE (треск), [CTRL3] — WOW FLUT (плавание). Начни с нуля и прибавляй NOISE и WOW FLUT, пока аккорды не «запылятся», а бочка остаётся плотной.",
+ "Сравни, выключая и включая [MFX]: исходные аккорды и обработанные. Выбери силу по слуху.",
+ "Сохрани эффекты: [SHIFT] + [TIE · WRITE] → ⟨EFCt⟩ → [C♯ · ENTER], и паттерн: ⟨Ptn⟩."],
+ check:"С эффектом аккорды звучат «старее», без него — чище, а бочка в обоих случаях одинаковая.",
+ task:"Попробуй Cassette Sim вместо Vinyl Sim и оставь тот, что лучше подходит твоим аккордам."},
+{n:"33",lv:"L4",t:"Лоу-фай: форма и запись",time:"40 мин",page:"112346123114022795",
+ goal:"Собрать из версий трек на 1–2 минуты и записать его.",
+ stage:{id:"lf4",track:"lofi",from:"4-02",to:"4-03 и 4-04",role:"Вступление и брейк",add:"Вступление из одних аккордов и брейк без бочки и снейра",
+  do:"Шаги этого урока.",ear:"«До» — полный грув, «После» — брейк: бочка и снейр уходят, аккорды и хэт остаются. Переключай на ходу, как в финале.",
+  A:[LF.chords,LF.hat4,LF.sn4,LF.kick4],B:[LF.chords,LF.hat4],lenA:64,lenB:64,swingA:.14,swingB:.14},
+ steps:[
+ "Вступление: скопируй 4-02 в 4-03, открой и заглуши бочку, снейр и хэт ([SHIFT] + пэд). Мьюты хранятся в паттерне. Сохрани ⟨Ptn⟩.",
+ "Брейк: скопируй 4-02 в 4-04, открой и заглуши бочку и снейр, хэт оставь. Сохрани ⟨Ptn⟩.",
+ "Каждая версия длится 4 такта. Следующую выбирай во время последнего прохода текущей: нажми [PATTERN] и номер — шаг замигает и начнётся, когда доиграет текущая.",
+ "Форма (около 80 секунд): 4-03 один раз, 4-02 два раза, 4-04 один раз, 4-02 два раза, 4-03 один раз. Карта — в уроке 30.",
+ "Отрепетируй форму без остановки, потом запиши с MIX OUT на телефон или по USB в компьютер (урок 14)."],
+ check:"На записи слушатель отмечает вход барабанов, брейк и возвращение грува.",
+ task:"Дай послушать запись другу и попроси отметить, где вступили барабаны."}];
 const lessons=[
 {n:"00",lv:"L1",t:"Страховка: бэкап до экспериментов",time:"15 мин",page:"124639499124688139",
  goal:"Сохранить заводские сэмплы и паттерны на компьютер, чтобы смело удалять и перезаписывать.",
@@ -1246,6 +1310,7 @@ const lessons=[
  check:"В Ableton лежит запись P-6, а [▶] в Ableton запускает паттерн в нужном темпе.",
  warn:"Названия пунктов меню Ableton зависят от версии. Здесь только общий путь, нажатия на P-6 сверены с руководством Roland."}
 ];
+lessons.push(...GENRE_LESSONS);
 const plan_old=[
  ["Неделя 1","Уроки 00–02: бэкап, звуки, пресеты"],["Неделя 2","Урок 03 + задачи «Диджей на пресетах», «Один звук — четыре роли»"],
  ["Неделя 3","Уроки 04–05: бит по шагам и живая запись"],["Неделя 4","Уроки 06–08: вероятность, ноты, моушены"],
@@ -1405,7 +1470,6 @@ const GLOSS=`<div class="box"><h4>Словарик ударных</h4>
 </div>`;
 
 /* ---------------- STEP GRIDS ---------------- */
-const R=(a,b,st=1)=>{const o=[];for(let i=a;i<=b;i+=st)o.push(i);return o};
 const GRIDS={
  "T1":[
   {t:"Четыре счёта",bpm:90,note:"Бочка на каждый счёт: «раз» — шаг 1, «два» — 5, «три» — 9, «четыре» — 13.",rows:[{n:"Бочка",pad:"счёт",k:"kick",s:[1,5,9,13]}]},
@@ -1472,7 +1536,7 @@ function gridHTML(g,id){
  return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
  const split=typeof PHONE!=="undefined"&&PHONE.matches;
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM${g.scale&&g.scale!=="1_16"?" · шаг "+g.scale:""}</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
- <div class="seq-wrap${split||g.len===32?" split":""}">${g.len===32?[[1,16],[17,32]].map(([a,b],k)=>`<p class="small" style="margin:0">Такт ${k+1} · шаги ${a}–${b} · страница ${k+1}</p>`+(split?blk(a,a+7)+blk(a+8,b):blk(a,b))).join(""):split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
+ <div class="seq-wrap${split||g.len>16?" split":""}">${g.len>16&&g.len%16===0?R(1,g.len/16).map(k=>[16*k-15,16*k]).map(([a,b],k)=>`<p class="small" style="margin:0">Такт ${k+1} · шаги ${a}–${b} · страница ${k+1}</p>`+(split?blk(a,a+7)+blk(a+8,b):blk(a,b))).join(""):split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
 let seqNext=null;const MG={};
@@ -1498,10 +1562,10 @@ const TK={kick:{n:"Бочка",pad:"",p6:"[1]",k:"kick",s:[1,5,9,13]},sn:{n:"С�
 const TKCOPY="Как копировать: останови [▶], [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер новой версии → [C♯ · ENTER]. Открой её: [PATTERN] → номер → [PATTERN].";
 const TKSAVE="Сохрани: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER].";
 const TRACK=[
- {id:"intro",n:"04",to:"2-01",role:"Интро",add:"Бочка на 1, 5, 9, 13 и снейр на 5 и 13",
+ {id:"intro",n:"04",track:"main",final:{cap:"Финал (урок 28): восемь тактов из сохранённых версий",head:["Такты","Версия"],rows:[["1–2","2-01 интро"],["3–4","2-02 грув"],["5–6","2-03 с басом"],["7","2-05 сбивка"],["8","2-02 грув"]]},to:"2-01",role:"Интро",add:"Бочка на 1, 5, 9, 13 и снейр на 5 и 13",
   do:"Шаги первого занятия этого урока.",ear:"Слышно только бочку и снейр: просторно, есть куда вступать.",
   B:[TK.sn,TK.kick],hl:[5,13],hlr:0,overview:1},
- {id:"groove",n:"04",from:"2-01",to:"2-02",role:"Основной грув",add:"Хэт восьмыми, каждый второй удар тише",
+ {id:"groove",n:"04",nocopy:1,from:"2-01",to:"2-02",role:"Основной грув",add:"Хэт восьмыми, каждый второй удар тише",
   do:"Шаги второго занятия этого урока: копия интро, хэт и акценты.",ear:"Хэт качает: громкий удар на счёт, тихий между счётами.",
   A:[TK.sn,TK.kick],B:[TK.hat,TK.sn,TK.kick],hl:R(1,15,2),hlr:0},
  {id:"bass",n:"07",start:1,from:"2-02",to:"2-03",role:"Версия с басом",add:"Короткая басовая фраза с паузой на последней доле",
@@ -1519,19 +1583,21 @@ const TRACK=[
  {id:"motion",n:"08",from:"2-05",to:"2-05",role:"Сбивка",add:"Фильтр хэта закрывается к концу такта",
   do:"Открой 2-05. Пэду хэта включи фильтр: [SHIFT] + [G♯ · FILTER] → [PITCH] → ⟨LPF⟩. Остановись, нажми [●], выбери шаг 13 и в том же меню поверни [START] (срез) чуть ниже. На шагах 14, 15 и 16 — ещё ниже. На шаге 1 верни срез вверх, иначе фильтр останется закрытым в следующих тактах. [●] — конец правки.",
   ear:"Хэт в сбивке темнеет и глохнет, а с новым тактом снова яркий."}];
-function trkStart(t){const g=gridState[`trk_${t.id}_A`]||{bpm:96,rows:t.A};const rows=g.rows.filter(r=>r.s);
+function regStages(){lessons.forEach(l=>{if(l.stage&&!TRACK.some(x=>x.id===l.stage.id))TRACK.push(Object.assign({n:l.n,nocopy:1},l.stage))})}
+regStages();
+function trkStart(t){const g=gridState[`trk_${t.id}_A`]||{bpm:t.bpm||96,rows:t.A,len:t.lenA};const rows=g.rows.filter(r=>r.s);
  const line=r=>{const weak=r.v?Object.keys(r.v).filter(i=>r.v[i]<1).map(Number):[];return [`${r.n} — пэд ${r.p6||""}`,r.s.join(", "),weak.length?`тише (⟨WEAK⟩): ${weak.join(", ")}`:"—"]};
- return `<div class="box start-card"><h4>Начать с этого урока</h4><p class="small">Нет сохранённой версии ${t.from} или пришёл сразу сюда? Собери основу по карточке: темп ${g.bpm} BPM, длина ${g.len||16} шагов, банк F.</p>
+ return `<div class="box start-card"><h4>Начать с этого урока</h4><p class="small">Нет сохранённой версии ${t.from} или пришёл сразу сюда? Собери основу по карточке: темп ${g.bpm} BPM, длина ${g.len||16} шагов${t.bank?", "+t.bank:", банк F"}.</p>
  <p class="earrow"><button type="button" class="btn" data-earv="trk_${t.id}_A" data-lbl="Послушать основу" data-toggle="1" aria-pressed="false">▶ Послушать основу</button></p>
  ${tableHTML({cap:"Основа: барабаны",head:["Партия","Шаги","Акценты"],rows:rows.map(line)})}
- <ol class="drill"><li>${fmt(`Пустой паттерн ${t.to}: [PATTERN] → держи [PATTERN] и нажми шаг 2 → отпусти → шаг ${+t.to.split("-")[1]} → [PATTERN]. Темп: крути [TEMPO/VALUE] до ${g.bpm}.`)}</li><li>${fmt("Банк F: нажми [B/F] дважды (кнопка мигает), [KYBD] не горит.")}</li><li>${fmt("Для каждой партии: выбери пэд без звука ([PATTERN] + пэд) и нажми шаги из таблицы. Акцент: держи шаг и нажимай пэд до ⟨WEAK⟩.")}</li><li>${fmt("Нажми [▶] и сверь с кнопкой «Послушать основу». Совпадает — переходи к басу.")}</li></ol></div>`}
+ <ol class="drill"><li>${fmt(`Пустой паттерн ${t.to}: [PATTERN] → держи [PATTERN] и нажми шаг ${+t.to.split("-")[0]} → отпусти → шаг ${+t.to.split("-")[1]} → [PATTERN]. Темп: крути [TEMPO/VALUE] до ${g.bpm}.`)}</li><li>${fmt(t.bankHow||"Банк F: нажми [B/F] дважды (кнопка мигает), [KYBD] не горит.")}</li><li>${fmt("Для каждой партии: выбери пэд без звука ([PATTERN] + пэд) и нажми шаги из таблицы. Акцент: держи шаг и нажимай пэд до ⟨WEAK⟩.")}</li><li>${fmt("Нажми [▶] и сверь с кнопкой «Послушать основу». Совпадает — переходи к басу.")}</li></ol></div>`}
 function trkHTML(t){const id=t.id,has=!!t.B;
- if(has){gridState[`trk_${id}_A`]={bpm:96,rows:t.A||[],loop:16};gridState[`trk_${id}_B`]={bpm:96,rows:t.B,loop:16};gridState[`trk_${id}_g`]={t:`${t.to} · ${t.role}`,bpm:96,rows:JSON.parse(JSON.stringify(t.B)),hl:t.hl,hlr:t.hlr,note:"Рамкой отмечено то, что добавилось."}}
+ const bpm=t.bpm||96;if(has){gridState[`trk_${id}_A`]={bpm,rows:t.A||[],loop:16,len:t.lenA,swing:t.swingA||0};gridState[`trk_${id}_B`]={bpm,rows:t.B,loop:16,len:t.lenB,swing:t.swingB||0};gridState[`trk_${id}_g`]={t:`${t.to} · ${t.role}`,bpm,len:t.lenB,swing:t.swingB||0,rows:JSON.parse(JSON.stringify(t.B)),hl:t.hl,hlr:t.hlr,note:"Рамкой отмечено то, что добавилось."}}
  const btn=(v,l)=>`<button type="button" class="btn" data-earv="trk_${id}_${v}" data-lbl="${l}" aria-pressed="false" aria-label="Пример «${l}»">▶ ${l}</button>`;
- const ov=t.overview?`${tableHTML({cap:"Карта сквозного трека: каждая версия — отдельный паттерн",head:["Версия","Урок","Что добавляется","Роль"],rows:TRACK.map(x=>[x.to,"урок "+x.n,x.add,x.role])})}${tableHTML({cap:"Финал (урок 28): восемь тактов из сохранённых версий",head:["Такты","Версия"],rows:[["1–2","2-01 интро"],["3–4","2-02 грув"],["5–6","2-03 с басом"],["7","2-05 сбивка"],["8","2-02 грув"]]})}<p class="small">Поэтому сохраняй каждую версию в свою ячейку, даже простое интро: в финале ты будешь переключать их вживую.</p>`:"";
- return `<div class="seq ear trk" id="trk_${id}"><div class="seq-head"><h4>Сквозной трек · ${t.to} · ${esc(t.role)}</h4>${has?`<span class="ctl"><span>96 BPM</span>${t.A?btn("A","До"):""}${btn("B","После")}<button type="button" class="btn" data-earstop="trk_${id}_" hidden>■ Стоп</button></span>`:""}</div>${has?`<p class="small muted earstat" id="trk_${id}_st" aria-live="polite"></p>`:""}
- ${ov}<p><b>Начни с:</b> ${t.from?`версии ${t.from}`:"пустого паттерна"}. <b>Добавь:</b> ${esc(t.add[0].toLowerCase()+t.add.slice(1))}. <b>Сохрани в:</b> ${t.to}.</p>
- <p>${fmt(t.do)}${t.from&&t.from!==t.to&&t.n!=="04"?" "+fmt(TKCOPY):""} ${fmt(TKSAVE)}</p>
+ const tr=t.track||"main",ov=t.overview?`${tableHTML({cap:"Карта трека: каждая версия — отдельный паттерн",head:["Версия","Урок","Что добавляется","Роль"],rows:TRACK.filter(x=>(x.track||"main")===tr).map(x=>[x.to,"урок "+x.n,x.add,x.role])})}${t.final?tableHTML(t.final):""}<p class="small">Поэтому сохраняй каждую версию в свою ячейку, даже простое начало: в финале ты будешь переключать их вживую.</p>`:"";
+ return `<div class="seq ear trk" id="trk_${id}"><div class="seq-head"><h4>Сквозной трек · ${t.to} · ${esc(t.role)}</h4>${has?`<span class="ctl"><span>${bpm} BPM</span>${t.A?btn("A","До"):""}${btn("B","После")}<button type="button" class="btn" data-earstop="trk_${id}_" hidden>■ Стоп</button></span>`:""}</div>${has?`<p class="small muted earstat" id="trk_${id}_st" aria-live="polite"></p>`:""}
+ ${ov}<p><b>Начни с:</b> ${t.from?`версии ${t.from}`:"пустого паттерна"}. <b>Добавь:</b> ${esc(/^[А-ЯЁ][а-яё]/.test(t.add)?t.add[0].toLowerCase()+t.add.slice(1):t.add)}. <b>Сохрани в:</b> ${t.to}.</p>
+ <p>${fmt(t.do)}${t.from&&t.from!==t.to&&!t.nocopy?" "+fmt(TKCOPY):""} ${fmt(TKSAVE)}</p>
  ${has?gridHTML(gridState[`trk_${id}_g`],`trk_${id}_g`):""}
  <p class="small"><b>Проверка на слух.</b> ${esc(t.ear)}</p></div>`}
 /* ---------------- TALLY (+/− per bar, two series) ---------------- */
@@ -1754,7 +1820,7 @@ function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const ses=ls.reduce((a,l)=>a+(SES[l.n]?1:(PARTS[l.n]||[]).length+1),0);return {ls,dn,steps,sd,ses}}
 function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
 function branchTile(sec,showList){const st=secStats(sec);
- return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname"><span class="bt">${esc(sec.name.replace("Ветка · ",""))}</span><span class="go">Открыть <span aria-hidden="true">→</span></span></span>
+ return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname"><span class="bt">${esc(sec.name.replace(/^(Ветка|Жанр) · /,""))}</span><span class="go">Открыть <span aria-hidden="true">→</span></span></span>
  <span class="bdesc">${esc(relabel(sec.desc))}</span>
  ${showList?`<span class="bles">${st.ls.map(l=>`${lbl(l.n)} · ${esc(l.t)}`).join("<br>")}</span>`:""}
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
@@ -1768,16 +1834,16 @@ function renderLessons(){
   st.ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
   box.innerHTML=html;bindDetails(box);
   document.getElementById("forkBox").innerHTML=`<div class="forkhead"><span class="node"></span><h2>Ветки</h2></div><p class="secdesc" style="margin:4px 0 0 24px">После базы выбирай любую ветку, порядок не важен. Каждая открывается отдельной страницей.</p>
-  <div class="fork">${SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("")}</div>`;
+  <div class="fork" id="forkMain">${SECTIONS.slice(1).filter(x=>!x.genre).map(sec=>branchTile(sec,true)).join("")}</div>${SECTIONS.some(x=>x.genre)?`<div class="forkhead" style="margin-top:28px"><span class="node"></span><h2>Жанровые ветки</h2></div><p class="secdesc" style="margin:4px 0 0 24px">Один трек в жанре по слоям: от первого грува до записи на 1–2 минуты. Лучше после базы.</p><div class="fork" id="forkGenre">${SECTIONS.filter(x=>x.genre).map(sec=>branchTile(sec,false)).join("")}</div>`:""}`;
   if(curBranch)renderBranch(curBranch);
   updateProgress();
 }
 let curBranch=null;
 function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
- document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.</p>
+ document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.${sec.recipe?` Рецепт жанра с сеткой — во вкладке <a href="#recipes">«Рецепты»</a>.`:""}</p>
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
- document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
+ document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id&&!!x.genre===!!sec.genre).map(x=>branchTile(x,false)).join("")}</div>`}
 function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done);store.set("p6last",k.slice(0,k.lastIndexOf("-")))}
 function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
  const cnt=doneCnt(l),tot=act(l).length,was=det.classList.contains("complete");det.querySelector(".lcount").textContent=cnt+" / "+tot;det.classList.toggle("complete",cnt===tot);
@@ -1785,7 +1851,7 @@ function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}
  else if(cnt<tot&&was){const dc=det.querySelector(".donecard");if(dc)dc.outerHTML=nextHTML(l)}
  updateProgress();refreshTiles()}
 function refreshTiles(){const bs=document.getElementById("baseStat");if(bs){const b=SECTIONS[0],t=secStats(b);bs.textContent=`${b.span} · пройдено уроков ${t.dn} из ${t.ls.length}`}
- const bo=document.querySelector("#branchOther .othergrid");if(bo&&curBranch)bo.innerHTML=SECTIONS.slice(1).filter(x=>x.id!==curBranch).map(x=>branchTile(x,false)).join("");const fb=document.querySelector("#forkBox .fork");if(fb)fb.innerHTML=SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("");
+ const bo=document.querySelector("#branchOther .othergrid");if(bo&&curBranch){const cs=SECTIONS.find(x=>x.id===curBranch);bo.innerHTML=SECTIONS.slice(1).filter(x=>x.id!==curBranch&&!!x.genre===!!(cs&&cs.genre)).map(x=>branchTile(x,false)).join("")}const fb=document.getElementById("forkMain");if(fb)fb.innerHTML=SECTIONS.slice(1).filter(x=>!x.genre).map(sec=>branchTile(sec,true)).join("");const fg=document.getElementById("forkGenre");if(fg)fg.innerHTML=SECTIONS.filter(x=>x.genre).map(sec=>branchTile(sec,false)).join("");
  if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
 function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);const a=act(l);let i=focus[n];
  if(!a.includes(i)){i=a.find(k=>k>=i);if(i==null)i=a[0];focus[n]=i;saveFocus()}
@@ -2097,7 +2163,7 @@ const RECIPES=[
 ];
 function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES.map((r,ri)=>{
  const id="rc_"+r.id;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(r.grid));
- return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)} в жанре</span></div>
+ return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)} в жанре</span>${(SECTIONS.find(x=>x.recipe===r.id)||0).id?`<a href="#branch-${SECTIONS.find(x=>x.recipe===r.id).id}">Пройти как ветку <span aria-hidden="true">→</span></a>`:""}</div>
  <p>${esc(relabel(r.mood))}</p><p class="small"><b>Послушать на приборе:</b> ${esc(relabel(r.ex))}</p>
  ${gridHTML(gridState[id],id)}
  <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(relabel(r.pads))}</p></div>
