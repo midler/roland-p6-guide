@@ -335,7 +335,8 @@ kbd{font-size:max(.78em,12px)}
 nav.tabs svg{display:none}
 .subnav{display:flex;gap:6px;flex-wrap:wrap}
 .subnav a{font-size:var(--fs-sm);font-weight:700;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px;min-height:36px;display:inline-flex;align-items:center}
-.subnav a[aria-current="true"]{color:var(--accent);border-color:var(--accent)}
+.subnav a[aria-current="true"]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+.ch .seq{background:transparent;border:0;padding:0}
 .devwrap.split{display:grid;gap:8px;overflow:visible}
 .devwrap.split .dev2{min-width:0}
 .devwrap.split .dev2 .lab{font-size:max(calc(.95cqw*var(--k,1)),9px);letter-spacing:-.03em}
@@ -500,7 +501,6 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 </section>
 
 <section class="view" id="v-cheats" hidden>
-  <nav class="subnav" aria-label="Разделы справки"><a href="#cheats" aria-current="true">Шпаргалка</a><a href="#about">О приборе</a><a href="#videos">Видео и источники</a></nav>
   <div class="levelhead"><h2>Шпаргалка</h2></div>
   <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, chop…" aria-label="Поиск по шпаргалке">
   <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
@@ -1612,7 +1612,7 @@ function route(){
   else if(!views.includes(h))h="start";
   document.getElementById("v-branch").hidden=h!=="branch";
   const HELP=["cheats","about","videos"],help=HELP.includes(h);
-  views.forEach(v=>{document.getElementById("v-"+v).hidden=help?!HELP.includes(v):v!==h});
+  views.forEach(v=>{document.getElementById("v-"+v).hidden=v!==h});
   document.body.dataset.view=h;
   document.querySelectorAll(".subnav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"true":"false"));
   if(br)renderBranch(br);else curBranch=null;
@@ -1622,9 +1622,8 @@ function route(){
   const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",about:"inFo",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
 }
-function helpScroll(){const t={"#videos":"v-videos","#about":"v-about"}[location.hash];if(t){document.getElementById(t).scrollIntoView({block:"start",behavior:"instant"});return true}return false}
-window.addEventListener("hashchange",()=>{route();if(!helpScroll())window.scrollTo(0,0)});
+["cheats","about","videos"].forEach(v=>document.getElementById("v-"+v).insertAdjacentHTML("afterbegin",`<nav class="subnav" aria-label="Разделы справки"><a href="#cheats">Шпаргалка</a><a href="#about">О приборе</a><a href="#videos">Видео</a></nav>`));
+window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0)});
 renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
-requestAnimationFrame(helpScroll);if(document.fonts)document.fonts.ready.then(()=>setTimeout(helpScroll,50));
 })();
 </script>
