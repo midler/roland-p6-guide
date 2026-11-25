@@ -306,6 +306,12 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 
+
+/* clarify pass: inline terms */
+.term{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:help;text-decoration:underline dashed;text-decoration-color:var(--muted);text-underline-offset:3px}
+.term[aria-expanded="true"]{text-decoration-color:var(--accent)}
+.termdef{display:block;margin:6px 0 8px;padding:8px 12px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);font-size:var(--fs-sm);line-height:var(--lh-text);color:var(--ink);font-weight:400;letter-spacing:0;text-transform:none;font-family:var(--f-body)}
+.search::placeholder{color:var(--muted);opacity:1}
 /* delight pass: lesson done card */
 .donecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;align-items:start;border:1px solid var(--done);border-radius:10px;padding:14px 16px;background:color-mix(in srgb,var(--done) 8%,var(--surface))}
 .donecard .lcd{font-size:var(--fs-md);margin-top:2px}
@@ -478,7 +484,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 <section class="view" id="v-cheats" hidden>
   <nav class="subnav" aria-label="Разделы справки"><a href="#cheats" aria-current="true">Шпаргалка</a><a href="#about">О приборе</a><a href="#videos">Видео и источники</a></nav>
   <div class="levelhead"><h2>Шпаргалка</h2></div>
-  <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, метроном, chop…" aria-label="Поиск по шпаргалке">
+  <input class="search" id="q" type="search" placeholder="Поиск: копировать, свинг, chop…" aria-label="Поиск по шпаргалке">
   <div class="card tablewrap"><table><thead><tr><th>Нажатие</th><th>Что делает</th><th>Урок</th></tr></thead><tbody id="cheatBody"></tbody></table></div>
 </section>
 
@@ -1352,12 +1358,37 @@ function renderChallenges(){
   f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
   f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
-  document.getElementById("chList").innerHTML=list.map(c=>`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`).join("");
+  document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
   document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone)});
 }
+
+/* ---------------- TERMS: tap a dashed word to see what it means ---------------- */
+const TERMS=[
+ [/сабстеп\p{L}*/iu,"Сабстеп: дробь внутри одного шага, несколько быстрых ударов вместо одного (⟨oo⟩, ⟨ooo⟩). Задаётся в деталях ноты, урок 06."],
+ [/(?<![\p{L}\d])8t(?![\p{L}\d])/u,"⟨8t⟩: размер шага «восьмые триоли», три удара на месте двух восьмых. Размер шага меняется в уроке 06."],
+ [/scatter/i,"Scatter: эффект, который на ходу перемешивает и повторяет кусочки паттерна. Звучит, пока держишь [PATTERN] + [SCATTER], урок 15."],
+ [/Cassette Sim/,"Cassette Sim ⟨CSt⟩: мульти-эффект, похожий на звук кассеты, с «плаванием» и шумом. Эффекты разобраны в уроке 13."],
+ [/(?<![\p{L}])MFX(?![\p{L}])/u,"MFX: мульти-эффект. В P-6 их 20, выбираются удержанием [MFX], урок 13."],
+ [/ресемпл\p{L}*/iu,"Ресемплинг: записать то, что сейчас играет P-6, вместе с эффектами, в новый сэмпл. Урок 10."],
+ [/step sampling/i,"Step sampling: запись по кусочкам в один пэд, каждое нажатие [SAMPLING] пишет следующий кусочек. Кусочки играются клавишами, урок 11."],
+ [/(?<![\p{L}])Chop(?![\p{L}])/u,"Chop: нарезка сэмпла на равные кусочки (2–64), которые играются клавишами в [KYBD]. Урок 11."]];
+function terms(html){const used=new Set();const stack=[];
+ return html.split(/(<[^>]+>)/).map(part=>{
+  if(part.startsWith("<")){const m=part.match(/^<(\/?)([a-z0-9]+)/i);if(!m)return part;const tag=m[2].toLowerCase();
+   if(/^(br|img|input|hr|svg|path|circle|rect)$/.test(tag)||part.endsWith("/>"))return part;
+   if(m[1])stack.pop();else stack.push(tag==="span"&&/class="[^"]*lcd/.test(part)?"lcd":tag);return part}
+  if(stack.some(t=>/^(a|button|kbd|lcd|b|label|h3|h4|textarea)$/.test(t)))return part;
+  let out=part;TERMS.forEach(([re,def],ti)=>{if(used.has(ti))return;const m=out.match(re);if(!m)return;used.add(ti);
+   out=out.slice(0,m.index)+`<button type="button" class="term" aria-expanded="false" data-term="${ti}">${m[0]}</button>`+out.slice(m.index+m[0].length)});
+  return out}).join("")}
+document.addEventListener("click",e=>{const t=e.target.closest(".term");if(!t)return;
+ const open=t.getAttribute("aria-expanded")==="true";const nx=t.nextElementSibling;
+ if(open){if(nx&&nx.classList.contains("termdef"))nx.remove();t.setAttribute("aria-expanded","false");return}
+ const id="td"+Math.random().toString(36).slice(2,8);t.insertAdjacentHTML("afterend",`<span class="termdef" id="${id}" role="note">${fmt(TERMS[+t.dataset.term][1])}</span>`);
+ t.setAttribute("aria-controls",id);t.setAttribute("aria-expanded","true")});
 function roll(){
   const out=document.getElementById("diceOut");
-  out.innerHTML=Object.entries(dice).map(([k,v])=>`<div class="slot"><b>${k}</b>${esc(v[Math.floor(Math.random()*v.length)])}</div>`).join("");
+  out.innerHTML=terms(Object.entries(dice).map(([k,v])=>`<div class="slot"><b>${k}</b>${esc(v[Math.floor(Math.random()*v.length)])}</div>`).join(""));
 }
 document.getElementById("roll").onclick=roll;
 
@@ -1518,7 +1549,7 @@ function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES
  ${gridHTML(gridState[id],id)}
  <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(relabel(r.pads))}</p></div>
  <div class="box"><h4>Приёмы</h4><ul class="small">${r.tips.map(t=>`<li>${fmt(t[0])} <a href="#lessons" data-open="${t[1]}">урок ${lbl(t[1])}</a></li>`).join("")}</ul></div>
- <div class="box task"><h4>Итоговое задание</h4><p>${esc(relabel(r.task))}</p></div></div>`}).join("").replace(/<(\/?)h4\b/g,"<$1h3");
+ <div class="box task"><h4>Итоговое задание</h4><p>${esc(relabel(r.task))}</p></div></div>`}).map(terms).join("").replace(/<(\/?)h4\b/g,"<$1h3");
  bindOpenLinks(document.getElementById("recipeList"))}
 /* ---------------- PROGRESS CODE ---------------- */
 function makeCode(){const o={d:Object.keys(done),c:Object.keys(chDone)};return "P6:"+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
