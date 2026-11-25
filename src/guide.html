@@ -777,7 +777,7 @@ const lessons=[
  "Квантизация при воспроизведении для одного пэда: держи пэд и нажми [●]. Пока она включена, микросдвиги (урок 06) у этого пэда не работают."],
  check:"Ты записал хэт или перкуссию вживую поверх бита из урока 04.",
  task:"«Человек и машина»: запиши одну и ту же партию с квантизацией и без. Оставь ту, что качает сильнее."},
-{n:"06",ear:["clap"],tc:[["OgHoQyyOL1o", "17:30", "Параметры шага и вероятность (Roland)"], ["D9hKUrkjH0U", "08:15", "Микросдвиг баса от бочки"], ["D9hKUrkjH0U", "09:46", "Вероятность: каждый второй проход"], ["5xllueR9U6M", "13:50", "Размер шага паттерна"]],lv:"L2",t:"Длина, размер шага и вероятность",time:"45 мин",page:"112175115114053259",
+{n:"06",ear:["clap","dbl"],tc:[["OgHoQyyOL1o", "17:30", "Параметры шага и вероятность (Roland)"], ["D9hKUrkjH0U", "08:15", "Микросдвиг баса от бочки"], ["D9hKUrkjH0U", "09:46", "Вероятность: каждый второй проход"], ["5xllueR9U6M", "13:50", "Размер шага паттерна"]],lv:"L2",t:"Длина, размер шага и вероятность",time:"45 мин",page:"112175115114053259",
  goal:"Сделать паттерн, который каждый раз звучит немного по-новому.",
  steps:[
  "Длина паттерна: [SHIFT] + [D♯ · LAST] → [TEMPO/VALUE] (1–64 шага) → [C · EXIT].",
@@ -1383,6 +1383,7 @@ const EARS={
   intro:"Бочка на каждую долю, клэп на «два» и «четыре». В примере B оба клэпа чуть сдвинуты от бочки.",
   q:"Как звучит клэп в примере B?",opts:["Раньше бочки — спешит","Позже бочки — отстаёт"],
   hint:"Слушай удар на шаге 5: что слышно первым — клэп или бочка?",
+  p6pre:"Сначала ответь на слух — здесь появится, на сколько сдвинуть клэп. Сдвиг ноты на P-6 называется ⟨t.⟩: держи шаг и нажимай [GRANULAR], пока его не увидишь.",
   A:[{n:"Клэп",pad:"",k:"clap",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
   vars:[
    {ans:0,hl:[5,13],why:"Клэп звучит раньше бочки: на сетке у него «−35», это 35% шага до доли.",
@@ -1391,6 +1392,15 @@ const EARS={
    {ans:1,hl:[5,13],why:"Клэп звучит позже бочки: на сетке у него «+35», это 35% шага после доли.",
     B:[{n:"Клэп",pad:"",k:"clap",s:[5,13],t:{5:.35,13:.35}},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
     p6:"Выбери пэд клэпа, держи шаг 5 и нажимай [GRANULAR], пока не увидишь ⟨t. 0⟩. Не отпуская шаг, крути [TEMPO/VALUE] до ⟨t. 35⟩. Повтори для шага 13. Потом верни ⟨t. 0⟩ и сравни: клэп снова встанет на долю. Если включён квантайз при игре ⟨P.qnt⟩, сдвиг не слышен."}]}
+,
+ dbl:{t:"На слух: где двойной удар?",bpm:96,pick:"step",
+  intro:"В примере A хэт играет восьмыми. В B один удар хэта разбит на два коротких внутри того же шага, остальное не меняется.",
+  q:"На каком шаге в примере B двойной удар? Нажми номер шага.",
+  p6pre:"Сначала найди шаг на слух — здесь появится, что нажать. Дробь шага на P-6 называется сабстепом: держи шаг и нажимай [GRANULAR] до последнего пункта по кругу.",
+  A:[{n:"Хэт",pad:"",k:"hat",s:R(1,15,2)},{n:"Снейр",pad:"",k:"snare",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
+  vars:[3,7,11,15].map(x=>({ans:x,hl:[x],why:`Двойной удар на шаге ${x}: цифра «×2» на сетке — это сабстеп.`,
+   B:[{n:"Хэт",pad:"",k:"hat",s:R(1,15,2),sub:{[x]:2}},{n:"Снейр",pad:"",k:"snare",s:[5,13]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
+   p6:`Собери A: хэт на шагах 1, 3, 5 … 15, снейр на 5 и 13, бочка на 1, 5, 9, 13. Выбери пэд хэта, держи шаг ${x} и нажимай [GRANULAR] до последнего пункта по кругу — сабстепа. Не отпуская шаг, крути [TEMPO/VALUE], пока шаг не разделится на две части. Потом убери дробь и поставь её на другой шаг: послушай, как меняется грув. Ещё один пример с дробями — сетка «Вероятность и сабстепы» в начале урока.`}))}
 };const earState={};
 function earBtns(){document.querySelectorAll("[data-earv]").forEach(b=>{const on=(seqNext||seqPlaying)===b.dataset.earv;b.setAttribute("aria-pressed",on);b.classList.toggle("primary",on);b.textContent=(on?"■ ":"▶ ")+b.dataset.earv.slice(-1)})}
 function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math.floor(Math.random()*E.vars.length),ans:null,show:false}),V=E.vars[st.v];
@@ -1405,7 +1415,7 @@ function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math
  <p><b>${esc(E.q)}</b></p><div class="earopts${E.pick==="step"?" steps16":""}" role="group" aria-label="${esc(E.q)}">${opts}</div><div aria-live="polite">${fb}</div>
  <p class="earrow"><button type="button" class="btn" data-earshow="${eid}" aria-expanded="${st.show}">${st.show?"Скрыть шаги":"Показать шаги"}</button>${E.vars.length>1?`<button type="button" class="btn" data-earnew="${eid}">Другое задание</button>`:""}</p>
  ${st.show?gridHTML(gridState[`ear_${eid}_g`],`ear_${eid}_g`):""}
- <div class="box task"><h4>Повтори на P-6</h4><p>${fmt(V.p6||E.p6)}</p></div></div>`}
+ <div class="box task"><h4>Повтори на P-6</h4><p>${fmt(ok||!E.p6pre?(V.p6||E.p6):E.p6pre)}</p></div></div>`}
 function earRender(eid,focusSel){const el=document.getElementById("ear_"+eid);if(!el)return;el.outerHTML=earHTML(eid);earBtns();if(focusSel){const f=document.querySelector(`#ear_${eid} ${focusSel}`);if(f)f.focus()}}
 document.addEventListener("click",e=>{
  const v=e.target.closest("[data-earv]");if(v){const id=v.dataset.earv,c=ac();if(!c)return;if(c.state==="suspended")c.resume();
