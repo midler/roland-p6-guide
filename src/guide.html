@@ -866,7 +866,18 @@ const lessons=[
  "Запомни частоту готового сэмпла: [SHIFT] + [LO-Fi] → ⟨SMP.r⟩ → [C♯ · ENTER]."],
  check:"На пэде твой звук, и он срабатывает сразу, без тишины в начале (подрежь [START], если нужно).",
  warn:"При 44,1 кГц моно на сэмпл есть только 5,9 секунды. Нужен длиннее — выбери ⟨22.0k⟩ (11,8 с) или ⟨11.0k⟩ (23,7 с) и получишь заодно лоу-фай характер.",
- task:"«Бит из кухни»: шесть звуков с кухни (крышка, ложка, кран, пачка крупы, щелчок плиты, чашка) на пэды 1–6 и бит в новом паттерне."},
+ task:"«Бит из кухни»: шесть звуков с кухни (крышка, ложка, кран, пачка крупы, щелчок плиты, чашка) на пэды 1–6 и бит в новом паттерне.",
+ ext:[["Деннис ДеСантис, Disquiet Junto 0220 «Rhythmic Arrhythmic»","https://disquiet.com/2016/03/17/disquiet0220-rhythmicarrhythmic/","idea"]],
+ drill:{t:"Найди пульс в шуме",goal:"Начать бит не с барабанов, а со своей бытовой записи: найти в ней ритм и построить вокруг него короткую партию.",
+  steps:[
+  "Запиши на свободный пэд секунды три какого-нибудь шума: застёжку-молнию, перебор ключей, шорох пакета.",
+  "Сохрани исходник: скопируй его на соседний пустой пэд (держи пэд + [SHIFT] + [▶ · COPY] → ⟨COPY⟩ → [C♯ · ENTER] → пустой пэд → [C♯ · ENTER]). Дальше меняй только копию.",
+  "Зацикли копию: включи [LOOP]. Пэд играет по кругу, пока не нажмёшь его снова.",
+  "Понемногу двигай [START] и [END], пока в петле не появится рисунок, который можно отстучать рукой по столу. Это и есть пульс.",
+  "Подстрой темп под петлю: крути [TEMPO/VALUE], пока метроном (держи [PATTERN] + [●] → ⟨M.PLY⟩) не совпадёт с твоим постукиванием. Метроном потом выключи.",
+  "В пустом паттерне поставь петлю на шаг 1, а бочку — в двух вариантах: сначала на шаги 1 и 9, потом на 5 и 13. Выбери вариант, где найденный акцент слышнее.",
+  "Сравни по очереди: исходный шум (первый пэд), петлю отдельно (копия) и готовый бит ([▶]). Слышно, откуда взялся ритм."],
+  check:"Из бытовой записи получилась петля с узнаваемым пульсом, и ты выбрал, куда поставить бочку, чтобы этот пульс было лучше слышно."}},
 {n:"10",tc:[["OgHoQyyOL1o", "22:38", "Ресемплинг (Roland)"], ["OgHoQyyOL1o", "03:00", "Сэмплинг J-6 по синхронизации (Roland)"], ["ykDvjIwl2ps", "08:05", "Ресемплинг и порог"], ["ykDvjIwl2ps", "12:14", "Внешний вход"], ["D9hKUrkjH0U", "12:04", "Голос вниз + дилей + ресемпл + Chop"]],lv:"L3",t:"Внешний звук и ресемплинг",time:"45 мин",page:"113319947114021515",
  goal:"Сэмплировать телефон или компьютер и перезаписывать собственные паттерны.",
  steps:[
@@ -1620,8 +1631,8 @@ const LINKS={
  factory:["Заводские сэмплы и паттерны","https://www.roland.com/global/support/by_product/p-6/updates_drivers/e56e996e-88d3-4132-a778-d399ed68901b/","Архив Roland, чтобы вернуть заводские звуки после сброса."],
  ableton:["Ableton Live","https://www.ableton.com/","DAW для записи P-6 по USB (урок 22)."]};
 function tableHTML(t){return `<div class="tablewrap"><table><caption class="small" style="text-align:left;padding-bottom:4px">${esc(relabel(t.cap))}</caption><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${fmt(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`}
-function extBox(x){const r=x.filter(e=>e[2]==="roland"),c=x.filter(e=>e[2]==="com");const a=e=>`<a href="${e[1]}" target="_blank" rel="noopener">${esc(e[0])} <span aria-hidden="true">↗</span></a>`;
-  return `<div class="box"><h4>Не из руководства</h4>${r.length?`<p class="small">Справка Roland: ${r.map(a).join(", ")}.</p>`:""}${c.length?`<p class="small">Совет с форума Elektronauts, проверь на своём приборе: ${c.map(a).join(", ")}.</p>`:""}</div>`}
+function extBox(x){const r=x.filter(e=>e[2]==="roland"),c=x.filter(e=>e[2]==="com"),id=x.filter(e=>e[2]==="idea");const a=e=>`<a href="${e[1]}" target="_blank" rel="noopener">${esc(e[0])} <span aria-hidden="true">↗</span></a>`;
+  return `<div class="box"><h4>Не из руководства</h4>${r.length?`<p class="small">Справка Roland: ${r.map(a).join(", ")}.</p>`:""}${c.length?`<p class="small">Совет с форума Elektronauts, проверь на своём приборе: ${c.map(a).join(", ")}.</p>`:""}${id.length?`<p class="small">Идея упражнения: ${id.map(a).join(", ")}.</p>`:""}</div>`}
 const LESSON_LINKS={"23":["freesound","pixabay","n99","akwf","audacity","digichain","sampletool"],"19":["digichain","audacity","sampletool"],"16":["akwf","digichain"],"14":["sampletool","factory"],"00":["factory"],"27":["factory"],"22":["ableton"]};
 function linksBox(keys){return `<div class="box"><h4>Сайты и программы</h4><ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">${keys.map(k=>{const L=LINKS[k];return `<li><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><br>${esc(relabel(L[2]))}</li>`}).join("")}</ul></div>`}
 let focus=store.get("p6focus",{});function saveFocus(){store.set("p6focus",focus)}
