@@ -111,6 +111,9 @@ kbd .fn{opacity:.7;font-weight:500}
 .lesson{background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .lesson>summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
 .lesson>summary::-webkit-details-marker{display:none}
+.lesson>summary{grid-template-columns:auto minmax(0,1fr)}
+.lesson>summary .lmeta{display:inline}
+.lesson>summary .lcount{display:inline-block;margin-left:12px;grid-column:auto}
 .lnum{font-family:var(--f-mono);font-weight:700;font-size:var(--fs-sm);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:4px 7px;min-width:38px;text-align:center}
 .lesson.complete .lnum{background:var(--done);color:var(--surface);border-color:var(--done)}
 .lmeta{font-size:var(--fs-sm);color:var(--muted)}
@@ -134,10 +137,15 @@ ol.steps li.on label{color:var(--muted)}
 .dice .out{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 .dice .slot{background:var(--surface-2);border-radius:10px;padding:10px 12px;min-height:72px}
 .dice .slot b{display:block;font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.ch{display:grid;gap:8px;align-content:start}
+.ch{display:flex;flex-direction:column;gap:8px}
+.ch>label{margin-top:auto;padding-top:4px}
+.ch.wide{grid-column:1/-1}
+#chList{grid-auto-flow:row dense}
+@media (min-width:900px){.ch.wide{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);column-gap:28px;align-content:start}.ch.wide>*{grid-column:1}.ch.wide>.seq{grid-column:2;grid-row:1/span 5;align-self:start}.ch.wide>label{margin-top:0;align-self:end}}
 .ch .tags{display:flex;gap:6px;flex-wrap:wrap}
 .ch .tags span{font-size:var(--fs-xs);font-family:var(--f-mono);border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted)}
-.ch label{display:flex;gap:8px;align-items:center;font-size:var(--fs-sm);color:var(--muted);cursor:pointer}
+.ch label{display:flex;gap:10px;align-items:center;font-size:var(--fs-sm);color:var(--muted);cursor:pointer;min-height:36px}
+.ch label input{width:22px;height:22px;margin:0;accent-color:var(--done);cursor:pointer}
 .filters{display:flex;flex-wrap:wrap;gap:6px}
 /* cheats */
 .search{width:100%;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
@@ -265,7 +273,7 @@ html{scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
 section.view,#lessonList,#branchList,#recipeList,.lbody{grid-template-columns:minmax(0,1fr)}
 ol.steps label,.fact p,.box p{overflow-wrap:anywhere}
 .progress .lcount{white-space:normal}
-.fork,.hero{grid-template-columns:minmax(0,1fr)}.branch{min-width:0;overflow-wrap:anywhere}.branch .bname{flex-wrap:wrap}.branch .bmeta{flex-wrap:wrap}footer,.vid a,.box li{overflow-wrap:anywhere}
+.fork,.hero{grid-template-columns:minmax(0,1fr)}.branch{min-width:0;overflow-wrap:anywhere}.branch .bname .bt{min-width:0;flex:1}.branch .bmeta{flex-wrap:wrap}footer,.vid a,.box li{overflow-wrap:anywhere}
 h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 .btn,.modes button,nav.tabs a,.cell,.ctrl,.dev2 .el,.branch{transition:filter .12s ease,background-color .12s ease,border-color .12s ease}
 .btn:active,.modes button:active,nav.tabs a:active,.cell:not(:disabled):active,.ctrl:active,.dev2 .el:active,.branch:active{filter:brightness(.88)}
@@ -1171,7 +1179,7 @@ function stepsHTML(l){const sp=PARTS[l.n]||[];const letters="абвг";let out="
 function lessonHTML(l,open){
  const tot=act(l).length,cnt=doneCnt(l),complete=cnt===tot;
  return `<details class="lesson${complete?" complete":""}${focus[l.n]!=null?" focusmode":""}" data-n="${l.n}"${open?" open":""}>
-<summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span></span><span class="lcount">${cnt} / ${tot}</span></summary>
+<summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span><span class="lcount">${cnt} / ${tot}</span></span></summary>
 <div class="lbody">
 <div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
 ${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
@@ -1213,7 +1221,7 @@ function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const ses=ls.reduce((a,l)=>a+(SES[l.n]?1:(PARTS[l.n]||[]).length+1),0);return {ls,dn,steps,sd,ses}}
 function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
 function branchTile(sec,showList){const st=secStats(sec);
- return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname">${esc(sec.name.replace("Ветка · ",""))}<span class="go">Открыть <span aria-hidden="true">→</span></span></span>
+ return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname"><span class="bt">${esc(sec.name.replace("Ветка · ",""))}</span><span class="go">Открыть <span aria-hidden="true">→</span></span></span>
  <span class="bdesc">${esc(relabel(sec.desc))}</span>
  ${showList?`<span class="bles">${st.ls.map(l=>`${lbl(l.n)} · ${esc(l.t)}`).join("<br>")}</span>`:""}
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
@@ -1236,7 +1244,7 @@ function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;c
  document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.</p>
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
- document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin-top:14px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
+ document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
 function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done);store.set("p6last",k.slice(0,k.lastIndexOf("-")))}
 function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
  const cnt=doneCnt(l),tot=act(l).length,was=det.classList.contains("complete");det.querySelector(".lcount").textContent=cnt+" / "+tot;det.classList.toggle("complete",cnt===tot);
@@ -1344,7 +1352,7 @@ function renderChallenges(){
   f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
   f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
-  document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
+  document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch${CH_GRIDS[c.t]?" wide":""}"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
   document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone)});
 }
 
