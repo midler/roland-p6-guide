@@ -305,6 +305,15 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
+
+/* delight pass: lesson done card */
+.donecard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;align-items:start;border:1px solid var(--done);border-radius:10px;padding:14px 16px;background:color-mix(in srgb,var(--done) 8%,var(--surface))}
+.donecard .lcd{font-size:var(--fs-md);margin-top:2px}
+.donecard b{display:block;font-size:var(--fs-md)}
+.donecard p{margin:2px 0 0;color:var(--muted);font-size:var(--fs-sm)}
+.donecard .nextles{grid-column:1/-1;margin-top:6px}
+@media (prefers-reduced-motion:no-preference){.donecard{animation:donein .32s cubic-bezier(.2,.8,.2,1)}}
+@keyframes donein{from{opacity:0;transform:translateY(6px)}}
 /* adapt pass: bottom tabs, split panel, sheet */
 nav.tabs svg{display:none}
 .subnav{display:flex;gap:6px;flex-wrap:wrap}
@@ -349,7 +358,7 @@ ol.steps li.flash{outline:2px solid var(--accent);outline-offset:4px;border-radi
 .focusmode ol.steps li.curtip{display:grid;padding:0 14px}
 .focusmode .lbody>.lrow [data-focus]{display:none}
 .nextles{margin:0}
-.nextles .btn{text-decoration:none;display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.nextles .btn{text-decoration:none;display:inline-block;line-height:1.4;max-width:100%;text-align:left;padding:10px 14px}
 details.ptools>summary{cursor:pointer;font-size:var(--fs-sm);font-weight:700;color:var(--muted);padding:6px 0;list-style:none;display:inline-flex;gap:6px;align-items:center;min-height:44px}
 details.ptools>summary::-webkit-details-marker{display:none}
 details.ptools>summary::after{content:"";width:.45em;height:.45em;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px)}
@@ -390,6 +399,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
   </div>
 </nav>
 
+<div id="announce" class="vh" aria-live="polite"></div>
 <main class="wrap">
 
 <section class="view" id="v-start">
@@ -1184,21 +1194,27 @@ ${LESSON_LINKS[l.n]?linksBox(LESSON_LINKS[l.n]):""}
 ${l.warn?`<div class="box warn"><h4>Важно</h4><p>${fmt(l.warn)}</p></div>`:""}
 <div class="box"><h4>Что должно получиться</h4><p>${fmt(l.check)}</p></div>
 ${l.task?`<div class="box task"><h4>Творческое задание</h4><p>${fmt(l.task)}</p></div>`:""}
-${nextHTML(l)}
+${complete?doneHTML(l):nextHTML(l)}
 <p class="small"><a href="${M}${l.page}.html" target="_blank" rel="noopener">Раздел руководства Roland <span aria-hidden="true">↗</span></a>${allVids.filter(v=>v[3].includes(l.n)).map(v=>` · <a href="${v[1]}" target="_blank" rel="noopener">▶ ${esc(v[0])}</a>`).join("")}</p>
 </div></div></details>`}
 function secOf(n){return SECTIONS.find(x=>x.order.includes(n))}
 function nextHTML(l){const sec=secOf(l.n);const nx=sec?sec.order[sec.order.indexOf(l.n)+1]:null;
  if(nx){const L=lessonByN(nx);return `<p class="nextles"><a class="btn" href="#${lessonHash(nx)}" data-open="${nx}">Следующий урок: ${lbl(nx)} · ${esc(L.t)} <span aria-hidden="true">→</span></a></p>`}
  return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери ветку <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Ветка закончена: другие ветки <span aria-hidden="true">↓</span></a></p>`}
+function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены, отметки сохранены в этом браузере.</p></div>${nextHTML(l)}</div>`}
+function announce(t){const a=document.getElementById("announce");if(a){a.textContent="";setTimeout(()=>{a.textContent=t},60)}}
 function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
  const cands=[];if(last&&lessonByN(last)){cands.push(last);cands.push(...secOf(last).order)}SECTIONS.forEach(x=>cands.push(...x.order));
  for(const n of cands){const l=lessonByN(n);if(!l)continue;const i=first(l);if(i!=null){const a=act(l);return {l,i,k:a.indexOf(i),tot:a.length,fresh:!Object.keys(done).length}}}return null}
 function renderResume(){const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
  :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Урок занимает одно-два занятия по 30 минут. Прибор держи под рукой.</p>`
- :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a><p>Пройдено уроков: ${dl} из ${all}.</p>`;
- const s=document.getElementById("resumeStart");if(s)s.innerHTML=html;const l=document.getElementById("resumeLessons");if(l)l.innerHTML=html.replace(/<p>Пройдено уроков[^<]*<\/p>/,"")}
+ :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a><p>${progressLine()}</p>`;
+ const s=document.getElementById("resumeStart");if(s)s.innerHTML=html;const l=document.getElementById("resumeLessons");if(l)l.innerHTML=html.replace(/<p>[^<]*<\/p>$/,"")}
+function progressLine(){const total=lessons.reduce((a,l)=>a+act(l).length,0),n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
+ const st=`${n} ${plural(n,"шаг","шага","шагов")} из ${total}`;
+ if(dl)return `Пройдено ${dl} ${plural(dl,"урок","урока","уроков")} из ${lessons.length} · ${st}`;
+ const cur=lessons.find(l=>doneCnt(l)>0);return n?`Сделано ${st}${cur?` · урок ${lbl(cur.n)} в процессе`:""}`:`Впереди ${lessons.length} уроков и ${total} шагов`}
 function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const dn=ls.filter(l=>doneCnt(l)===act(l).length).length;
  const steps=ls.reduce((a,l)=>a+act(l).length,0),sd=ls.reduce((a,l)=>a+doneCnt(l),0);
@@ -1231,7 +1247,10 @@ function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;c
  document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin-top:14px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id).map(x=>branchTile(x,false)).join("")}</div>`}
 function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done);store.set("p6last",k.slice(0,k.lastIndexOf("-")))}
 function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
- const cnt=doneCnt(l),tot=act(l).length;det.querySelector(".lcount").textContent=cnt+" / "+tot;det.classList.toggle("complete",cnt===tot);updateProgress();refreshTiles()}
+ const cnt=doneCnt(l),tot=act(l).length,was=det.classList.contains("complete");det.querySelector(".lcount").textContent=cnt+" / "+tot;det.classList.toggle("complete",cnt===tot);
+ if(cnt===tot&&!was){const nl=det.querySelector(".lbody > div > .nextles, .lbody .nextles");if(nl&&!nl.closest(".donecard"))nl.outerHTML=doneHTML(l);announce(`Урок ${lbl(n)} пройден. ${(det.querySelector(".donecard .nextles a")||{}).textContent||""}`.replace(/[→↓]/g,"").trim())}
+ else if(cnt<tot&&was){const dc=det.querySelector(".donecard");if(dc)dc.outerHTML=nextHTML(l)}
+ updateProgress();refreshTiles()}
 function refreshTiles(){const fb=document.querySelector("#forkBox .fork");if(fb)fb.innerHTML=SECTIONS.slice(1).map(sec=>branchTile(sec,true)).join("");
  if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
 function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);const a=act(l);let i=focus[n];
@@ -1263,7 +1282,7 @@ function updateProgress(){
   const n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
   document.getElementById("pbar").style.width=(100*n/total)+"%";
   const pw=document.getElementById("pbarWrap");pw.setAttribute("aria-valuemax",total);pw.setAttribute("aria-valuenow",n);
-  document.getElementById("ptext").textContent=`уроков ${dl} из ${lessons.length} · шагов ${n} из ${total}`;
+  document.getElementById("ptext").textContent=progressLine();
   renderResume();
 }
 document.getElementById("resetProgress").onclick=()=>{document.getElementById("resetConfirm").hidden=false};
