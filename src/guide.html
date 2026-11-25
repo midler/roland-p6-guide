@@ -1339,7 +1339,8 @@ function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="
  if(scroll&&li){const r=li.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)li.scrollIntoView({block:"center",behavior:RM()?"auto":"smooth"})}}
 ["lessonList","branchList"].forEach(hid=>{const host=document.getElementById(hid);
 host.addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
- setStep(cb.dataset.k,cb.checked);cb.closest("li").classList.toggle("on",cb.checked);refreshLesson(cb.closest("details").dataset.n)});
+ setStep(cb.dataset.k,cb.checked);cb.closest("li").classList.toggle("on",cb.checked);refreshLesson(cb.closest("details").dataset.n);
+ const fd=cb.closest("details.focusmode");if(cb.checked&&fd&&cb.closest("li.cur")){const nb=fd.querySelector("[data-fnext]");if(nb)nb.click()}});
 host.addEventListener("click",e=>{
  const f=e.target.closest("[data-focus]");if(f){const n=f.dataset.focus,l=lessonByN(n);
   if(focus[n]!=null){delete focus[n]}else{const a=act(l);const i=a.find(k=>!done[n+"-"+k]);focus[n]=i==null?a[0]:i}saveFocus();
