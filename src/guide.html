@@ -2078,14 +2078,15 @@ function chordsHTML(list){return `<div class="box"><h4>Схемы аккордо
  return `<div class="chord"><b>${esc(c[0])}</b><div class="piano">${w}${b}</div><span class="notes">${c[1].map(n=>NOTE_N[n]).join(" – ")}${c[2]?" · "+esc(c[2]):""}</span><button type="button" class="btn" data-chord="${c[1].join(",")}">▶ Послушать</button></div>`}).join("")}</div></div>`}
 const SPB={"1_8":2,"1_16":4,"1_32":8,"8t":3,"16t":6,"32t":12};
 function spb(g){return SPB[g.scale||"1_16"]}
-function gridHTML(g,id){
+function nBars(g){return Math.max(1,...g.rows.map(r=>r.bars?r.bars.length:1))}
+function gridHTML(g,id){const nb=nBars(g),cb=(g.curBar||0)%nb;
  const KN=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","O−","O+","TIE"];
  const bt={3:3,6:6}[spb(g)]||4;
  const blk=(a,b)=>{const nums=R(a,b).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+R(a,b).map((i,j)=>`<span class="num kn${j===b-a&&b%16===0?" end":""}">${KN[(i-1)%16]}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(a,b).map(i=>{
    if(g.len&&i>g.len)return `<span class="cell off${(i-1)%bt===0&&i>a?" q":""}" aria-hidden="true"></span>`;
    const on=(r.s||[]).includes(i),q=((i-1)%bt===0&&i>a?" q":"")+(g.hl&&g.hl.includes(i)&&(g.hlr==null||g.hlr===ri)?" hl":"");
-   if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
+   if(r.k==="tone"||r.k==="pad"){const bar=r.bars[cb%r.bars.length];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
      return `<span class="cell ro${st?" on":hold?" hold":""}${q}" data-i="${i}" role="img" aria-label="${esc(r.n)}, шаг ${i}${st?", нота "+esc(st[3]||""):hold?", звучит":", тишина"}">${st&&st[3]?`<span class="tag" aria-hidden="true">${esc(st[3])}</span>`:""}</span>`}
    if(r.lvl){const v=r.v[i]??1;return `<button type="button" class="cell lvlcell${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-label="${esc(r.n)}, шаг ${i}, уровень ${Math.round(v*127)}"><span class="lvl" style="height:${Math.max(6,v*100)}%"></span></button>`}
    const p=r.p&&r.p[i],sb=r.sub&&r.sub[i],v=r.v&&r.v[i],mt=r.t&&r.t[i];
@@ -2095,10 +2096,11 @@ function gridHTML(g,id){
  return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
  const split=typeof PHONE!=="undefined"&&PHONE.matches;
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM${g.scale&&g.scale!=="1_16"?" · шаг "+g.scale:""}</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
- <div class="seq-wrap${split||g.len>16?" split":""}">${g.len>16&&g.len%16===0?R(1,g.len/16).map(k=>[16*k-15,16*k]).map(([a,b],k)=>`<p class="small" style="margin:0">Такт ${k+1} · шаги ${a}–${b} · страница ${k+1}</p>`+(split?blk(a,a+7)+blk(a+8,b):blk(a,b))).join(""):split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
+ ${nb>1?`<div class="earrow gbars" role="group" aria-label="Какой такт показать"><span class="small muted" aria-live="polite">${seqPlaying===id?"Сейчас звучит":"Показан"} такт ${cb+1} из ${nb}</span>${R(1,nb).map(k=>`<button type="button" class="btn" data-gbar="${id}" data-b="${k-1}" aria-pressed="${k-1===cb}">Такт ${k}</button>`).join("")}</div>`:""}<div class="seq-wrap${split||g.len>16?" split":""}">${g.len>16&&g.len%16===0?R(1,g.len/16).map(k=>[16*k-15,16*k]).map(([a,b],k)=>`<p class="small" style="margin:0">Такт ${k+1} · шаги ${a}–${b} · страница ${k+1}</p>`+(split?blk(a,a+7)+blk(a+8,b):blk(a,b))).join(""):split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
 let seqNext=null;const MG={};
+function refreshGrid(id){const host=document.getElementById(id);if(!host||!gridState[id])return;const f=document.activeElement&&host.contains(document.activeElement)?document.activeElement.getAttribute("data-b"):null;host.outerHTML=gridHTML(gridState[id],id);if(seqPlaying===id){const pb=document.querySelector(`[data-play="${id}"]`);if(pb){pb.textContent="■ Стоп";pb.setAttribute("aria-pressed","true")}}if(f!=null){const b=document.querySelector(`[data-gbar="${id}"][data-b="${f}"]`);if(b)b.focus()}}
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;seqNext=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null;earBtns()}
 function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume();
  if(seqPlaying===id){stopSeq();return}stopSeq();seqPlaying=id;let g=gridState[id];let stepDur=60/g.bpm/spb(g);let step=0,next=c.currentTime+.05,bars=0;
@@ -2110,8 +2112,9 @@ function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume
    if(r.k==="bass"){bassNote(tn,stepDur,r.v?r.v[i]??1:1);return}
    if(r.p&&r.p[i]&&Math.random()*100>r.p[i])return;
    const n=r.sub&&r.sub[i]||1,v=r.v&&r.v[i]!=null?r.v[i]:1;const tm=tn+(r.t&&r.t[i]||0)*stepDur;if(r.mg){const pv=MG[r.mg];if(pv){try{if(pv.gain.cancelAndHoldAtTime)pv.gain.cancelAndHoldAtTime(tm);else pv.gain.cancelScheduledValues(tm);pv.gain.linearRampToValueAtTime(0,tm+.012)}catch(e){}}}for(let k=0;k<n;k++){const gn=hit(r.k,tm+k*stepDur/n,v,r.pm&&r.pm[i]);if(r.mg)MG[r.mg]=gn}if(r.echo&&(!r.echo.on||r.echo.on.includes(i)))for(let e=1;e<=r.echo.n;e++)hit(r.k,tm+e*r.echo.t*stepDur,v*Math.pow(r.echo.fb,e))});
-  const tt=(next-c.currentTime)*1000,el=document.getElementById(id),cid=id;
-  setTimeout(()=>{if(seqPlaying!==cid||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
+  const tt=(next-c.currentTime)*1000,cid=id,bi=bars;
+  if(i===1&&nBars(g)>1)setTimeout(()=>{if(seqPlaying!==cid)return;g.curBar=bi%nBars(g);refreshGrid(cid)},Math.max(0,tt));
+  setTimeout(()=>{const el=document.getElementById(cid);if(seqPlaying!==cid||!el)return;el.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));el.querySelectorAll(`.cell[data-i="${i}"]`).forEach(x=>x.classList.add("now"))},Math.max(0,tt));
   next+=stepDur;step=(step+1)%(g.len||16);if(step===0&&++bars>=(g.loop||8)){setTimeout(stopSeq,tt+stepDur*1000);break}}},25)}
 /* ---------------- THROUGH-LINE TRACK ---------------- */
 const TK={kick:{n:"Бочка",pad:"",p6:"[1]",k:"kick",s:[1,5,9,13]},sn:{n:"Снейр",pad:"",p6:"[4]",k:"snare",s:[5,13]},
@@ -2285,6 +2288,7 @@ document.addEventListener("click",e=>{
 document.addEventListener("click",e=>{
  const ch=e.target.closest("[data-chord]");if(ch){const c=ac();if(c){if(c.state==="suspended")c.resume();ch.dataset.chord.split(",").map(Number).forEach(n=>tone(c.currentTime+.02,1.2,60+n,.8,"tone"))}return}
  const hb=e.target.closest("[data-hit]");if(hb){const c=ac();if(c){if(c.state==="suspended")c.resume();hit(hb.dataset.hit,c.currentTime+.02,1)}return}
+ const gb=e.target.closest("[data-gbar]");if(gb){const id=gb.dataset.gbar;gridState[id].curBar=+gb.dataset.b;refreshGrid(id);const b=document.querySelector(`[data-gbar="${id}"][data-b="${gb.dataset.b}"]`);if(b)b.focus();return}
  const pb=e.target.closest("[data-play]");if(pb){playSeq(pb.dataset.play);return}
  const cell=e.target.closest(".cell[data-g]");if(!cell||cell.disabled)return;const g=gridState[cell.dataset.g],r=g.rows[+cell.dataset.r],i=+cell.dataset.i;
  if(r.lvl){const v=r.v[i]??1;r.v[i]=v>=1?0:v<.28?.28:1}else{const at=r.s.indexOf(i);if(at>=0)r.s.splice(at,1);else{r.s.push(i);if(r.p)delete r.p[i];if(r.v)delete r.v[i];if(r.sub)delete r.sub[i];if(r.t)delete r.t[i]}if(!r.lvl&&r.k!=="bass"&&r.s.includes(i))hit(r.k,ac()?ac().currentTime:0,1)}
