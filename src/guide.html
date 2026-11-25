@@ -214,6 +214,7 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .focusmode ol.steps li.cur{display:grid;font-size:var(--fs-md);line-height:1.5;padding:14px;border:2px solid var(--accent);border-radius:10px;background:var(--surface)}
 .focusmode ol.steps li.cur input{width:26px;height:26px}
 .focusmode .hideinfocus{display:none!important}
+.verify{display:none}.focusmode .verify{display:grid;gap:8px;padding:14px;border:2px solid var(--done);border-radius:10px;background:var(--surface)}.verify h4{margin:0}.focusmode.verifying ol.steps li{display:none!important}.focusmode.verifying .focusbar [data-fnext]{display:none}
 .focusbar .fpos{font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--muted);margin-right:auto}
 .codebox{display:grid;gap:8px}
 .codebox textarea{width:100%;min-height:64px;font-family:var(--f-mono);font-size:var(--fs-xs);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
@@ -1403,7 +1404,7 @@ const lessons=[
  "Нажми [KYBD] ещё раз, чтобы вернуть кнопкам роль шагов."],
  check:"Ты сыграл мелодию из трёх нот и на одном сэмпле слышишь, чем C отличается от Cm.",
  task:"Подбери по слуху мелодию из 5 нот (детская песня, рингтон) на заводском сэмпле."},
-{n:"04",gloss:1,fixes:["Потренироваться в очистке лучше на копии: сначала скопируй паттерн в свободную ячейку (задание ниже), открой копию и стирай там.","Стереть дорожку одного пэда: выбери пэд → [SHIFT] + [C · PAD] (13-я кнопка, верхняя C, над ней подпись PTN CLEAR) → ⟨CLr.P⟩ → [C♯ · ENTER]. Стереть весь паттерн: [SHIFT] + [B · ALL] (12-я кнопка) → [C♯ · ENTER]. Показано в роликах, в онлайн-руководстве этого нет.","Быстро скопировать шаг: держи шаг и нажми [SHIFT] + [▶ · COPY], потом держи шаг-цель и снова [SHIFT] + [▶ · COPY]. Буфер одноразовый: для следующей вставки скопируй заново. Тоже показано в роликах, в руководстве нет."],ear:["hat","choke"],diag:["silent"],tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
+{n:"04",verify:{q:"Запусти сохранённый грув 2-02 и послушай: снейр звучит на «два» и «четыре» — на шагах 5 и 13?",back:3,backLabel:"Вернуться к шагу со снейром"},gloss:1,fixes:["Потренироваться в очистке лучше на копии: сначала скопируй паттерн в свободную ячейку (задание ниже), открой копию и стирай там.","Стереть дорожку одного пэда: выбери пэд → [SHIFT] + [C · PAD] (13-я кнопка, верхняя C, над ней подпись PTN CLEAR) → ⟨CLr.P⟩ → [C♯ · ENTER]. Стереть весь паттерн: [SHIFT] + [B · ALL] (12-я кнопка) → [C♯ · ENTER]. Показано в роликах, в онлайн-руководстве этого нет.","Быстро скопировать шаг: держи шаг и нажми [SHIFT] + [▶ · COPY], потом держи шаг-цель и снова [SHIFT] + [▶ · COPY]. Буфер одноразовый: для следующей вставки скопируй заново. Тоже показано в роликах, в руководстве нет."],ear:["hat","choke"],diag:["silent"],tc:[["OgHoQyyOL1o", "17:06", "Секвенсор паттернов (Roland)"], ["d3uRNdytUa0", "06:40", "Очистка дорожки пэда"], ["d3uRNdytUa0", "29:46", "Быстрое копирование шага"], ["D9hKUrkjH0U", "06:53", "Три уровня акцентов на хэтах"]],lv:"L2",t:"Первый бит по шагам",time:"45 мин",page:"112172811114051723",
  goal:"Собрать бит на пустом паттерне, добавить акценты и свинг, сохранить.",
  steps:[
  "Пустой паттерн: [PATTERN] → держи [PATTERN] и нажми шаг 2 (банк 2) → отпусти → шаг 1 (паттерн 2-01) → [PATTERN].",
@@ -2463,7 +2464,14 @@ host.addEventListener("click",e=>{
   const det=f.closest("details");det.outerHTML=lessonHTML(l,true);const nd=document.querySelector(`details[data-n="${n}"]`);
   nd.addEventListener("toggle",saveOpen);
   if(focus[n]!=null)placeFocus(n);nd.scrollIntoView({block:"start"});if(focus[n]==null){const b=nd.querySelector("[data-focus]");if(b)b.focus({preventScroll:true})}else{const g=nd.querySelector("[data-fnext]");if(g)g.focus({preventScroll:true})}return}
- const nx=e.target.closest("[data-fnext]");if(nx){const n=nx.dataset.fnext,l=lessonByN(n),i=focus[n];const k=n+"-"+i;setStep(k,true);
+ const vb=e.target.closest("[data-vback]");if(vb){const n=vb.dataset.vback,det=document.querySelector(`details[data-n="${n}"]`);det.classList.remove("verifying");const v=det.querySelector(".verify");if(v)v.remove();focus[n]=+vb.dataset.s;saveFocus();placeFocus(n,true);const cur=det.querySelector("li.cur input");if(cur)cur.focus();return}
+ const nx=e.target.closest("[data-fnext]");if(nx){const n=nx.dataset.fnext,l=lessonByN(n),i=focus[n];const k=n+"-"+i;
+  {const a0=act(l),rest=a0.filter(x=>x!==i&&!done[n+"-"+x]);const det=document.querySelector(`details[data-n="${n}"]`);
+   if(!rest.length&&!nx.hasAttribute("data-verified")&&det&&det.classList.contains("focusmode")){const V=l.verify||{},bk=V.back??((PARTS[n]||[]).slice(-1)[0]??a0[0]);
+    det.classList.add("verifying");const old=det.querySelector(".verify");if(old)old.remove();
+    det.querySelector("ol.steps").insertAdjacentHTML("afterend",`<div class="verify" role="group" aria-labelledby="vh_${n}"><h4 id="vh_${n}" tabindex="-1">Проверь на приборе</h4><p>${fmt(V.q||l.check)}</p><p class="earrow"><button type="button" class="btn primary" data-fnext="${n}" data-verified="1">Получилось <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-vback="${n}" data-s="${bk}">${esc(V.backLabel||"Вернуться к шагу "+(a0.indexOf(bk)+1))}</button></p></div>`);
+    const h=det.querySelector(".verify h4");if(h)h.focus();announce("Проверь результат на приборе");return}}
+  setStep(k,true);
   const li=document.querySelector(`details[data-n="${n}"] li[data-si="${i}"]`);if(li){li.classList.add("on");li.querySelector("input").checked=true}
   refreshLesson(n);const a=act(l),nxt=a.find(k=>k>i&&!done[n+"-"+k])??a.find(k=>!done[n+"-"+k]);
   if(nxt!=null){focus[n]=nxt;saveFocus();placeFocus(n,true)}else{delete focus[n];saveFocus();const det=document.querySelector(`details[data-n="${n}"]`);det.outerHTML=lessonHTML(l,true);
