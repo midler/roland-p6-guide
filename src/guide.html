@@ -338,6 +338,13 @@ kbd{font-size:max(.78em,12px)}
 @keyframes donein{from{opacity:0;transform:translateY(6px)}}
 
 
+
+/* harden pass 2: held key, keyboard hint, resume reminder */
+.dev2 .el.held{background:#5fb7cf;color:#0d1316;border-color:#5fb7cf}
+.keystrip .sk.held{background:#5fb7cf}
+.khint{font-size:var(--fs-xs);color:var(--muted);flex-basis:100%}
+@media (hover:none),(max-width:560px){.khint{display:none}}
+.resume .also{font-size:var(--fs-sm);color:var(--ink)}
 /* layout pass 3: panel beside its description on wide screens */
 #v-panel>.card p{max-width:68ch}
 @media (min-width:1200px){
@@ -1066,7 +1073,7 @@ function renderDevice(){
    const html=L.filter(e=>e.x>=x0&&e.x<x0+W&&e.y<H).map(e=>{
    if(e.lab)return `<span class="lab${e.sec?" sec":""}" style="left:${px(e.x)}%;top:${py(e.y)}%">${esc(e.lab)}</span>`;
    const c=e.id?findCtrl(e.id):null;let cls="el "+e.cls;
-   if(c&&curMode!=="none")cls+=c[curMode]?" hot":" dim";
+   if(c&&curMode!=="none")cls+=c.id===curMode?" held":c[curMode]?" hot":" dim";
    const st=`left:${px(e.x-e.w/2)}%;top:${py(e.y-e.h/2)}%;width:${(e.w/W*100).toFixed(3)}%;height:${(e.h/H*100).toFixed(3)}%`;
    const sec=e.sec?`<span class="lab sec" style="left:${px(e.sec[1])}%;top:${py(e.sec[2])}%">${esc(e.sec[0])}</span>`:"";
    if(!c)return `<span class="${cls}" style="${st}">${esc(e.l)}</span>`;
@@ -1085,7 +1092,8 @@ function showCtrl(id){
   const keys=["base","shift","pattern","kybd","mfx","sampling","power"].filter(k=>c[k]);
   const order=curMode!=="none"&&c[curMode]?[curMode,...keys.filter(k=>k!==curMode)]:keys;
   const ki=KEYS.findIndex(k=>k[1]===id);const stepInfo=ki>=0?`<p class="small muted">${fmt("Кнопка-шаг "+KEYS.filter(k=>k[1]===id).map(k=>KEYS.indexOf(k)+1).join(" и ")+" из 16. В режиме [KYBD] — клавиша "+KEYS.filter(k=>k[1]===id).map(k=>k[0]).join(" и ")+".")}</p>`:"";
-  d.innerHTML=`<button type="button" class="btn sheetx" aria-label="Закрыть описание"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h3>${esc(c.l)}</h3>${stepInfo}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
+  const miss=curMode!=="none"&&curMode!==id&&!c[curMode]?`<p class="small muted">${esc(modeLabel[curMode])}: у этого органа отдельной функции нет.</p>`:"";
+  d.innerHTML=`<button type="button" class="btn sheetx" aria-label="Закрыть описание"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h3>${esc(c.l)}</h3>${stepInfo}${miss}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
   d.classList.toggle("sheet",!WIDE.matches);
   d.querySelector(".sheetx").onclick=()=>{const was=curCtrl;curCtrl=null;d.classList.remove("sheet");d.innerHTML=DETAIL0;renderDevice();const b=document.querySelector(`#device [data-id="${was}"]`);if(b)b.focus()};
   if(!WIDE.matches)requestAnimationFrame(()=>{const b=document.querySelector(`#device [data-id="${id}"][aria-pressed="true"]`);if(!b)return;const r=b.getBoundingClientRect(),limit=d.getBoundingClientRect().top-12;
@@ -1243,7 +1251,7 @@ function lessonHTML(l,open){
 ${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
 ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
-<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button></div>
+<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter или → готово, ← назад</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
@@ -1265,10 +1273,13 @@ function announce(t){const a=document.getElementById("announce");if(a){a.textCon
 function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
  const cands=[];if(last&&lessonByN(last)){cands.push(last);cands.push(...secOf(last).order)}SECTIONS.forEach(x=>cands.push(...x.order));
  for(const n of cands){const l=lessonByN(n);if(!l)continue;const i=first(l);if(i!=null){const a=act(l);return {l,i,k:a.indexOf(i),tot:a.length,fresh:!Object.keys(done).length}}}return null}
+function earlierNote(r){const base=SECTIONS[0],idx=base.order.indexOf(r.l.n),upto=idx<0?base.order.length:idx;
+ const e=base.order.slice(0,upto).map(lessonByN).find(l=>l&&doneCnt(l)<act(l).length);if(!e)return "";const i=act(e).find(k=>!done[e.n+"-"+k]);
+ return `<p class="also">В уроке ${lbl(e.n)} остались шаги: <a href="#lessons" data-open="${e.n}" data-step="${i}">вернуться к ним <span aria-hidden="true">→</span></a></p>`}
 function renderResume(){const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
  :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Урок занимает одно-два занятия по 30 минут. Прибор держи под рукой.</p>`
- :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a><p>${progressLine()}</p>`;
+ :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a>${earlierNote(r)}<p>${progressLine()}</p>`;
  const s=document.getElementById("resumeStart");if(s)s.innerHTML=html;const l=document.getElementById("resumeLessons");if(l)l.innerHTML=html.replace(/<p>[^<]*<\/p>$/,"")}
 function progressLine(){const total=lessons.reduce((a,l)=>a+act(l).length,0),n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const st=`${n} ${plural(n,"шаг","шага","шагов")} из ${total}`;
@@ -1639,6 +1650,21 @@ function openLesson(n,step){const o=store.get("p6open",[]);if(!o.includes(n))o.p
   else{el.scrollIntoView({block:"start"});const sm=el.querySelector("summary");if(sm)sm.focus({preventScroll:true})}},80)}
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-open]");if(a){e.preventDefault();openLesson(a.dataset.open,a.dataset.step!=null?+a.dataset.step:null);return}
  const sc=e.target.closest("a[data-scroll]");if(sc){e.preventDefault();const h=sc.getAttribute("href");const go=()=>{const t=document.getElementById(sc.dataset.scroll);if(t)t.scrollIntoView({block:"start"})};if(location.hash!==h){location.hash=h;setTimeout(go,80)}else go()}});
+
+/* keyboard: step mode and Escape */
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){const d=document.getElementById("detail");
+  if(d&&d.classList.contains("sheet")&&!document.getElementById("v-panel").hidden){d.querySelector(".sheetx").click();e.preventDefault();return}
+  const cb=document.getElementById("codeBox");if(cb&&!cb.hidden){cb.hidden=true;document.getElementById("copyCode").focus();e.preventDefault();return}
+  const rc=document.getElementById("resetConfirm");if(rc&&!rc.hidden){document.getElementById("resetNo").click();e.preventDefault();return}
+  const td=document.querySelector(".term[aria-expanded=\"true\"]");if(td){td.click();td.focus();e.preventDefault()}return}
+ if(e.altKey||e.ctrlKey||e.metaKey)return;
+ const t=e.target;if(t.closest&&t.closest("input,textarea,select,[contenteditable]"))return;
+ let det=t.closest&&t.closest("details.focusmode");
+ if(!det){const v=[...document.querySelectorAll("details.focusmode")].filter(x=>x.offsetParent);if(v.length===1)det=v[0]}
+ if(!det)return;
+ if((e.key==="Enter"&&!t.closest("button,a,summary"))||e.key==="ArrowRight"){const b=det.querySelector("[data-fnext]");if(b){b.click();e.preventDefault()}}
+ else if(e.key==="ArrowLeft"){const b=det.querySelector("[data-fprev]");if(b){b.click();e.preventDefault()}}});
 /* ---------------- ROUTING ---------------- */
 const views=["start","panel","lessons","recipes","challenges","cheats","about","videos"];
 function route(){
