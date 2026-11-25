@@ -562,7 +562,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
       <div class="facts">
       <div class="fact"><h3><span class="n">1</span>Сохраняй вручную</h3><p>Точка в правом нижнем углу дисплея означает несохранённые правки. При выключении они пропадут, в том числе если сядет батарея: красный индикатор CHARGE значит, что до отключения меньше 30 минут. Сохранение: <kbd>SHIFT</kbd><span class="plus">+</span><kbd>TIE <span class="fn">WRITE</span></kbd>. Сами записанные сэмплы сохраняются сразу, вручную сохранять нужно настройки пэдов, паттерны и эффекты. Перед сохранением останови паттерн кнопкой <kbd>▶</kbd>: во время игры дисплей пишет <span class="lcd">StoP</span> и не сохраняет.</p></div>
       <div class="fact"><h3><span class="n">2</span>Сэмплы общие, паттерны свои</h3><p>48 сэмплов (8 банков × 6 пэдов) и их настройки одни на все 64 паттерна. Гранулярный пэд, мьюты и темп хранятся в паттерне.</p></div>
-      <div class="fact"><h3><span class="n">3</span>Сначала бэкап</h3><p>Сброс к заводским настройкам не возвращает заводские сэмплы. Их можно только скачать с сайта Roland. Поэтому урок 00 — экспорт.</p></div>
+      <div class="fact"><h3><span class="n">3</span>Сначала бэкап</h3><p>Сброс к заводским настройкам не возвращает заводские сэмплы. Их можно только скачать с сайта Roland. Поэтому сразу после первого знакомства с прибором идёт экспорт на компьютер.</p></div>
       </div>
     </div>
   </div>
@@ -642,7 +642,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
     <h2>Чего P-6 не умеет</h2>
     <p class="muted small" style="margin:6px 0 10px">Об этом говорят почти все обзоры. Лучше знать заранее и не искать функцию, которой нет.</p>
     <div class="facts">
-      <div class="fact"><h3>Нет карты памяти</h3><p>Всего 48 сэмплов. Старое выгружай на компьютер (урок 00), а 8–16 ударов можно уложить на один пэд (урок Б4).</p></div>
+      <div class="fact"><h3>Нет карты памяти</h3><p>Всего 48 сэмплов. Старое выгружай на компьютер (урок про бэкап), а 8–16 ударов можно уложить на один пэд (урок Б4).</p></div>
       <div class="fact"><h3>Нет «ленивой» нарезки</h3><p>Нельзя ставить метки нажатиями на ходу. Есть только деление на равные части (Chop) и step sampling.</p></div>
       <div class="fact"><h3>Пэды не чувствуют силу нажатия</h3><p>Громкость удара задаётся в шаге (урок 04) или параметром <span class="lcd">vELo</span> в меню. С MIDI-клавиатуры сила передаётся.</p></div>
       <div class="fact"><h3>Нет режима песни</h3><p>Паттерны переключаются вручную, следующий начинается после текущего. Длинные треки удобно собирать в DAW по USB.</p></div>
@@ -684,7 +684,7 @@ const M="https://static.roland.com/manuals/p-6/en-US/";
 /* text formatter: [KEY · FN] -> kbd, ⟨TXT⟩ -> lcd, + between -> plus */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 const PREFIX={beats:"Б",sound:"С",live:"Ж",comp:"К"};let _LBL=null;
-function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>{let t=0;sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?(id[0]==="T"?"T"+(++t):id):PREFIX[sec.id]+(i+1)})})}return _LBL[n]||n}
+function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>{let t=0,b=0;sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?(id[0]==="T"?"T"+(++t):String(b++).padStart(2,"0")):PREFIX[sec.id]+(i+1)})})}return _LBL[n]||n}
 function relabel(t){return t.replace(/([Уу]рок(?:а|у|е|ом|и|ов|ам|ах)?\s+)((?:\d\d|T\d)(?:\s*(?:[–-]|,|и)\s*(?:\d\d|T\d))*)/g,(m,pre,list)=>pre+list.replace(/\d\d|T\d/g,x=>lbl(x)))}
 function fmt(s){s=relabel(s);
   s=esc(s);
@@ -703,7 +703,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 
 /* ---------------- LESSONS ---------------- */
 const SECTIONS=[
- {id:"base",name:"База",span:"проходи по порядку",desc:"Без этого не обойтись: звуки, паттерны, ритм и ноты.",order:["00","01","02","T2","03","T1","04","05","06","07","08"]},
+ {id:"base",name:"База",span:"проходи по порядку",desc:"Без этого не обойтись: звуки, паттерны, ритм и ноты.",order:["01","00","02","T2","03","T1","04","05","06","07","08"]},
  {id:"beats",name:"Ветка · Биты",span:"в любом порядке",desc:"Свои звуки и нарезка: из чего собирать бит.",order:["09","10","11","19","23","24"]},
  {id:"sound",name:"Ветка · Саунд-дизайн",span:"в любом порядке",desc:"Гранулы, синты из сэмплов, эффекты. Для эмбиента и текстур.",order:["12","16","13","25"]},
  {id:"live",name:"Ветка · Живая игра",span:"в любом порядке",desc:"Как играть паттернами вживую и записывать сет.",order:["15","17","18","26"]},
@@ -726,7 +726,8 @@ const lessons=[
 {n:"01",tc:[["-gMw6gDpS9I", "14:46", "Первое включение: типичные затруднения"], ["tKkJvIwi23M", "16:13", "Заводские паттерны (PNV)"], ["MF4EohXfTEo", "06:35", "Остановить все звуки"]],lv:"L1",t:"Первый звук, банки и пресеты",time:"30 мин",page:"114038283114165131",
  goal:"Понять главный экран, переключать банки и паттерны, глушить пэды на ходу.",
  steps:[
- "Включи [POWER], поставь [VOLUME] примерно на середину. На дисплее темп: это главный экран.",
+ "Встроенного динамика у P-6 нет. Подключи наушники или колонки к гнезду MIX OUT/HEADSET.",
+ "Включи [POWER] и начни с тихой громкости: [VOLUME] почти до упора влево, потом прибавляй до комфортной. На дисплее темп: это главный экран.",
  "Понажимай пэды [1]–[6]. Это банк A.",
  "Нажми [B/F], [C/G], [D/H]: кнопка горит — выбран банк A–D. Нажми ту же кнопку ещё раз: она мигает — выбран банк E–H.",
  "Нажми [▶]: играет текущий паттерн. Ещё раз [▶] — стоп.",
@@ -734,7 +735,8 @@ const lessons=[
  "Переключи паттерн во время игры: его кнопка замигает, и он начнётся, когда доиграет текущий.",
  "Темп: крути [TEMPO/VALUE] (40–300). С зажатым [SHIFT] — точная подстройка по 0,1.",
  "Мьют: [SHIFT] + пэд глушит пэд, [SHIFT] + [A/E] глушит весь банк. Повтори, чтобы включить обратно.",
- "Не можешь найти, в каком банке играет звук? Глуши банки по очереди через [SHIFT] + кнопку банка, пока звук не пропадёт. А лучше сразу заведи порядок (урок 21)."],
+ "Не можешь найти, в каком банке играет звук? Глуши банки по очереди через [SHIFT] + кнопку банка, пока звук не пропадёт. А лучше сразу заведи порядок (урок 21).",
+ "Ты пока ничего не менял и не сохранял. Прежде чем записывать свои звуки и паттерны, сделай бэкап заводских (урок 00)."],
  check:"Ты в такт переключаешь заводские паттерны 1-01…1-16 и выключаешь/включаешь отдельные пэды.",
  task:"«Диджей на пресетах»: 2 минуты играй только переключением паттернов, темпом и мьютами. Запиши на телефон."},
 {n:"02",tc:[["OgHoQyyOL1o", "07:06", "Редактирование сэмпла (Roland)"], ["SqH9BcxpVhk", "14:03", "Откат и очистка (Vladislav CREW)"], ["TTpTh6zf2N8", "05:18", "Подсмотреть значение ручки"]],lv:"L1",t:"Характер звука пэда",time:"40 мин",page:"130545803130564363",
@@ -1626,7 +1628,7 @@ function earlierNote(r){const base=SECTIONS[0],idx=base.order.indexOf(r.l.n),upt
  return `<p class="also">В уроке ${lbl(e.n)} остались шаги${more?` (и ещё ${more} ${plural(more,"урок","урока","уроков")} до текущего)`:""}: <a href="#lessons" data-open="${e.n}" data-step="${i}">вернуться к ним <span aria-hidden="true">→</span></a></p>`}
 function renderResume(){document.body.classList.toggle("returning",Object.keys(done).length>0);const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
- :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Первый урок на 15 минут: сохраняем заводские звуки, чтобы дальше смело экспериментировать. Прибор держи под рукой.</p>`
+ :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Первый урок без компьютера: наушники, звук пэдов и заводские паттерны. Следом — бэкап заводских звуков, чтобы дальше смело экспериментировать.</p>`
  :`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Продолжить: ${lbl(r.l.n)} · ${esc(r.l.t)} <small>шаг ${r.k+1} из ${r.tot}</small> <span aria-hidden="true">→</span></a>${earlierNote(r)}<p>${progressLine()}</p>`;
  const s=document.getElementById("resumeStart");if(s)s.innerHTML=html;const l=document.getElementById("resumeLessons");if(l)l.innerHTML=html.replace(/<p>[^<]*<\/p>$/,"")}
 function progressLine(){const total=lessons.reduce((a,l)=>a+act(l).length,0),n=lessons.reduce((a,l)=>a+doneCnt(l),0),dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
