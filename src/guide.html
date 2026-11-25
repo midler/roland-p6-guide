@@ -214,6 +214,7 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .focusmode ol.steps li.cur{display:grid;font-size:var(--fs-md);line-height:1.5;padding:14px;border:2px solid var(--accent);border-radius:10px;background:var(--surface)}
 .focusmode ol.steps li.cur input{width:26px;height:26px}
 .focusmode .hideinfocus{display:none!important}
+li.linked{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}.permalink{font-size:var(--fs-sm)}.focusbar .flink{font-size:var(--fs-sm)}
 .verify{display:none}.focusmode .verify{display:grid;gap:8px;padding:14px;border:2px solid var(--done);border-radius:10px;background:var(--surface)}.verify h4{margin:0}.focusmode.verifying ol.steps li{display:none!important}.focusmode.verifying .focusbar [data-fnext]{display:none}
 .focusbar .fpos{font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--muted);margin-right:auto}
 .codebox{display:grid;gap:8px}
@@ -2367,11 +2368,11 @@ function lessonHTML(l,open){
  return `<details class="lesson${complete?" complete":""}${focus[l.n]!=null?" focusmode":""}" data-n="${l.n}"${open?" open":""}>
 <summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span><span class="lcount">${cnt} / ${tot}</span></span></summary>
 <div class="lbody">
-<div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button></div>
+<div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button><a class="btn quiet permalink" href="#l-${l.n}" aria-label="Ссылка на урок ${lbl(l.n)}">Ссылка на урок</a></div>
 ${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
 ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 ${TRACK.filter(t=>t.n===l.n&&t.start).map(trkStart).join("")}<ol class="steps">${stepsHTML(l)}</ol>${l.table?tableHTML(l.table):""}
-<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
+<div class="focusbar"><span class="fpos" aria-live="polite"></span><a class="btn quiet flink" href="#l-${l.n}">Ссылка на шаг</a><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
 ${TRACK.filter(t=>t.n===l.n||(t.also||[]).includes(l.n)).map(trkHTML).join("")}${l.ear?l.ear.map(earHTML).join(""):""}${l.diag?l.diag.map(diagHTML).join(""):""}
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
@@ -2456,7 +2457,7 @@ function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="
  det.querySelectorAll("li.cur,li.curtip").forEach(x=>x.classList.remove("cur","curtip"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
  for(let k=i+1;isTip(n,k);k++){const t=det.querySelector(`li[data-si="${k}"]`);if(t)t.classList.add("curtip")}
  const sp=PARTS[n]||[];let part=0;sp.forEach(x=>{if(i>=x)part++});
- det.querySelector(".fpos").textContent=`Шаг ${a.indexOf(i)+1} из ${a.length}`+(sp.length?` · занятие ${part+1}`:"");
+ det.querySelector(".fpos").textContent=`Шаг ${a.indexOf(i)+1} из ${a.length}`+(sp.length?` · занятие ${part+1}`:"");{const fl=det.querySelector(".flink");if(fl)fl.setAttribute("href",`#l-${n}-s${i+1}`)}
  if(scroll&&li){const r=li.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90)li.scrollIntoView({block:"center",behavior:RM()?"auto":"smooth"})}}
 ["lessonList","branchList"].forEach(hid=>{const host=document.getElementById(hid);
 host.addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
@@ -2791,7 +2792,7 @@ document.getElementById("codeClose").onclick=()=>{cbx.hidden=true};
 document.getElementById("codeApply").onclick=()=>{try{const o=readCode(ctx.value);let n=0;o.d.forEach(k=>{if(!done[k]){done[k]=1;n++}});(o.c||[]).forEach(k=>{chDone[k]=1});
  store.set("p6done",done);store.set("p6chd",chDone);renderLessons();renderChallenges();setCodeErr(false);cmsg.textContent="Загружено, новых отметок: "+n+"."}catch(e){setCodeErr(true);cmsg.textContent="Код не подошёл. Скопируй его целиком, он начинается с P6:";ctx.focus()}};
 function lessonHash(n){const sec=SECTIONS.find(x=>x.order.includes(n));return !sec||sec.id==="base"?"lessons":"branch-"+sec.id}
-function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>a.setAttribute("href","#"+lessonHash(a.dataset.open)))}
+function bindOpenLinks(root){root.querySelectorAll("[data-open]").forEach(a=>a.setAttribute("href","#l-"+a.dataset.open))}
 function openLesson(n,step){const o=store.get("p6open",[]);if(!o.includes(n))o.push(n);store.set("p6open",o);
  const h=lessonHash(n);if(location.hash!=="#"+h)location.hash=h;else route();
  setTimeout(()=>{renderLessons();const el=document.querySelector(`details[data-n="${n}"]`);if(!el)return;
@@ -3140,7 +3141,8 @@ document.getElementById("aboutMore").innerHTML=`<div class="card"><h2>Если �
 /* ---------------- ROUTING ---------------- */
 const views=["start","panel","lessons","recipes","challenges","cheats","menus","about","videos"];
 function route(){
-  let h=(location.hash||"#start").slice(1);let br=null;
+  let h=(location.hash||"#start").slice(1);let br=null,deep=null;
+  {const m=h.match(/^l-([0-9A-Za-z]+?)(?:-s(\d+))?$/);if(m&&lessonByN(m[1])){deep={n:m[1],s:m[2]?+m[2]-1:null};h=lessonHash(m[1])}}
   if(h.startsWith("branch-")&&SECTIONS.some(x=>"branch-"+x.id===h&&x.id!=="base")){br=h.slice(7);h="branch"}
   else if(!views.includes(h))h="start";
   document.getElementById("v-branch").hidden=h!=="branch";
@@ -3156,9 +3158,14 @@ function route(){
   document.getElementById("lcdHero").textContent=lcd;
   const TT={start:"Старт",panel:"Панель",lessons:"Уроки",branch:"Ветка",recipes:"Рецепты",challenges:"Задания",cheats:"Шпаргалка",menus:"Меню прибора",about:"О приборе",videos:"Видео"}[h];
   document.title=(h==="start"?"":TT+" · ")+"Тренажёр Roland P-6";
+  if(deep)setTimeout(()=>openDeep(deep),0);
 }
+function openDeep(d){const det=[...document.querySelectorAll(`details[data-n="${d.n}"]`)].find(x=>x.offsetParent!==null||!x.closest("[hidden]"));if(!det)return;
+ if(!det.open){det.open=true;saveOpen()}document.querySelectorAll("li.linked").forEach(x=>x.classList.remove("linked"));
+ let tgt=det;if(d.s!=null){const li=det.querySelector(`li[data-si="${d.s}"]`);if(li){li.classList.add("linked");tgt=li}}
+ const sc=()=>tgt.scrollIntoView({block:d.s!=null?"center":"start",behavior:"instant"});sc();setTimeout(sc,150);const f=d.s!=null?tgt.querySelector("input"):det.querySelector("summary");if(f)f.focus({preventScroll:true})}
 ["cheats","menus","about","videos"].forEach(v=>document.getElementById("v-"+v).insertAdjacentHTML("afterbegin",`<nav class="subnav" aria-label="Разделы справки"><a href="#cheats">Шпаргалка</a><a href="#menus">Меню</a><a href="#about">О приборе</a><a href="#videos">Видео</a></nav>`));
-window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0)});
+window.addEventListener("hashchange",()=>{const dl=/^#l-/.test(location.hash);route();if(!dl)window.scrollTo(0,0)});
 renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
 })();
 </script>
