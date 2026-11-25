@@ -153,7 +153,7 @@ ol.steps li.on label{color:var(--muted)}
 table{border-collapse:collapse;width:100%;font-size:var(--fs-sm)}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-td:first-child{white-space:normal;min-width:190px}
+#v-cheats td:first-child{white-space:normal;min-width:190px}
 /* videos */
 .vid{display:grid;gap:4px}
 .vid a{font-weight:700;text-decoration:none}
@@ -205,7 +205,7 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .piano .w.on{background:var(--accent)}
 .piano .bk{position:absolute;top:0;height:58%;background:#2a2d33;border-radius:0 0 3px 3px;z-index:1}
 .piano .bk.on{background:var(--accent);outline:1px solid #2a2d33}
-.piano .w span{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.55rem;font-family:var(--f-mono);color:#555}
+.piano .w span{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:var(--fs-xs);line-height:1.2;font-family:var(--f-mono);color:#596170}
 .piano .w.on span{color:var(--accent-ink)}
 .recipe{display:grid;gap:14px}
 .recipe .meta{display:flex;gap:8px;flex-wrap:wrap}
@@ -302,6 +302,9 @@ h1,h2,h3,.lede,.meta,.secdesc{overflow-wrap:break-word;hyphens:auto}
 
 
 
+/* polish: chip text never below 12px */
+kbd{font-size:max(.78em,12px)}
+.lcd{font-size:max(.84em,12px)}
 /* clarify pass: inline terms */
 .term{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:help;text-decoration:underline dashed;text-decoration-color:var(--muted);text-underline-offset:3px}
 .term[aria-expanded="true"]{text-decoration-color:var(--accent)}
@@ -443,7 +446,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 
 <section class="view" id="v-lessons" hidden>
   <div class="resume" id="resumeLessons"></div>
-  <div class="card progress"><b class="small">Пройдено</b><div class="bar" role="progressbar" aria-label="Пройдено шагов" id="pbarWrap" aria-valuemin="0"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span></div>
+  <div class="card progress"><div class="bar" role="progressbar" aria-label="Пройдено шагов" id="pbarWrap" aria-valuemin="0"><i id="pbar"></i></div><span class="lcount" id="ptext">0 / 0</span></div>
   <details class="ptools"><summary>Перенести прогресс на другое устройство</summary><div>
   <div class="lrow"><button class="btn" id="copyCode" type="button">Скопировать код</button><button class="btn" id="loadCodeBtn" type="button">Загрузить код</button><button class="btn" id="resetProgress" type="button">Сбросить прогресс</button></div>
   <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small muted" id="codeMsg"></span></div></div>
@@ -1110,7 +1113,7 @@ function gridHTML(g,id){
  const KN=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","O−","O+","TIE"];
  const bt=g.len===12?3:4;const nums=R(1,16).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.map((k,j)=>`<span class="num kn${j===15?" end":""}">${k}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(1,16).map(i=>{
-   if(g.len&&i>g.len)return `<button type="button" class="cell off${(i-1)%4===0&&i>1?" q":""}" disabled aria-hidden="true"></button>`;
+   if(g.len&&i>g.len)return `<span class="cell off${(i-1)%4===0&&i>1?" q":""}" aria-hidden="true"></span>`;
    const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>1?" q":"";
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
      return `<span class="cell ro${st?" on":hold?" hold":""}${q}" data-i="${i}" role="img" aria-label="${esc(r.n)}, шаг ${i}${st?", нота "+esc(st[3]||""):hold?", звучит":", тишина"}">${st&&st[3]?`<span class="tag" aria-hidden="true">${esc(st[3])}</span>`:""}</span>`}
