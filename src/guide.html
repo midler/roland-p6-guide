@@ -186,7 +186,7 @@ th{font-family:var(--f-mono);font-size:var(--fs-xs);text-transform:uppercase;let
 .cell.now{outline:2px solid var(--ink);outline-offset:1px}
 .cell.hl{box-shadow:0 0 0 2px var(--warn)}
 .ear .ctl .btn{min-width:56px}
-.ear p{margin:0}
+.ear p{margin:0}.ear .earstat:empty{display:none}.btn.queued{border-style:dashed;border-color:var(--accent)}
 .earopts{display:flex;flex-wrap:wrap;gap:6px}
 .earopts .btn{white-space:normal;text-align:left}
 .earopts.steps16{display:grid;grid-template-columns:repeat(8,minmax(0,1fr))}
@@ -1487,14 +1487,14 @@ const TRACK=[
 function trkStart(t){const g=gridState[`trk_${t.id}_A`]||{bpm:96,rows:t.A};const rows=g.rows.filter(r=>r.s);
  const line=r=>{const weak=r.v?Object.keys(r.v).filter(i=>r.v[i]<1).map(Number):[];return [`${r.n} — пэд ${r.p6||""}`,r.s.join(", "),weak.length?`тише (⟨WEAK⟩): ${weak.join(", ")}`:"—"]};
  return `<div class="box start-card"><h4>Начать с этого урока</h4><p class="small">Нет сохранённой версии ${t.from} или пришёл сразу сюда? Собери основу по карточке: темп ${g.bpm} BPM, длина ${g.len||16} шагов, банк F.</p>
- <p class="earrow"><button type="button" class="btn" data-earv="trk_${t.id}_A" data-lbl="Послушать основу" aria-pressed="false">▶ Послушать основу</button></p>
+ <p class="earrow"><button type="button" class="btn" data-earv="trk_${t.id}_A" data-lbl="Послушать основу" data-toggle="1" aria-pressed="false">▶ Послушать основу</button></p>
  ${tableHTML({cap:"Основа: барабаны",head:["Партия","Шаги","Акценты"],rows:rows.map(line)})}
  <ol class="drill"><li>${fmt(`Пустой паттерн ${t.to}: [PATTERN] → держи [PATTERN] и нажми шаг 2 → отпусти → шаг ${+t.to.split("-")[1]} → [PATTERN]. Темп: крути [TEMPO/VALUE] до ${g.bpm}.`)}</li><li>${fmt("Банк F: нажми [B/F] дважды (кнопка мигает), [KYBD] не горит.")}</li><li>${fmt("Для каждой партии: выбери пэд без звука ([PATTERN] + пэд) и нажми шаги из таблицы. Акцент: держи шаг и нажимай пэд до ⟨WEAK⟩.")}</li><li>${fmt("Нажми [▶] и сверь с кнопкой «Послушать основу». Совпадает — переходи к басу.")}</li></ol></div>`}
 function trkHTML(t){const id=t.id,has=!!t.B;
  if(has){gridState[`trk_${id}_A`]={bpm:96,rows:t.A||[],loop:16};gridState[`trk_${id}_B`]={bpm:96,rows:t.B,loop:16};gridState[`trk_${id}_g`]={t:`${t.to} · ${t.role}`,bpm:96,rows:JSON.parse(JSON.stringify(t.B)),hl:t.hl,hlr:t.hlr,note:"Рамкой отмечено то, что добавилось."}}
  const btn=(v,l)=>`<button type="button" class="btn" data-earv="trk_${id}_${v}" data-lbl="${l}" aria-pressed="false" aria-label="Пример «${l}»">▶ ${l}</button>`;
  const ov=t.overview?`${tableHTML({cap:"Карта сквозного трека: каждая версия — отдельный паттерн",head:["Версия","Урок","Что добавляется","Роль"],rows:TRACK.map(x=>[x.to,"урок "+x.n,x.add,x.role])})}${tableHTML({cap:"Финал (урок 28): восемь тактов из сохранённых версий",head:["Такты","Версия"],rows:[["1–2","2-01 интро"],["3–4","2-02 грув"],["5–6","2-03 с басом"],["7","2-05 сбивка"],["8","2-02 грув"]]})}<p class="small">Поэтому сохраняй каждую версию в свою ячейку, даже простое интро: в финале ты будешь переключать их вживую.</p>`:"";
- return `<div class="seq ear trk" id="trk_${id}"><div class="seq-head"><h4>Сквозной трек · ${t.to} · ${esc(t.role)}</h4>${has?`<span class="ctl"><span>96 BPM</span>${t.A?btn("A","До"):""}${btn("B","После")}</span>`:""}</div>
+ return `<div class="seq ear trk" id="trk_${id}"><div class="seq-head"><h4>Сквозной трек · ${t.to} · ${esc(t.role)}</h4>${has?`<span class="ctl"><span>96 BPM</span>${t.A?btn("A","До"):""}${btn("B","После")}<button type="button" class="btn" data-earstop="trk_${id}_" hidden>■ Стоп</button></span>`:""}</div>${has?`<p class="small muted earstat" id="trk_${id}_st" aria-live="polite"></p>`:""}
  ${ov}<p><b>Начни с:</b> ${t.from?`версии ${t.from}`:"пустого паттерна"}. <b>Добавь:</b> ${esc(t.add[0].toLowerCase()+t.add.slice(1))}. <b>Сохрани в:</b> ${t.to}.</p>
  <p>${fmt(t.do)}${t.from&&t.from!==t.to&&t.n!=="04"?" "+fmt(TKCOPY):""} ${fmt(TKSAVE)}</p>
  ${has?gridHTML(gridState[`trk_${id}_g`],`trk_${id}_g`):""}
@@ -1595,7 +1595,9 @@ const EARS={
    B:[{n:"Мелодия",pad:"",k:"tone",bars:[[[3,1,69,"A"],[6,1,72,"C"],[9,1,76,"E"]]]},{n:"Бочка",pad:"",k:"kick",s:[1,5,9,13]}],
    p6:"Собери A: бочка на шагах 1, 5, 9, 13, тональный пэд с нотами [A], [C], [E] на шагах 1, 4, 7 (ввод нот — шаги этого урока). Скопируй паттерн в свободную ячейку ([SHIFT] + [▶ · COPY] → ⟨Ptn⟩) и в копии перенеси ноты на шаги 3, 6, 9: сотри старые, впиши те же клавиши на новые шаги. Послушай обе версии по кругу и выбери вступление для своего трека."}]}
 };const earState={};
-function earBtns(){document.querySelectorAll("[data-earv]").forEach(b=>{const on=(seqNext||seqPlaying)===b.dataset.earv;b.setAttribute("aria-pressed",on);b.classList.toggle("primary",on);b.textContent=(on?"■ ":"▶ ")+(b.dataset.lbl||b.dataset.earv.slice(-1))})}
+function earBtns(){const L=id=>{const b=document.querySelector(`[data-earv="${id}"]`);return b?(b.dataset.lbl||id.slice(-1)):""};
+ document.querySelectorAll("[data-earv]").forEach(b=>{const id=b.dataset.earv,lb=b.dataset.lbl||id.slice(-1),pl=seqPlaying===id,q=seqNext===id;b.setAttribute("aria-pressed",pl);b.classList.toggle("primary",pl);b.classList.toggle("queued",q);b.textContent=(pl?"♪ ":q?"→ ":"▶ ")+lb});
+ document.querySelectorAll("[data-earstop]").forEach(x=>{const g=x.dataset.earstop,on=!!seqPlaying&&seqPlaying.startsWith(g);x.hidden=!on;const st=document.getElementById(g+"st");if(st)st.textContent=on?`Звучит ${L(seqPlaying)}`+(seqNext&&seqNext.startsWith(g)?`, с нового такта — ${L(seqNext)}`:""):""})}
 function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math.floor(Math.random()*E.vars.length),ans:null,show:false}),V=E.vars[st.v];
  gridState[`ear_${eid}_A`]={bpm:E.bpm,rows:E.A,loop:16};gridState[`ear_${eid}_B`]={bpm:E.bpm,rows:V.B,loop:16};
  const opts=E.pick==="step"?R(1,16).map(i=>`<button type="button" class="btn" data-earans="${eid}" data-a="${i}" aria-pressed="${st.ans===i}" aria-label="Шаг ${i}">${i}</button>`).join("")
@@ -1603,8 +1605,8 @@ function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math
  const ok=st.ans!=null&&st.ans===V.ans;
  const fb=st.ans==null?"":ok?`<p class="earfb ok">Верно. ${fmt(V.why)}</p>`:`<p class="earfb no">Пока нет. ${fmt(E.pick==="step"?`Двойной удар звучит ${st.ans<V.ans?"позже":"раньше"} шага ${st.ans}.`:E.hint)} Послушай A и B ещё раз.</p>`;
  if(st.show){gridState[`ear_${eid}_g`]={t:"Пример B по шагам",bpm:E.bpm,rows:JSON.parse(JSON.stringify(V.B)),hl:V.hl,hlr:V.hlr??0,note:"Рамкой отмечены шаги, которые отличаются от A."}}
- return `<div class="seq ear" id="ear_${eid}"><div class="seq-head"><h4>${esc(E.t)}</h4><span class="ctl"><span>${E.bpm} BPM</span>${["A","B"].map(v=>`<button type="button" class="btn" data-earv="ear_${eid}_${v}" aria-pressed="false" aria-label="Пример ${v}">▶ ${v}</button>`).join("")}</span></div>
- <p class="small">${fmt(E.intro)} Включи A, потом B: пример сменится с начала такта, бит не остановится.</p>
+ return `<div class="seq ear" id="ear_${eid}"><div class="seq-head"><h4>${esc(E.t)}</h4><span class="ctl"><span>${E.bpm} BPM</span>${["A","B"].map(v=>`<button type="button" class="btn" data-earv="ear_${eid}_${v}" aria-pressed="false" aria-label="Пример ${v}">▶ ${v}</button>`).join("")}<button type="button" class="btn" data-earstop="ear_${eid}_" hidden>■ Стоп</button></span></div><p class="small muted earstat" id="ear_${eid}_st" aria-live="polite"></p>
+ <p class="small">${fmt(E.intro)} Включи A, потом выбери B прямо во время игры: текущий такт доиграет, и с первой доли следующего зазвучит B. Обратно — так же.</p>
  <p><b>${esc(E.q)}</b></p><div class="earopts${E.pick==="step"?" steps16":""}" role="group" aria-label="${esc(E.q)}">${opts}</div><div aria-live="polite">${fb}</div>
  <p class="earrow"><button type="button" class="btn" data-earshow="${eid}" aria-expanded="${st.show}">${st.show?"Скрыть шаги":"Показать шаги"}</button>${E.vars.length>1?`<button type="button" class="btn" data-earnew="${eid}">Другое задание</button>`:""}</p>
  ${st.show?gridHTML(gridState[`ear_${eid}_g`],`ear_${eid}_g`):""}
@@ -1612,9 +1614,10 @@ function earHTML(eid){const E=EARS[eid],st=earState[eid]||(earState[eid]={v:Math
 function earRender(eid,focusSel){const el=document.getElementById("ear_"+eid);if(!el)return;el.outerHTML=earHTML(eid);earBtns();if(focusSel){const f=document.querySelector(`#ear_${eid} ${focusSel}`);if(f)f.focus()}}
 document.addEventListener("click",e=>{
  const v=e.target.closest("[data-earv]");if(v){const id=v.dataset.earv,c=ac();if(!c)return;if(c.state==="suspended")c.resume();
-  const cur=seqNext||seqPlaying;if(cur===id){stopSeq();return}
-  if(seqPlaying&&seqPlaying.slice(0,-1)===id.slice(0,-1)){seqNext=seqPlaying===id?null:id;earBtns();return}
+  if(seqPlaying===id){if(seqNext){seqNext=null;earBtns()}else if(v.dataset.toggle)stopSeq();return}
+  if(seqPlaying&&seqPlaying.slice(0,-1)===id.slice(0,-1)){seqNext=id;earBtns();return}
   playSeq(id);return}
+ const sp=e.target.closest("[data-earstop]");if(sp){stopSeq();const v=sp.parentElement.querySelector("[data-earv]");if(v)v.focus();return}
  const a=e.target.closest("[data-earans]");if(a){const eid=a.dataset.earans,st=earState[eid];st.ans=+a.dataset.a;if(st.ans===EARS[eid].vars[st.v].ans)st.show=true;earRender(eid,`[data-a="${a.dataset.a}"]`);return}
  const sh=e.target.closest("[data-earshow]");if(sh){const eid=sh.dataset.earshow;earState[eid].show=!earState[eid].show;earRender(eid,"[data-earshow]");return}
  const nw=e.target.closest("[data-earnew]");if(nw){const eid=nw.dataset.earnew,st=earState[eid],n=EARS[eid].vars.length;if(seqPlaying&&seqPlaying.startsWith(`ear_${eid}_`))stopSeq();st.v=(st.v+1+Math.floor(Math.random()*(n-1)))%n;st.ans=null;st.show=false;earRender(eid,"[data-earnew]");return}
