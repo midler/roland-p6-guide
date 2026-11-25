@@ -31,7 +31,7 @@ Every button press is checked against the official Roland P-6 online manual (sys
 
 - Used with the P-6 in hand: one hand on the device, the other on the phone or keyboard.
 - Sessions of about 30 minutes; the learner sets their own pace, there is no week-based schedule.
-- Structure: a base track (lessons 00–08 plus theory T1 rhythm and T2 notes/chords), then four branches taken in any order (Beats Б1–Б5, Sound design С1–С3, Live Ж1–Ж3, Computer and order К1–К4), then genre recipes (lo-fi → ambient → drum and bass).
+- Structure: a base track (lessons 00–08 plus two theory lessons, labelled by order: T1 notes and chords, T2 rhythm; their internal ids are T2 and T1), then four branches taken in any order (Beats Б1–Б5, Sound design С1–С3, Live Ж1–Ж3, Computer and order К1–К4), then genre recipes (lo-fi → ambient → drum and bass).
 - Desktop side: Windows, Ableton Live, P-6 over USB-C (audio and MIDI); free tools DigiChain, Audacity, P-6 SampleTool; sound sources Freesound (CC0), Pixabay, 99Sounds, AKWF.
 - Published two ways: a private claude.ai artifact and a public GitHub Pages site (github.com/midler/roland-p6-guide) that installs as an offline web app.
 

@@ -357,6 +357,23 @@ kbd{font-size:max(.78em,12px)}
 
 
 
+
+/* critique 5 pass */
+.dev2 .el.dim[aria-pressed="true"],.keystrip .sk.dim[aria-pressed="true"]{opacity:1}
+.dev2 .el.sm,.dev2 .el.round{font-size:max(calc(1.1cqw*var(--k,1)),11px)}
+main kbd[data-ctl],main .lcd[data-menu]{cursor:help}
+main kbd[data-ctl]:hover{filter:brightness(1.25)}
+.helpsheet{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(560px,calc(100vw - 16px));max-height:50vh;overflow:auto;z-index:30;background:var(--surface);border:1px solid var(--ink);border-radius:14px;padding:12px 16px 14px;overscroll-behavior:contain}
+.helpsheet .sheetx{float:right;margin:-4px -8px 0 8px;min-height:44px;min-width:44px;display:inline-flex;justify-content:center;align-items:center;padding:0;border:0;background:transparent}
+.helpsheet h3{font-size:var(--fs-md);margin:4px 0 6px}
+.helpsheet ul{margin:8px 0 0;padding-left:18px;display:grid;gap:6px}
+.helpsheet p{margin:6px 0 0}
+.helpsheet .tag{font-family:var(--f-mono);font-size:var(--fs-xs);color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+@media (max-width:560px){.helpsheet{bottom:calc(76px + env(safe-area-inset-bottom,0px))}.subnav a{min-height:44px}}
+.ch.done{border-color:var(--done)}
+.ch.done>label{color:var(--done);font-weight:700}
+.ptag{font-size:var(--fs-xs);font-weight:700;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:0 6px;margin-left:6px;white-space:nowrap}
+.resume .btn small{font-family:var(--f-body);letter-spacing:0;font-variant-numeric:tabular-nums}
 /* menus reference */
 .menu>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding-right:28px;position:relative}
 .menu>summary::-webkit-details-marker{display:none}
@@ -505,6 +522,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 </nav>
 
 <div id="announce" class="vh" aria-live="polite"></div>
+<div class="helpsheet" id="helpSheet" role="dialog" aria-label="Подсказка" hidden><button type="button" class="btn sheetx" aria-label="Закрыть подсказку"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><div class="hbody" aria-live="polite"></div></div>
 <main class="wrap">
 
 <section class="view" id="v-start">
@@ -531,7 +549,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
       <div class="facts">
       <div class="fact"><h3><span class="n">1</span>Сохраняй вручную</h3><p>Точка в правом нижнем углу дисплея означает несохранённые правки. При выключении они пропадут, в том числе если сядет батарея: красный индикатор CHARGE значит, что до отключения меньше 30 минут. Сохранение: <kbd>SHIFT</kbd><span class="plus">+</span><kbd>TIE <span class="fn">WRITE</span></kbd>. Сами записанные сэмплы сохраняются сразу, вручную сохранять нужно настройки пэдов, паттерны и эффекты. Перед сохранением останови паттерн кнопкой <kbd>▶</kbd>: во время игры дисплей пишет <span class="lcd">StoP</span> и не сохраняет.</p></div>
       <div class="fact"><h3><span class="n">2</span>Сэмплы общие, паттерны свои</h3><p>48 сэмплов (8 банков × 6 пэдов) и их настройки одни на все 64 паттерна. Гранулярный пэд, мьюты и темп хранятся в паттерне.</p></div>
-      <div class="fact"><h3><span class="n">3</span>Сначала бэкап</h3><p>Сброс к заводским настройкам не возвращает заводские сэмплы. Их можно только скачать с сайта Roland. Поэтому урок 0 — экспорт.</p></div>
+      <div class="fact"><h3><span class="n">3</span>Сначала бэкап</h3><p>Сброс к заводским настройкам не возвращает заводские сэмплы. Их можно только скачать с сайта Roland. Поэтому урок 00 — экспорт.</p></div>
       </div>
     </div>
   </div>
@@ -626,9 +644,10 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 <section class="view" id="v-menus" hidden>
   <div class="card">
     <h2>Меню прибора</h2>
-    <p class="muted small" style="margin-top:6px">Все пункты меню P-6 по официальному руководству Roland, версия 1.02. Как ходить по меню: крути <kbd>TEMPO/VALUE</kbd>, выбери пункт, нажми <kbd>C♯ <span class="fn">ENTER</span></kbd>; меняй значение <kbd>TEMPO/VALUE</kbd>; <kbd>C <span class="fn">EXIT</span></kbd> возвращает к списку, ещё раз <kbd>C <span class="fn">EXIT</span></kbd> — выход. На дисплее пункты показаны так, как в левой колонке.</p>
+    <p class="muted small" style="margin-top:6px">Все пункты меню P-6 по официальному руководству Roland, версия 1.02. Как ходить по меню: крути <kbd>TEMPO/VALUE</kbd>, выбери пункт, нажми <kbd>C♯ <span class="fn">ENTER</span></kbd>; меняй значение <kbd>TEMPO/VALUE</kbd>; <kbd>C <span class="fn">EXIT</span></kbd> возвращает к списку, ещё раз <kbd>C <span class="fn">EXIT</span></kbd> — выход. Красным показано, как пункт выглядит на дисплее.</p>
   </div>
   <input class="search" id="mq" type="search" placeholder="Найти пункт: метроном, vOL, реверб…" aria-label="Поиск по меню">
+  <p class="small muted" id="mCount" aria-live="polite"></p>
   <div id="menuList" style="display:grid;gap:10px"></div>
 </section>
 
@@ -654,11 +673,17 @@ function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>{let t=0;sec.order.forEa
 function relabel(t){return t.replace(/([Уу]рок(?:а|у|е|ом|и|ов|ам|ах)?\s+)((?:\d\d|T\d)(?:\s*(?:[–-]|,|и)\s*(?:\d\d|T\d))*)/g,(m,pre,list)=>pre+list.replace(/\d\d|T\d/g,x=>lbl(x)))}
 function fmt(s){s=relabel(s);
   s=esc(s);
-  s=s.replace(/\[([^\]]+)\]/g,(m,k)=>{const p=k.split(" · ");return "<kbd>"+p[0]+(p[1]?" <span class=\"fn\">"+p[1]+"</span>":"")+"</kbd>"});
-  s=s.replace(/⟨([^⟩]+)⟩/g,'<span class="lcd">$1</span>');
+  s=s.replace(/\[([^\]]+)\]/g,(m,k)=>{const p=k.split(" · ");const id=chipId(p[0],p[1]);return "<kbd"+(id?` data-ctl="${id}"`:"")+">"+p[0]+(p[1]?" <span class=\"fn\">"+p[1]+"</span>":"")+"</kbd>"});
+  s=s.replace(/⟨([^⟩]+)⟩/g,(m,t)=>`<span class="lcd"${menuCode(t)?` data-menu="${t}"`:""}>${t}</span>`);
   s=s.replace(/ \+ /g,'<span class="plus">+</span>');
   return s;
 }
+function menuCode(t){try{return MENUCODES[t]}catch(e){return null}}
+function chipId(a,b){if(!window._CTL){try{KEYS}catch(e){return null}const m={};const add=(k,v)=>{if(!(k in m))m[k]=v};
+  if(typeof KEYS!=="undefined")KEYS.forEach(k=>add(k[0]+" "+k[2],k[1]));
+  Object.entries({"TEMPO/VALUE":"tempo",VOLUME:"volume",SHIFT:"shift",PATTERN:"pattern","▶":"play","●":"rec",CTRL1:"ctrl",CTRL2:"ctrl",CTRL3:"ctrl",LOOPER:"looper",DELAY:"delay",FILTER:"filter",SCATTER:"scatter",MFX:"mfx",PITCH:"kpitch",START:"kstart",END:"kend",LEVEL:"klevel",SAMPLING:"sampling","LO-Fi":"lofi",GATE:"gate",DELETE:"del",LOOP:"loop","A/E":"banks","B/F":"banks","C/G":"banks","D/H":"banks","1":"pads","2":"pads","3":"pads","4":"pads","5":"pads","6":"pads",GRANULAR:"gran",KYBD:"kybd",TIE:"tie","OCT−":"octm","OCT+":"octp","OCT-":"octm","MIX IN":"mixin","MIX OUT":"mixout"}).forEach(([k,v])=>add(k,v));
+  if(typeof KEYS!=="undefined")window._CTL=m;else return null;}
+ return (b&&window._CTL[a+" "+b])||window._CTL[a]||null}
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 /* ---------------- LESSONS ---------------- */
@@ -1105,30 +1130,30 @@ function renderModes(){
   const box=document.getElementById("modes");
   const all=allModes||modes.findIndex(m=>m[0]===curMode)>3;
   box.innerHTML=(all?modes:modes.slice(0,4)).map(([id,l])=>`<button type="button" data-m="${id}" aria-pressed="${id===curMode}">${l}</button>`).join("")+(all?"":`<button type="button" class="more" data-more="1">Ещё: MFX, SAMPLING, при включении</button>`)+(curMode!=="none"?`<p class="small muted modehint">В бирюзовой рамке органы, у которых есть функция в этом режиме. Остальные притушены.</p>`:"");
-  box.querySelectorAll("button[data-m]").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl)});
+  box.querySelectorAll("button[data-m]").forEach(b=>b.onclick=()=>{curMode=b.dataset.m;renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl,true);const nb=box.querySelector(`[data-m="${curMode}"]`);if(nb)nb.focus()});
   const mb=box.querySelector("[data-more]");if(mb)mb.onclick=()=>{allModes=true;renderModes();const f=box.querySelector('[data-m="mfx"]');if(f)f.focus()};
 }
 const KEYS=[["C","kC","EXIT"],["C♯","kCs","ENTER"],["D","kD","SHUFFLE"],["D♯","kDs","LAST"],["E","kEF","◀ PAGE"],["F","kEF","PAGE ▶"],["F♯","kFs","P.ENV"],["G","kG","VOICE"],["G♯","kGs","FILTER"],["A","kA","MIXER"],["A♯","kAs","DLY/REV"],["B","kB","ALL"],["C","kC2","PAD"],["OCT−","octm","MOTION"],["OCT+","octp","MENU"],["TIE","tie","WRITE"]];
 const KX=[85,215,345,475,605,735,860,985,1105,1225,1350,1470,1590,1715,1840,1960];
 function devLayout(){const E=[];const add=(id,l,x,y,w,h,cls,sec,big)=>E.push({id,l,x,y,w,h,cls,sec,big});
  add(null,"90.0",350,170,220,170,"disp");add("tempo","",225,400,120,120,"knob");E.push({lab:"TEMPO/VALUE",x:300,y:470});
- add("shift","SHIFT",170,620,120,110,"");add("pattern","PATTERN",380,620,120,110,"",["STEP LOOP",380,690]);
+ add("shift","SHIFT",170,620,120,110,"");add("pattern","PATTERN",380,620,120,110,"",["STEP LOOP",380,700]);
  add("play","▶",170,780,120,110,"",["COPY",170,850]);add("rec","●",380,780,120,110,"",["QUANTIZE",380,850]);
  [["ctrl","CTRL1",590],["ctrl","CTRL2",820],["ctrl","CTRL3",1050]].forEach(c=>{add(c[0],"",c[2],250,90,90,"knob ctrlk");E.push({lab:c[1],x:c[2],y:310})});
  add("looper","LOOPER",590,430,130,120,"");add("pitchfx","PITCH",820,430,130,120,"");add("delay","DELAY",1050,430,130,120,"");
- add("filter","FILTER",590,575,130,120,"");add("scatter","SCATTER",820,575,130,120,"");add("mfx","MFX",1050,575,130,120,"");E.push({lab:"EFFECTS",x:820,y:650,sec:1});
+ add("filter","FILTER",590,575,130,120,"");add("scatter","SCATTER",820,575,130,120,"");add("mfx","MFX",1050,575,130,120,"");E.push({lab:"EFFECTS",x:820,y:642,sec:1});
  E.push({lab:"● CHARGE",x:950,y:80,sec:1});
  [["sync","SYNC IN",1190],["sync","SYNC OUT",1340],["mixin","MIX IN",1490],["mixout","MIX OUT",1640]].forEach(j=>{add(j[0],"",j[2],95,70,70,"jack");E.push({lab:j[1],x:j[2],y:150,sec:1})});
  add("volume","",1880,95,95,95,"knob");E.push({lab:"VOLUME",x:1880,y:160});
  [["kpitch","PITCH",1260],["kstart","START",1440],["kend","END",1620],["klevel","LEVEL",1840]].forEach(k=>{add(k[0],"",k[2],280,95,95,"knob");E.push({lab:k[1],x:k[2],y:345})});
  E.push({lab:"MIC ●",x:1190,y:410,sec:1});
  add("sampling","SAMPLING",1240,560,150,150,"round samp");
- add("lofi","LO-Fi",1420,440,110,105,"");add("gate","GATE",1570,440,110,105,"",["POLY",1570,500]);add("banks","A/E",1720,440,105,105,"");add("banks","B/F",1870,440,105,105,"");
+ add("lofi","LO-Fi",1420,440,110,105,"");add("gate","GATE",1570,440,110,105,"",["POLY",1570,510]);add("banks","A/E",1720,440,105,105,"");add("banks","B/F",1870,440,105,105,"");
  add("del","DELETE",1420,580,110,105,"",["MIC MUTE",1420,640]);add("loop","LOOP",1570,580,110,105,"",["REVERSE",1570,640]);add("banks","C/G",1720,580,105,105,"");add("banks","D/H",1870,580,105,105,"");E.push({lab:"BANK",x:1795,y:645,sec:1});
  [600,830,1060,1290,1520,1740].forEach((x,i)=>add("pads",String(i+1),x,770,175,165,"pad"));
  add("gran","GRANU-\nLAR",1940,690,110,100,"sm");add("kybd","KYBD",1940,810,110,100,"",["HOLD",1940,870]);
  KEYS.forEach((k,i)=>{add(k[1],k[0],KX[i],975,95,105,"key");E.push({lab:k[2],x:KX[i],y:1050,sec:1})});
- E.push({lab:"SAMPLE EDIT",x:985,y:905,sec:1});E.push({lab:"PTN CLEAR",x:1530,y:905,sec:1});
+ E.push({lab:"SAMPLE EDIT",x:985,y:892,sec:1});E.push({lab:"PTN CLEAR",x:1530,y:892,sec:1});
  return E}
 const PHONE=matchMedia("(max-width:560px)"),WIDE=matchMedia("(min-width:1200px)");
 function renderDevice(){
@@ -1137,30 +1162,33 @@ function renderDevice(){
    const html=L.filter(e=>e.x>=x0&&e.x<x0+W&&e.y<H).map(e=>{
    if(e.lab)return `<span class="lab${e.sec?" sec":""}" style="left:${px(e.x)}%;top:${py(e.y)}%">${esc(e.lab)}</span>`;
    const c=e.id?findCtrl(e.id):null;let cls="el "+e.cls;
-   if(c&&curMode!=="none")cls+=c.id===curMode?" held":c[curMode]?" hot":" dim";
+   if(c&&curMode!=="none")cls+=c.id===curMode?" held":c[curMode]&&c[curMode]!==c.base?" hot":" dim";
    const st=`left:${px(e.x-e.w/2)}%;top:${py(e.y-e.h/2)}%;width:${(e.w/W*100).toFixed(3)}%;height:${(e.h/H*100).toFixed(3)}%`;
    const sec=e.sec?`<span class="lab sec" style="left:${px(e.sec[1])}%;top:${py(e.sec[2])}%">${esc(e.sec[0])}</span>`:"";
    if(!c)return `<span class="${cls}" style="${st}">${esc(e.l)}</span>`;
    return `<button type="button" class="${cls}" style="${st}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}" aria-label="${esc(c.l)}">${esc(e.l)}</button>${sec}`}).join("");
    return `<div class="dev2 ${cls}" role="group" aria-label="${lbl}" style="aspect-ratio:${W}/${H};--k:${(2000/W).toFixed(4)}">${html}</div>`};
-  const strip=()=>`<div class="keystrip" role="group" aria-label="16 кнопок-шагов">${KEYS.map((k,i)=>{const c=findCtrl(k[1]);let cls="sk";if(c&&curMode!=="none")cls+=c[curMode]?" hot":" dim";
+  const strip=()=>`<div class="keystrip" role="group" aria-label="16 кнопок-шагов">${KEYS.map((k,i)=>{const c=findCtrl(k[1]);let cls="sk";if(c&&curMode!=="none")cls+=c[curMode]&&c[curMode]!==c.base?" hot":" dim";
     return `<button type="button" class="${cls}" data-id="${k[1]}" aria-pressed="${curCtrl===k[1]}" aria-label="Шаг ${i+1}: ${esc(k[0])}, ${esc(k[2])}"><i aria-hidden="true">${i+1}</i><b>${esc(k[0])}</b><small>${esc(k[2])}</small></button>`}).join("")}</div>`;
   const draw=PHONE.matches?`<div class="devwrap split">${half(0,1155,"half-a","Левая часть панели",900)}${half(1155,845,"half-b","Правая часть панели",900)}${strip()}</div>`:`<div class="devwrap">${half(0,2040,"","Панель P-6")}</div>`;
   const rear=zones.flatMap(z=>z.items).filter(c=>["usb","midi"].includes(c.id)).map(c=>`<button type="button" class="ctrl${curMode!=="none"?(c[curMode]?" hot":" dim"):""}" data-id="${c.id}" aria-pressed="${curCtrl===c.id}">${esc(c.l)} <small>сзади</small></button>`).join("");
   dev.innerHTML=`${draw}<div class="rearrow">${rear}<span class="small" style="color:#8f98a5;align-self:center">Сзади ещё выключатель POWER.</span></div>`;
-  dev.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{curCtrl=b.dataset.id;renderDevice();showCtrl(curCtrl)});
+  dev.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{const inStrip=!!b.closest(".keystrip");curCtrl=b.dataset.id;renderDevice();showCtrl(curCtrl);const nb=dev.querySelector(`${inStrip?".keystrip ":".dev2 "}[data-id="${curCtrl}"][aria-pressed="true"]`)||dev.querySelector(`[data-id="${curCtrl}"]`);if(nb)nb.focus({preventScroll:true})});
 }
 function findCtrl(id){for(const z of zones)for(const c of z.items)if(c.id===id)return c}
-function showCtrl(id){
-  const c=findCtrl(id);const d=document.getElementById("detail");
+const XSVG=`<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>`;
+function ctrlBody(id,mode){const c=findCtrl(id);if(!c)return "";
   const keys=["base","shift","pattern","kybd","mfx","sampling","power"].filter(k=>c[k]);
-  const order=curMode!=="none"&&c[curMode]?[curMode,...keys.filter(k=>k!==curMode)]:keys;
-  const ki=KEYS.findIndex(k=>k[1]===id);const stepInfo=ki>=0?`<p class="small muted">${fmt("Кнопка-шаг "+KEYS.filter(k=>k[1]===id).map(k=>KEYS.indexOf(k)+1).join(" и ")+" из 16. В режиме [KYBD] — клавиша "+KEYS.filter(k=>k[1]===id).map(k=>k[0]).join(" и ")+".")}</p>`:"";
-  const miss=curMode!=="none"&&curMode!==id&&!c[curMode]?`<p class="small muted">${esc(modeLabel[curMode])}: у этого органа отдельной функции нет.</p>`:"";
-  d.innerHTML=`<button type="button" class="btn sheetx" aria-label="Закрыть описание"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h3>${esc(c.l)}</h3>${stepInfo}${miss}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`;
+  const order=mode!=="none"&&c[mode]?[mode,...keys.filter(k=>k!==mode)]:keys;
+  const stepInfo=KEYS.some(k=>k[1]===id)?`<p class="small muted">${fmt("Кнопка-шаг "+KEYS.filter(k=>k[1]===id).map(k=>KEYS.indexOf(k)+1).join(" и ")+" из 16. В режиме [KYBD] — клавиша "+KEYS.filter(k=>k[1]===id).map(k=>k[0]).join(" и ")+".")}</p>`:"";
+  const miss=mode!=="none"&&mode!==id&&!c[mode]?`<p class="small muted">${esc(modeLabel[mode])}: у этого органа отдельной функции нет.</p>`:"";
+  return `<h3>${esc(c.l)}</h3>${stepInfo}${miss}<ul>${order.map(k=>`<li><span class="tag">${modeLabel[k]}</span><br>${fmt(c[k])}</li>`).join("")}</ul>`}
+function showCtrl(id,keep){
+  const d=document.getElementById("detail");
+  d.innerHTML=`<button type="button" class="btn sheetx" aria-label="Закрыть описание">${XSVG}</button>${ctrlBody(id,curMode)}`;
   d.classList.toggle("sheet",!WIDE.matches);
   d.querySelector(".sheetx").onclick=()=>{const was=curCtrl;curCtrl=null;d.classList.remove("sheet");d.innerHTML=DETAIL0;renderDevice();const b=document.querySelector(`#device [data-id="${was}"]`);if(b)b.focus()};
-  if(!WIDE.matches)requestAnimationFrame(()=>{const b=document.querySelector(`#device [data-id="${id}"][aria-pressed="true"]`);if(!b)return;const r=b.getBoundingClientRect(),limit=d.getBoundingClientRect().top-12;
+  if(!WIDE.matches&&!keep)requestAnimationFrame(()=>{const b=document.querySelector(`#device [data-id="${id}"][aria-pressed="true"]`);if(!b)return;const r=b.getBoundingClientRect(),limit=d.getBoundingClientRect().top-12;
    if(r.bottom>limit)window.scrollBy({top:r.bottom-limit,behavior:"instant"});else if(r.top<8)window.scrollBy({top:r.top-16,behavior:"instant"})});
 
 }
@@ -1242,8 +1270,8 @@ function gridHTML(g,id){
  const bt=g.len===12?3:4;
  const blk=(a,b)=>{const nums=R(a,b).map(i=>`<span class="num${(i-1)%bt===0&&(!g.len||i<=g.len)?" beat":""}">${i}</span>`).join("")+`<span class="num kn">кнопка</span>`+KN.slice(a-1,b).map((k,j)=>`<span class="num kn${j===b-a&&b===16?" end":""}">${k}</span>`).join("");
  const rows=g.rows.map((r,ri)=>`<span class="lbl">${esc(r.n)}<small>${esc(r.pad)}</small></span>`+R(a,b).map(i=>{
-   if(g.len&&i>g.len)return `<span class="cell off${(i-1)%4===0&&i>a?" q":""}" aria-hidden="true"></span>`;
-   const on=(r.s||[]).includes(i),q=(i-1)%4===0&&i>a?" q":"";
+   if(g.len&&i>g.len)return `<span class="cell off${(i-1)%bt===0&&i>a?" q":""}" aria-hidden="true"></span>`;
+   const on=(r.s||[]).includes(i),q=(i-1)%bt===0&&i>a?" q":"";
    if(r.k==="tone"||r.k==="pad"){const bar=r.bars[0];const st=bar.find(x=>x[0]===i),hold=bar.find(x=>i>x[0]&&i<x[0]+x[1]);
      return `<span class="cell ro${st?" on":hold?" hold":""}${q}" data-i="${i}" role="img" aria-label="${esc(r.n)}, шаг ${i}${st?", нота "+esc(st[3]||""):hold?", звучит":", тишина"}">${st&&st[3]?`<span class="tag" aria-hidden="true">${esc(st[3])}</span>`:""}</span>`}
    if(r.lvl){const v=r.v[i]??1;return `<button type="button" class="cell lvlcell${q}" data-g="${id}" data-r="${ri}" data-i="${i}" aria-label="${esc(r.n)}, шаг ${i}, уровень ${Math.round(v*127)}"><span class="lvl" style="height:${Math.max(6,v*100)}%"></span></button>`}
@@ -1254,7 +1282,7 @@ function gridHTML(g,id){
  return `<div class="seq-grid" style="--cols:${b-a+1}"><span></span>${nums}${rows}</div>`};
  const split=typeof PHONE!=="undefined"&&PHONE.matches;
  return `<div class="seq" id="${id}"><div class="seq-head"><h4>${esc(g.t)}</h4><span class="ctl"><span>${g.bpm} BPM</span><button type="button" class="btn primary" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(g.t)}">▶ Слушать</button></span></div>
- <div class="seq-wrap${split?" split":""}">${split?blk(1,8)+blk(9,16):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
+ <div class="seq-wrap${split?" split":""}">${split?(g.len===12?blk(1,6)+blk(7,12):blk(1,8)+blk(9,16)):blk(1,16)}</div><p class="seq-note">${esc(relabel(g.note))} Нажимай на клетки, чтобы менять бит.</p></div>`}
 const gridState={};
 function gridsFor(n){return (GRIDS[n]||[]).map((g,gi)=>{const id=`g${n}_${gi}`;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(g));return gridHTML(gridState[id],id)}).join("")}
 function stopSeq(){clearInterval(seqTimer);seqTimer=null;document.querySelectorAll(".cell.now").forEach(c=>c.classList.remove("now"));document.querySelectorAll("[data-play]").forEach(b=>{b.textContent="▶ Слушать";b.setAttribute("aria-pressed","false")});seqPlaying=null}
@@ -1319,7 +1347,7 @@ function lessonHTML(l,open){
 ${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
 ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 <ol class="steps">${stepsHTML(l)}</ol>
-<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}">◀ Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово ▶</button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter или → готово, ← назад</span></div>
+<div class="focusbar"><span class="fpos" aria-live="polite"></span><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter или → готово, ← назад</span></div>
 <div class="hideinfocus" style="display:grid;gap:14px">
 ${GL[l.n]?`<p class="small"><a href="#recipes"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>${esc(GL[l.n])} <span>, раздел «Рецепты»</span> <span aria-hidden="true">→</span></a></p>`:""}
 ${l.src?`<p class="small muted">Идея из ролика ${esc(l.src)}. Нажатия сверены с руководством Roland.</p>`:""}
@@ -1336,14 +1364,15 @@ function secOf(n){return SECTIONS.find(x=>x.order.includes(n))}
 function nextHTML(l){const sec=secOf(l.n);const nx=sec?sec.order[sec.order.indexOf(l.n)+1]:null;
  if(nx){const L=lessonByN(nx);return `<p class="nextles"><a class="btn" href="#${lessonHash(nx)}" data-open="${nx}">Следующий урок: ${lbl(nx)} · ${esc(L.t)} <span aria-hidden="true">→</span></a></p>`}
  return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери ветку <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Ветка закончена: другие ветки <span aria-hidden="true">↓</span></a></p>`}
-function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены, отметки сохранены в этом браузере.</p></div>${nextHTML(l).replace('class="btn"','class="btn primary"')}</div>`}
+function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены в гайде. Паттерн на самом приборе сохраняй через ${fmt("[SHIFT] + [TIE · WRITE]")}.</p></div>${nextHTML(l).replace('class="btn"','class="btn primary"')}</div>`}
 function announce(t){const a=document.getElementById("announce");if(a){a.textContent="";setTimeout(()=>{a.textContent=t},60)}}
 function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
  const cands=[];if(last&&lessonByN(last)){cands.push(last);cands.push(...secOf(last).order)}SECTIONS.forEach(x=>cands.push(...x.order));
  for(const n of cands){const l=lessonByN(n);if(!l)continue;const i=first(l);if(i!=null){const a=act(l);return {l,i,k:a.indexOf(i),tot:a.length,fresh:!Object.keys(done).length}}}return null}
 function earlierNote(r){const base=SECTIONS[0],idx=base.order.indexOf(r.l.n),upto=idx<0?base.order.length:idx;
  const e=base.order.slice(0,upto).map(lessonByN).find(l=>l&&doneCnt(l)<act(l).length);if(!e)return "";const i=act(e).find(k=>!done[e.n+"-"+k]);
- return `<p class="also">В уроке ${lbl(e.n)} остались шаги: <a href="#lessons" data-open="${e.n}" data-step="${i}">вернуться к ним <span aria-hidden="true">→</span></a></p>`}
+ const more=base.order.slice(0,upto).map(lessonByN).filter(l=>l&&l!==e&&doneCnt(l)<act(l).length).length;
+ return `<p class="also">В уроке ${lbl(e.n)} остались шаги${more?` (и ещё ${more} ${plural(more,"урок","урока","уроков")} до текущего)`:""}: <a href="#lessons" data-open="${e.n}" data-step="${i}">вернуться к ним <span aria-hidden="true">→</span></a></p>`}
 function renderResume(){document.body.classList.toggle("returning",Object.keys(done).length>0);const r=resumePoint();const all=lessons.length,dl=lessons.filter(l=>doneCnt(l)===act(l).length).length;
  const html=!r?`<a class="btn primary" href="#recipes">Все уроки пройдены. Дальше: жанровые рецепты <span aria-hidden="true">→</span></a>`
  :r.fresh?`<a class="btn primary" href="#${lessonHash(r.l.n)}" data-open="${r.l.n}" data-step="${r.i}">Начать с урока ${lbl(r.l.n)} · ${esc(r.l.t)} <span aria-hidden="true">→</span></a><p>Первый урок на 15 минут: сохраняем заводские звуки, чтобы дальше смело экспериментировать. Прибор держи под рукой.</p>`
@@ -1402,7 +1431,7 @@ function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="
 ["lessonList","branchList"].forEach(hid=>{const host=document.getElementById(hid);
 host.addEventListener("change",e=>{const cb=e.target.closest("input[type=checkbox][data-k]");if(!cb)return;
  setStep(cb.dataset.k,cb.checked);cb.closest("li").classList.toggle("on",cb.checked);refreshLesson(cb.closest("details").dataset.n);
- const fd=cb.closest("details.focusmode");if(cb.checked&&fd&&cb.closest("li.cur")){const nb=fd.querySelector("[data-fnext]");if(nb)nb.click()}});
+ const fd=cb.closest("details.focusmode");if(cb.checked&&fd&&cb.closest("li.cur")){const nb=fd.querySelector("[data-fnext]");if(nb){nb.click();const nf=document.querySelector(`details[data-n="${fd.dataset.n}"] [data-fnext]`)||document.querySelector(`details[data-n="${fd.dataset.n}"] .nextles a`);if(nf)nf.focus({preventScroll:true})}}});
 host.addEventListener("click",e=>{
  const f=e.target.closest("[data-focus]");if(f){const n=f.dataset.focus,l=lessonByN(n);
   if(focus[n]!=null){delete focus[n]}else{const a=act(l);const i=a.find(k=>!done[n+"-"+k]);focus[n]=i==null?a[0]:i}saveFocus();
@@ -1497,11 +1526,11 @@ function renderChallenges(){
   const tags=["Все",...new Set(challenges.map(c=>c.tag))];
   const f=document.getElementById("chFilters");
   f.innerHTML=tags.map(t=>`<button type="button" class="btn" aria-pressed="${t===chFilter}" style="${t===chFilter?"background:var(--accent);color:var(--accent-ink);border-color:var(--accent)":""}">${t}</button>`).join("");
-  f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges()});
+  f.querySelectorAll("button").forEach(b=>b.onclick=()=>{chFilter=b.textContent;store.set("p6chf",chFilter);renderChallenges();const nb=[...f.querySelectorAll("button")].find(x=>x.textContent===chFilter);if(nb)nb.focus()});
   const list=challenges.map((c,i)=>({...c,i})).filter(c=>chFilter==="Все"||c.tag===chFilter);
   document.getElementById("chList").innerHTML=list.map(c=>terms(`<div class="card ch${CH_GRIDS[c.t]?" wide":""}"><div class="tags"><span>${c.tag}</span><span>после урока ${lbl(c.need)}</span></div><h3>${esc(c.t)}</h3><p class="small">${fmt(c.d)}</p>${CH_GRIDS[c.t]?(()=>{const id="ch_"+c.i;gridState[id]=gridState[id]||JSON.parse(JSON.stringify(CH_GRIDS[c.t]));return gridHTML(gridState[id],id)})():""}<label><input type="checkbox" data-i="${c.i}"${chDone[c.i]?" checked":""}> Сделано</label></div>`)).join("");
-  const cnt=()=>{const n=Object.keys(chDone).filter(k=>challenges[k]).length;document.getElementById("chCount").textContent=`Сделано заданий: ${n} из ${challenges.length}`};cnt();
-  document.querySelectorAll("#chList input").forEach(cb=>cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone);cnt()});
+  const cnt=()=>{const n=Object.keys(chDone).filter(k=>challenges[k]).length,fn=list.filter(c=>chDone[c.i]).length;document.getElementById("chCount").textContent=chFilter==="Все"?`Сделано заданий: ${n} из ${challenges.length}`:`В этом фильтре сделано ${fn} из ${list.length} · всего ${n} из ${challenges.length}`};cnt();
+  document.querySelectorAll("#chList input").forEach(cb=>{const card=cb.closest(".ch");card.classList.toggle("done",cb.checked);cb.onchange=()=>{if(cb.checked)chDone[cb.dataset.i]=1;else delete chDone[cb.dataset.i];store.set("p6chd",chDone);card.classList.toggle("done",cb.checked);cnt();announce(cb.checked?"Задание отмечено":"Отметка снята")}});
 }
 
 /* ---------------- TERMS: tap a dashed word to see what it means ---------------- */
@@ -1657,7 +1686,7 @@ const vidGroups=[
   ["Официальное руководство Roland P-6 (онлайн)","https://static.roland.com/manuals/p-6/en-US/index.html","Первоисточник всех нажатий в этом гайде. Версия 1.02.",[]]]}
 ];
 const allVids=vidGroups.flatMap(g=>g.items);
-document.getElementById("vidList").innerHTML=vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(lbl).join(", ")+".":""}</p></div>`).join("")).join("")+`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("");
+document.getElementById("vidList").innerHTML=vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(n=>`<a href="#${lessonHash(n)}" data-open="${n}">${lbl(n)}</a>`).join(", ")+".":""}</p></div>`).join("")).join("")+`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("");
 
 const plan=[["1. База","Уроки 00–08 по порядку, с двумя уроками теории (ритм и аккорды). Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Рецепты","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Задания и кубики — когда хочется просто поиграть."]];
 document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
@@ -1728,11 +1757,12 @@ function netNote(){const n=document.getElementById("offNote");if(n)n.hidden=navi
 addEventListener("online",netNote);addEventListener("offline",netNote);netNote();
 /* keyboard: step mode and Escape */
 document.addEventListener("keydown",e=>{
- if(e.key==="Escape"){const d=document.getElementById("detail");
+ if(e.key==="Escape"){if(closeHelp()){e.preventDefault();return}const d=document.getElementById("detail");
   if(d&&d.classList.contains("sheet")&&!document.getElementById("v-panel").hidden){d.querySelector(".sheetx").click();e.preventDefault();return}
   const cb=document.getElementById("codeBox");if(cb&&!cb.hidden){cb.hidden=true;document.getElementById("copyCode").focus();e.preventDefault();return}
   const rc=document.getElementById("resetConfirm");if(rc&&!rc.hidden){document.getElementById("resetNo").click();e.preventDefault();return}
-  const td=document.querySelector(".term[aria-expanded=\"true\"]");if(td){td.click();td.focus();e.preventDefault()}return}
+  const td=document.querySelector(".term[aria-expanded=\"true\"]");if(td){td.click();td.focus();e.preventDefault();return}
+  if(!document.getElementById("v-panel").hidden&&curMode!=="none"){curMode="none";renderModes();renderDevice();if(curCtrl)showCtrl(curCtrl,true);e.preventDefault()}return}
  if(e.altKey||e.ctrlKey||e.metaKey)return;
  const t=e.target;if(t.closest&&t.closest("input,textarea,select,[contenteditable]"))return;
  let det=t.closest&&t.closest("details.focusmode");
@@ -1744,7 +1774,7 @@ document.addEventListener("keydown",e=>{
 // item: [display, name, values, description, knob]
 const MENUS=[
  {id:"menu",t:"Системное меню",open:"[SHIFT] + [OCT+ · MENU]",page:"119857419121342731",
-  note:"Пункты с пометкой «паттерн» хранятся в текущем паттерне, остальные общие для прибора. После правок не забудь сохранить: [SHIFT] + [TIE · WRITE].",
+  note:"Пункты с пометкой «в паттерне» хранятся в текущем паттерне, остальные общие для прибора. После правок не забудь сохранить: [SHIFT] + [TIE · WRITE].",
   items:[
   ["vOL","Громкость паттерна","0–200","Громкость текущего паттерна. Паттерн."],
   ["trAn","Транспонирование","−60…60","Сдвигает высоту всех звуков прибора. Паттерн."],
@@ -1876,14 +1906,26 @@ const MENUS=[
   ["G. 0","Чувствительность: ручка [LEVEL]","⟨G. 0⟩…⟨G.255⟩","Чувствительность микрофона."],
   ["S. 8","Step sampling: [SHIFT] + [PITCH]","⟨S.OFF⟩, ⟨S. 2⟩…⟨S. 64⟩","На сколько кусочков разрезать запись (урок 11)."]]}
 ];
+const MENUCODES={};MENUS.forEach(m=>m.items.forEach(it=>{if(it[0]&&!(it[0] in MENUCODES))MENUCODES[it[0]]=[m,it]}));
+function menuBody(code){const [m,it]=MENUCODES[code];return `<h3><span class="lcd">${esc(code)}</span> ${esc(it[1])}</h3><p class="small muted">${esc(m.t)}: ${fmt(m.open)}</p><p>${fmt(it[3])}</p><p class="small muted">Значения: ${fmt(it[2])}</p><p class="small"><a href="#menus" data-mq="${esc(code)}">Все пункты этого меню <span aria-hidden="true">→</span></a></p>`}
+function openHelp(html){const h=document.getElementById("helpSheet");h.querySelector(".hbody").innerHTML=html;h.hidden=false;h.querySelector(".sheetx").focus({preventScroll:true})}
+function closeHelp(){const h=document.getElementById("helpSheet");if(h.hidden)return false;h.hidden=true;if(window._helpFrom&&document.contains(window._helpFrom))window._helpFrom.focus({preventScroll:true});return true}
+document.addEventListener("click",e=>{
+ const k=e.target.closest("main kbd[data-ctl], main .lcd[data-menu]");
+ if(k&&!k.closest("#v-panel,#v-menus,.dev2,.keystrip,#helpSheet")){e.preventDefault();k.setAttribute("tabindex","-1");window._helpFrom=k;
+  if(k.dataset.ctl){const id=k.dataset.ctl;openHelp(ctrlBody(id,"none")+`<p class="small"><a href="#panel" data-ctlopen="${id}">Показать на панели <span aria-hidden="true">→</span></a></p>`)}
+  else openHelp(menuBody(k.dataset.menu));return}
+ const po=e.target.closest("a[data-ctlopen]");if(po){closeHelp();curCtrl=po.dataset.ctlopen;setTimeout(()=>{renderDevice();showCtrl(curCtrl)},60)}
+ const mq=e.target.closest("a[data-mq]");if(mq){closeHelp();setTimeout(()=>{const i=document.getElementById("mq");i.value=mq.dataset.mq;renderMenus(i.value)},60)}
+ if(e.target.closest("#helpSheet .sheetx"))closeHelp()});
 function menusHTML(q){const N=t=>t.toLowerCase().replace(/ё/g,"е");q=N(q||"").trim();let shown=0;
  const html=MENUS.map(m=>{const its=m.items.filter(it=>!q||N(it.join(" ")+" "+m.t).includes(q));if(!its.length)return "";shown+=its.length;
   return `<details class="menu card" id="menu-${m.id}"${q?" open":""}><summary><h3>${esc(m.t)}</h3><span class="mopen">${fmt(m.open)}</span><span class="lcount">${m.items.length} ${plural(m.items.length,"пункт","пункта","пунктов")}</span></summary>
   <p class="small muted">${fmt(m.note)}</p>
-  <dl class="mlist">${its.map(it=>`<div class="mrow"><dt>${it[0]?`<span class="lcd">${esc(it[0])}</span>`:""}</dt><dd><b>${esc(it[1])}</b>${it[4]?` <span class="mknob">ручка ${fmt("["+it[4].split(", ")[0]+"]")}${it[4].includes(",")?" "+esc(it[4].split(", ").slice(1).join(", ")):""}</span>`:""}<br>${fmt(it[3])}<span class="mval">${fmt(it[2])}</span></dd></div>`).join("")}</dl>
+  <dl class="mlist">${its.map(it=>`<div class="mrow"><dt>${it[0]?`<span class="lcd">${esc(it[0])}</span>`:""}</dt><dd><b>${esc(it[1])}</b>${/ Паттерн\.$/.test(it[3])?` <span class="ptag">в паттерне</span>`:""}${it[4]?` <span class="mknob">ручка ${fmt("["+it[4].split(", ")[0]+"]")}${it[4].includes(",")?" "+esc(it[4].split(", ").slice(1).join(", ")):""}</span>`:""}<br>${fmt(it[3].replace(/ Паттерн\.$/,""))}<span class="mval">${fmt(it[2])}</span></dd></div>`).join("")}</dl>
   <p class="small"><a href="${M}${m.page}.html" target="_blank" rel="noopener">Этот раздел в руководстве Roland <span aria-hidden="true">↗</span></a></p></details>`}).join("");
  return shown?html:`<p class="muted">Ничего не нашлось. Попробуй ⟨vOL⟩ или слово по-русски: «метроном», «реверб», «гранул».</p>`.replace(/⟨([^⟩]+)⟩/g,'<span class="lcd">$1</span>')}
-function renderMenus(q){document.getElementById("menuList").innerHTML=menusHTML(q)}
+function renderMenus(q){document.getElementById("menuList").innerHTML=menusHTML(q);const n=document.querySelectorAll("#menuList .mrow").length;document.getElementById("mCount").textContent=q&&q.trim()?`Найдено пунктов: ${n}`:""}
 document.getElementById("mq").addEventListener("input",e=>renderMenus(e.target.value));
 renderMenus("");
 
@@ -1904,6 +1946,8 @@ function route(){
   const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-(w.clientWidth-cur.offsetWidth)/2)}
   const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",about:"inFo",menus:"MEnU",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
+  const TT={start:"Старт",panel:"Панель",lessons:"Уроки",branch:"Ветка",recipes:"Рецепты",challenges:"Задания",cheats:"Шпаргалка",menus:"Меню прибора",about:"О приборе",videos:"Видео"}[h];
+  document.title=(h==="start"?"":TT+" · ")+"Тренажёр Roland P-6";
 }
 ["cheats","menus","about","videos"].forEach(v=>document.getElementById("v-"+v).insertAdjacentHTML("afterbegin",`<nav class="subnav" aria-label="Разделы справки"><a href="#cheats">Шпаргалка</a><a href="#menus">Меню</a><a href="#about">О приборе</a><a href="#videos">Видео</a></nav>`));
 window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0)});
