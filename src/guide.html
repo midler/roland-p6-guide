@@ -253,7 +253,7 @@ nav.tabs a{scroll-snap-align:start}
 @media (max-width:560px){
  .btn,.modes button,nav.tabs a{min-height:44px;display:inline-flex;align-items:center}
  nav.tabs .wrap{padding-block:6px;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:40px}
- .crumb{display:inline-flex;align-items:center;min-height:44px}
+ .crumb{display:inline-flex;align-items:center;gap:4px;min-height:44px}
  ol.steps input{width:24px;height:24px}
  ol.steps li{grid-template-columns:30px 1fr}
  .ch label{min-height:44px}
@@ -320,6 +320,7 @@ kbd{font-size:max(.78em,12px)}
 /* clarify pass: inline terms */
 .term{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:help;text-decoration:underline dashed;text-decoration-color:var(--muted);text-underline-offset:3px}
 .term[aria-expanded="true"]{text-decoration-color:var(--accent)}
+.termlook{cursor:default;align-self:center}
 .termdef{display:block;margin:6px 0 8px;padding:8px 12px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);font-size:var(--fs-sm);line-height:var(--lh-text);color:var(--ink);font-weight:400;letter-spacing:0;text-transform:none;font-family:var(--f-body)}
 .search::placeholder{color:var(--muted);opacity:1}
 /* delight pass: lesson done card */
@@ -430,6 +431,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
       <div><kbd>SHIFT</kbd><span class="plus">+</span><kbd>G <span class="fn">VOICE</span></kbd><span>держи первую кнопку и нажми вторую</span></div>
       <div><kbd>C♯ <span class="fn">ENTER</span></kbd><span>кнопка-шаг: на ней нота и функция мелким шрифтом</span></div>
       <div><kbd>▶ <span class="fn">COPY</span></kbd><span>вторая функция кнопки, подписанная рядом с ней мелким шрифтом. Работает вместе с SHIFT. Отдельной кнопки COPY нет: это кнопка старта ▶ с зажатым SHIFT</span></div>
+      <div><span class="term termlook">сабстеп</span><span>слово с пунктиром можно нажать: под абзацем появится короткое пояснение и номер урока</span></div>
       <div><span class="lcd">donE</span><span>что появится на дисплее (буквы как на 7-сегментном экране)</span></div>
       <div><kbd>▶</kbd> <kbd>●</kbd><span>старт/стоп и запись</span></div>
       <p class="small muted">Совет из «ЗОЖ» Vladislav CREW: сначала покрути прибор и посмотри ролики, потом перечитай руководство. Через месяц сочетания с SHIFT запоминаются сами.</p>
@@ -489,7 +491,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 <section class="view" id="v-challenges" hidden>
   <div class="card dice">
     <h2>Генератор задания</h2>
-    <p class="muted small">Брось кубики: получишь источник звука, ограничение, эффект и темп. Сделай из этого паттерн за 20 минут и сохрани его.</p>
+    <p class="muted small">Брось кубики: получишь источник звука, ограничение, эффект и темп. Сделай из этого паттерн за 20 минут и сохрани его. Слова с пунктиром можно нажать: появится пояснение.</p>
     <div class="out" id="diceOut"></div>
     <div><button class="btn primary" id="roll" type="button">Бросить кубики</button></div>
   </div>
@@ -1404,10 +1406,13 @@ function terms(html){const used=new Set();const stack=[];
   let out=part;TERMS.forEach(([re,def],ti)=>{if(used.has(ti))return;const m=out.match(re);if(!m)return;used.add(ti);
    out=out.slice(0,m.index)+`<button type="button" class="term" aria-expanded="false" data-term="${ti}">${m[0]}</button>`+out.slice(m.index+m[0].length)});
   return out}).join("")}
-document.addEventListener("click",e=>{const t=e.target.closest(".term");if(!t)return;
- const open=t.getAttribute("aria-expanded")==="true";const nx=t.nextElementSibling;
- if(open){if(nx&&nx.classList.contains("termdef"))nx.remove();t.setAttribute("aria-expanded","false");return}
- const id="td"+Math.random().toString(36).slice(2,8);t.insertAdjacentHTML("afterend",`<span class="termdef" id="${id}" role="note">${fmt(TERMS[+t.dataset.term][1])}</span>`);
+document.addEventListener("click",e=>{const t=e.target.closest("button.term");if(!t)return;
+ if(t.getAttribute("aria-expanded")==="true"){const d=document.getElementById(t.getAttribute("aria-controls"));if(d)d.remove();t.setAttribute("aria-expanded","false");return}
+ const id="td"+Math.random().toString(36).slice(2,8),html=`<span class="termdef" id="${id}" role="note">${fmt(TERMS[+t.dataset.term][1])}</span>`;
+ const blk=t.closest("p,.slot,.seq-note,td");const li=t.closest("li");
+ if(li&&(!blk||li.contains(blk)===false&&blk.contains(li)===false&&!li.contains(blk)))li.insertAdjacentHTML("beforeend",html);
+ else if(blk&&blk.matches(".slot,td"))blk.insertAdjacentHTML("beforeend",html);
+ else if(blk)blk.insertAdjacentHTML("afterend",html);else t.insertAdjacentHTML("afterend",html);
  t.setAttribute("aria-controls",id);t.setAttribute("aria-expanded","true")});
 function roll(){
   const out=document.getElementById("diceOut");
