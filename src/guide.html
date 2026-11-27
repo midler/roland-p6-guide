@@ -600,7 +600,6 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
   <div class="card codebox" id="codeBox" hidden><p class="small" id="codeHint"></p><textarea id="codeText" aria-label="Код прогресса" spellcheck="false"></textarea><div class="lrow"><button class="btn primary" id="codeApply" type="button" hidden>Загрузить</button><button class="btn" id="codeClose" type="button">Закрыть</button><span class="small codemsg" id="codeMsg" role="status" aria-live="polite"></span></div></div>
   </div></details>
   <div id="lessonList" style="display:grid;gap:10px"></div>
-  <div id="forkBox"></div>
   <div class="resetzone">
    <button class="btn quiet" id="resetProgress" type="button" aria-expanded="false" aria-controls="resetConfirm">Сбросить прогресс…</button>
    <div class="warnnote" id="resetConfirm" hidden>
@@ -611,6 +610,8 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
   </div>
 </section>
 
+<section class="view" id="v-skills" hidden><div id="skillsBox"></div></section>
+<section class="view" id="v-tracks" hidden><div id="tracksBox"></div></section>
 <section class="view" id="v-branch" hidden>
   <div id="branchHead"></div>
   <div id="branchList" style="display:grid;gap:10px"></div>
@@ -2453,7 +2454,7 @@ ${complete?doneHTML(l):nextHTML(l)}
 function secOf(n){return SECTIONS.find(x=>x.order.includes(n))}
 function nextHTML(l){const sec=secOf(l.n);const nx=sec?sec.order[sec.order.indexOf(l.n)+1]:null;
  if(nx){const L=lessonByN(nx);return `<p class="nextles"><a class="btn" href="#${lessonHash(nx)}" data-open="${nx}">Следующий урок: ${lbl(nx)} · ${esc(L.t)} <span aria-hidden="true">→</span></a></p>`}
- return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери навык или трек <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Раздел пройден: что дальше <span aria-hidden="true">↓</span></a></p>`}
+ return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#skills">База пройдена: выбери навык или собери трек <span aria-hidden="true">→</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Раздел пройден: что дальше <span aria-hidden="true">↓</span></a></p>`}
 function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены в гайде. Паттерн на самом приборе сохраняй через ${fmt("[SHIFT] + [TIE · WRITE]")}.</p></div>${nextHTML(l).replace('class="btn"','class="btn primary"')}</div>`}
 function announce(t){const a=document.getElementById("announce");if(a){a.textContent="";setTimeout(()=>{a.textContent=t},60)}}
 function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
@@ -2486,8 +2487,8 @@ function skillTile(sec){const st=secStats(sec);return `<a class="skill${st.dn===
 function trackTile(sec){const st=secStats(sec),id="prev_"+sec.id;const stg=TRACK.filter(t=>t.track!=="cmp"&&sec.order.includes(t.n)&&(t.V||t.B));const last=stg[stg.length-1];
  if(last&&!gridState[id]){const v=last.V?last.V[last.V.length-1]:{rows:last.B,len:last.lenB,swing:last.swingB};gridState[id]={t:sec.name,bpm:v.bpm||last.bpm||sec.bpm||96,rows:v.rows,len:v.len,swing:v.swing||0,loop:4}}
  return `<div class="trackc${st.dn===st.ls.length?" complete":""}"><a class="tt" href="#branch-${sec.id}">${esc(sec.name)}</a><span class="tm">${sec.bpm} BPM · ${esc(sec.dur)} · ${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")}</span><span class="ta">${last?`<button type="button" class="btn" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(sec.name)}">▶ Слушать</button>`:""}<a class="btn" href="#branch-${sec.id}" aria-label="Открыть: ${esc(sec.name)}">Открыть <span aria-hidden="true">→</span></a></span><span class="bar" role="progressbar" aria-label="Шаги трека ${esc(sec.name)}" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span></div>`}
-function forkHTML(){const sk=SECTIONS.slice(1).filter(x=>!x.genre);return `<div class="levelhead" style="margin-top:28px"><h2>Навыки</h2></div><p class="secdesc">Отдельные темы, в любом порядке. Теорию можно пройти до базы.</p><div class="skills" id="forkMain">${sk.map(skillTile).join("")}</div>
- <div class="levelhead" style="margin-top:28px"><h2>Собери трек</h2></div><p class="secdesc">Трек в одном жанре по слоям, от первого грува до записи. Лучше после базы. Нажми «Слушать», чтобы услышать, к чему придёшь.</p><div class="tracks" id="forkGenre">${SECTIONS.filter(x=>x.genre).map(trackTile).join("")}</div>`}
+function skillsHTML(){const sk=SECTIONS.slice(1).filter(x=>!x.genre);return `<div class="levelhead"><h2>Навыки</h2></div><p class="secdesc">Отдельные темы, в любом порядке. Теорию можно пройти до базы, остальное — когда база пройдена или по ходу.</p><div class="skills" id="forkMain">${sk.map(skillTile).join("")}</div>`}
+function tracksHTML(){return `<div class="levelhead"><h2>Собери трек</h2></div><p class="secdesc">Трек в одном жанре по слоям, от первого грува до записи. Лучше после базы. Нажми «Слушать», чтобы услышать, к чему придёшь.</p><div class="tracks" id="forkGenre">${SECTIONS.filter(x=>x.genre).map(trackTile).join("")}</div>`}
 function branchTile(sec,showList){const st=secStats(sec);
  return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname"><span class="bt">${esc(sec.name.replace(/^(Ветка|Жанр) · /,""))}</span><span class="go">Открыть <span aria-hidden="true">→</span></span></span>
  <span class="bdesc">${esc(relabel(sec.desc))}</span>
@@ -2503,13 +2504,13 @@ function renderLessons(){
   html+=`<div class="levelhead"><h2>${base.name}</h2><span id="baseStat">${base.span} · пройдено уроков ${st.dn} из ${st.ls.length}</span></div><p class="secdesc">${esc(base.desc)}</p>`;
   st.ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
   box.innerHTML=html;bindDetails(box);
-  document.getElementById("forkBox").innerHTML=forkHTML();
+  document.getElementById("skillsBox").innerHTML=skillsHTML();document.getElementById("tracksBox").innerHTML=tracksHTML();
   if(curBranch)renderBranch(curBranch);
   updateProgress();
 }
 let curBranch=null;
 function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
- document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><span class="kicker small muted">${sec.genre?"Собери трек":sec.id==="base"?"":"Навык"}</span><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.${sec.recipe?` Рецепт жанра с сеткой — во вкладке <a href="#recipes">«Рецепты»</a>.`:""}</p>
+ document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#${sec.genre?"tracks":"skills"}"><span aria-hidden="true">←</span> ${sec.genre?"Собери трек":"Навыки"}</a><span class="kicker small muted">${sec.genre?"Собери трек":sec.id==="base"?"":"Навык"}</span><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.${sec.recipe?` Рецепт жанра с сеткой — во вкладке <a href="#recipes">«Рецепты»</a>.`:""}</p>
  <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги раздела" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
  document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>${sec.genre?"Другие треки":"Другие навыки"}</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id&&!!x.genre===!!sec.genre).map(x=>branchTile(x,false)).join("")}</div>`}
@@ -3206,7 +3207,7 @@ const COMMUNITY=[
 document.getElementById("aboutMore").innerHTML=`<div class="card"><h2>Если что-то не так</h2><p class="muted small" style="margin:6px 0 10px">Ответы из справочного центра Roland и обзоров.</p><div class="facts">${TROUBLE.map(t=>`<div class="fact"><h3>${esc(t[0])}</h3><p>${fmt(t[1])} <a href="${t[2]}" target="_blank" rel="noopener">Источник <span aria-hidden="true">↗</span></a></p></div>`).join("")}</div></div>
 <div class="card"><h2>Советы сообщества</h2><p class="muted small" style="margin:6px 0 10px">Приёмы владельцев P-6 с форума Elektronauts. Это не руководство Roland: проверяй на своём приборе.</p><div class="facts">${COMMUNITY.map(t=>`<div class="fact"><h3>${esc(t[0])}</h3><p>${fmt(t[1])} <a href="${t[2]}" target="_blank" rel="noopener">Источник <span aria-hidden="true">↗</span></a></p></div>`).join("")}</div></div>`;
 /* ---------------- ROUTING ---------------- */
-const views=["start","panel","lessons","recipes","challenges","cheats","menus","about","videos"];
+const views=["start","panel","lessons","skills","tracks","recipes","challenges","cheats","menus","about","videos"];
 function route(){
   let h=(location.hash||"#start").slice(1);let br=null,deep=null;
   {const m=h.match(/^l-([0-9A-Za-z]+?)(?:-s(\d+)|-(full))?$/);if(m&&lessonByN(m[1])){deep={n:m[1],s:m[2]?+m[2]-1:null,full:!!m[3]};h=lessonHash(m[1])}}
@@ -3216,15 +3217,15 @@ function route(){
   const HELP=["cheats","menus","about","videos"],help=HELP.includes(h);
   views.forEach(v=>{document.getElementById("v-"+v).hidden=v!==h});
   document.body.dataset.view=h;
-  document.querySelectorAll(".subnav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+h?"true":"false"));
+  {const sv=h==="branch"?((SECTIONS.find(x=>x.id===br)||{}).genre?"tracks":"skills"):h;document.querySelectorAll(".subnav a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+sv?"true":"false"))}
   if(br)renderBranch(br);else curBranch=null;
-  const tab=h==="branch"?"lessons":help?"cheats":h;
+  const tab=["branch","skills","tracks"].includes(h)?"lessons":help?"cheats":h;
   document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+tab?"page":"false"));
   const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-(w.clientWidth-cur.offsetWidth)/2)}
-  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{theory:"tEOr",beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",about:"inFo",menus:"MEnU",videos:"vid"}[h];
+  const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",skills:"SKiL",tracks:"trAc",branch:{theory:"tEOr",beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",about:"inFo",menus:"MEnU",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
-  const TT={start:"Старт",panel:"Панель",lessons:"Уроки",branch:"Раздел",recipes:"Рецепты",challenges:"Задания",cheats:"Шпаргалка",menus:"Меню прибора",about:"О приборе",videos:"Видео"}[h];
-  document.title=(h==="start"?"":TT+" · ")+"Тренажёр Roland P-6";
+  const TT={start:"Старт",panel:"Панель",lessons:"Уроки",skills:"Навыки",tracks:"Собери трек",branch:"Раздел",recipes:"Рецепты",challenges:"Задания",cheats:"Шпаргалка",menus:"Меню прибора",about:"О приборе",videos:"Видео"}[h];
+  document.title=(h==="start"?"":(h==="branch"&&br?(SECTIONS.find(x=>x.id===br)||{}).name||TT:TT)+" · ")+"Тренажёр Roland P-6";
   if(deep)setTimeout(()=>openDeep(deep),0);
 }
 function openDeep(d){const det=[...document.querySelectorAll(`details[data-n="${d.n}"]`)].find(x=>x.offsetParent!==null||!x.closest("[hidden]"));if(!det)return;
@@ -3232,6 +3233,7 @@ function openDeep(d){const det=[...document.querySelectorAll(`details[data-n="${
  if(d.s!=null&&det.classList.contains("focusmode")&&act(lessonByN(d.n)).includes(d.s)){det.classList.remove("verifying");const v=det.querySelector(".verify");if(v)v.remove();focus[d.n]=d.s;saveFocus();placeFocus(d.n)}
  let tgt=det;if(d.full){const fb=det.querySelector(`#full_${d.n}`);if(fb){det.classList.remove("focusmode");tgt=fb;const sc=()=>fb.scrollIntoView({block:"start",behavior:"instant"});sc();setTimeout(sc,150);fb.focus({preventScroll:true});return}}if(d.s!=null){const li=det.querySelector(`li[data-si="${d.s}"]`);if(li){li.classList.add("linked");tgt=li}}
  const sc=()=>tgt.scrollIntoView({block:d.s!=null?"center":"start",behavior:"instant"});sc();setTimeout(sc,150);const f=d.s!=null?tgt.querySelector("input"):det.querySelector("summary");if(f)f.focus({preventScroll:true})}
+["lessons","skills","tracks","branch"].forEach(v=>document.getElementById("v-"+v).insertAdjacentHTML("afterbegin",`<nav class="subnav" aria-label="Разделы уроков"><a href="#lessons">Путь</a><a href="#skills">Навыки</a><a href="#tracks">Собери трек</a></nav>`));
 ["cheats","menus","about","videos"].forEach(v=>document.getElementById("v-"+v).insertAdjacentHTML("afterbegin",`<nav class="subnav" aria-label="Разделы справки"><a href="#cheats">Шпаргалка</a><a href="#menus">Меню</a><a href="#about">О приборе</a><a href="#videos">Видео</a></nav>`));
 window.addEventListener("hashchange",()=>{const dl=/^#l-/.test(location.hash);route();if(!dl)window.scrollTo(0,0)});
 renderModes();renderDevice();renderLessons();renderRecipes();renderChallenges();roll();renderCheats("");route();
