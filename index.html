@@ -250,6 +250,24 @@ li.linked{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}.
 .cell.hold{background:color-mix(in srgb,var(--accent) 35%,var(--surface));border-color:var(--accent)}
 /* branches */
 .forkhead{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pathcard{display:grid;gap:12px;margin-bottom:20px}.pathcard h2{margin:0}
+.pathline{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));position:relative}
+.pathline::before{content:"";position:absolute;left:calc(50%/var(--n));right:calc(50%/var(--n));top:15px;height:2px;background:var(--line)}
+.pathline li{display:grid;justify-items:center;gap:4px;position:relative}
+.pathline a{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:var(--surface);color:var(--muted);font-family:var(--f-mono);font-size:var(--fs-xs);text-decoration:none;font-weight:700}
+.pathline li.done a{background:var(--done);border-color:var(--done);color:var(--surface)}
+.pathline li.cur a{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.pathline .pl{font-size:var(--fs-xs);color:var(--muted);text-align:center;line-height:1.2;max-width:9ch}
+@media (max-width:560px){.pathline .pl{display:none}}
+.pathnow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:10px}
+.skill{display:grid;gap:6px;align-content:start;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.skill .bt{font-weight:700}.skill .sd{font-size:var(--fs-sm);color:var(--muted)}.skill.complete{border-color:var(--done)}
+.tracks{display:grid;gap:8px;margin-top:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}.trackc a.btn{text-decoration:none}
+.trackc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.trackc .tt{font-weight:700;color:var(--ink);text-decoration:none}.trackc .tm{font-size:var(--fs-sm);color:var(--muted);grid-column:1}
+.trackc .ta{grid-column:2;grid-row:1/span 2;display:flex;gap:6px}.trackc .bar{grid-column:1/-1}
+.trackc.complete{border-color:var(--done)}
 .forkhead .node{width:14px;height:14px;border-radius:50%;background:var(--accent);flex:none}
 .fork{position:relative;margin-left:6px;padding-left:24px;display:grid;gap:12px;margin-top:6px}
 .fork::before{content:"";position:absolute;left:-1px;top:-8px;bottom:34px;width:4px;background:var(--accent)}
@@ -528,7 +546,7 @@ body:not([data-view="start"]) .hero .lcd.big{font-size:var(--fs-md)}
 <header class="wrap hero">
   <div class="lcdline"><span class="lcd big" id="lcdHero">P-6</span><span class="meta">По официальному руководству Roland, система Ver.&nbsp;1.02</span></div>
   <h1>Тренажёр Roland P-6</h1>
-  <p class="lede">База из 11 уроков, четыре ветки по целям, рецепты лоу-фая, эмбиента и драм-н-бейса. Везде точные нажатия кнопок, сетки битов и аккордов, которые можно послушать, творческие задания и шпаргалка. Галочки сохраняются в этом браузере, а на другое устройство их переносит код прогресса.</p>
+  <p class="lede">База из 9 уроков, теория и навыки по темам, 13 треков в разных жанрах. Везде точные нажатия кнопок, сетки битов и аккордов, которые можно послушать, творческие задания и шпаргалка. Галочки сохраняются в этом браузере, а на другое устройство их переносит код прогресса.</p>
 </header>
 
 <nav class="tabs" aria-label="Разделы">
@@ -711,25 +729,25 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 
 /* ---------------- LESSONS ---------------- */
 const SECTIONS=[
- {id:"base",name:"База",span:"проходи по порядку",desc:"Без этого не обойтись: звуки, паттерны, ритм и ноты.",order:["01","00","02","03","04","05","06","07","08"]},
- {id:"theory",name:"Ветка · Теория",span:"в любом порядке",desc:"Ритм на 16 шагах, ноты и аккорды на кнопках. Можно пройти до базы или возвращаться по ходу.",order:["T1","T2"]},
- {id:"beats",name:"Ветка · Биты",span:"в любом порядке",desc:"Свои звуки и нарезка: из чего собирать бит.",order:["09","10","11","19","23","24"]},
- {id:"sound",name:"Ветка · Саунд-дизайн",span:"в любом порядке",desc:"Гранулы, синты из сэмплов, эффекты. Для эмбиента и текстур.",order:["12","16","13","25"]},
- {id:"live",name:"Ветка · Живая игра",span:"в любом порядке",desc:"Как играть паттернами вживую и записывать сет.",order:["28","17","18","26","15"]},
- {id:"g-lofi",genre:1,recipe:"lofi",name:"Жанр · Лоу-фай хип-хоп",span:"по порядку",desc:"Трек на 84 BPM по слоям: грув, аккорды, «пыль» и форма на 1–2 минуты.",order:["30","31","32","33"]},
- {id:"g-amb",genre:1,recipe:"ambient",name:"Жанр · Эмбиент",span:"по порядку",desc:"Пьеса на две минуты из записи места, голоса и редких нот. Как удержать внимание, когда событий мало.",order:["34","35","36","37"]},
- {id:"g-dnb",genre:1,recipe:"dnb",name:"Жанр · Драм-н-бейс",span:"по порядку",desc:"Двухшаговый бит на 172 BPM, ответ брейка, саб-бас и первый дроп — трек примерно на минуту.",order:["38","39","40","41"]},
- {id:"g-house",genre:1,name:"Жанр · Хаус",span:"по порядку",desc:"Минутный трек на 124 BPM: бочка на каждую долю, бас между ударами, короткий аккорд и форма на 32 такта.",order:["42","43","44"]},
- {id:"g-dub",genre:1,name:"Жанр · Даб",span:"по порядку",desc:"Сухой грув на 72 BPM и его даб-версия руками: эхо на одном ударе, партии уходят и возвращаются.",order:["45","46","47","57"]},
- {id:"g-ukg",genre:1,name:"Жанр · UK garage / 2-step",span:"по порядку",desc:"Двухтактовый грув на 132 BPM, где короткой вокальной фразе отвечает бас.",order:["48","49","50"]},
- {id:"g-min",genre:1,name:"Жанр · Минимал-техно",span:"по порядку",desc:"Один короткий мотив на 32 такта: подъём, пауза и возврат без новых звуков.",order:["51","52","53"]},
- {id:"g-disco",genre:1,name:"Жанр · Диско-фанк",span:"по порядку",desc:"Три варианта басового грува: как длина нот и затакт подводят к первой доле.",order:["54","55","56"]},
- {id:"g-jungle",genre:1,name:"Жанр · Джангл",span:"по порядку",desc:"Вариации из одного барабанного брейка: срезы, перестановки и ответ во втором такте. Продолжение ветки «Драм-н-бейс».",order:["58","59","60"]},
- {id:"g-trap",genre:1,name:"Жанр · Трэп / халфтайм",span:"по порядку",desc:"Медленный пульс поверх быстрых хэтов на 140 BPM: саб-бас и дроби хэта.",order:["61","62","63"]},
- {id:"g-french",genre:1,name:"Жанр · French touch",span:"по порядку",desc:"Своя аккордовая фраза становится хаус-хуком: нарезка, повтор среза и вступление через фильтр.",order:["64","65","66"]},
- {id:"g-electro",genre:1,name:"Жанр · Электро",span:"по порядку",desc:"Диалог ломаной бочки, короткого баса и голоса в двухтактовой сцене.",order:["67","68","69"]},
- {id:"g-ind",genre:1,name:"Жанр · Индастриал",span:"по порядку",desc:"Ключи, защёлка и кружка становятся сухим грувом, а искажённый такт — кульминацией трека.",order:["70","71","72"]},
- {id:"comp",name:"Ветка · Компьютер и порядок",span:"в любом порядке",desc:"Импорт, MIDI, Ableton и как не запутаться в 48 сэмплах.",order:["14","20","21","22","27"]}];
+ {id:"base",name:"База",span:"проходи по порядку",desc:"Без этого не обойтись: звук пэдов, паттерны, живая запись и ноты в шагах.",order:["01","00","02","03","04","05","06","07","08"]},
+ {id:"theory",name:"Теория",span:"в любом порядке",desc:"Ритм на 16 шагах, ноты и аккорды на кнопках. Можно пройти до базы или возвращаться по ходу.",order:["T1","T2"]},
+ {id:"beats",name:"Биты",span:"в любом порядке",desc:"Свои звуки и нарезка: из чего собирать бит.",order:["09","10","11","19","23","24"]},
+ {id:"sound",name:"Саунд-дизайн",span:"в любом порядке",desc:"Гранулы, синты из сэмплов, эффекты. Для эмбиента и текстур.",order:["12","16","13","25"]},
+ {id:"live",name:"Живая игра",span:"в любом порядке",desc:"Как играть паттернами вживую и записывать сет.",order:["28","17","18","26","15"]},
+ {id:"g-lofi",genre:1,bpm:84,dur:"1–2 мин",recipe:"lofi",name:"Лоу-фай хип-хоп",span:"по порядку",desc:"Трек на 84 BPM по слоям: грув, аккорды, «пыль» и форма на 1–2 минуты.",order:["30","31","32","33"]},
+ {id:"g-amb",genre:1,bpm:70,dur:"2 мин",recipe:"ambient",name:"Эмбиент",span:"по порядку",desc:"Пьеса на две минуты из записи места, голоса и редких нот. Как удержать внимание, когда событий мало.",order:["34","35","36","37"]},
+ {id:"g-dnb",genre:1,bpm:172,dur:"около минуты",recipe:"dnb",name:"Драм-н-бейс",span:"по порядку",desc:"Двухшаговый бит на 172 BPM, ответ брейка, саб-бас и первый дроп — трек примерно на минуту.",order:["38","39","40","41"]},
+ {id:"g-house",genre:1,bpm:124,dur:"около минуты",name:"Хаус",span:"по порядку",desc:"Минутный трек на 124 BPM: бочка на каждую долю, бас между ударами, короткий аккорд и форма на 32 такта.",order:["42","43","44"]},
+ {id:"g-dub",genre:1,bpm:72,dur:"две версии",name:"Даб",span:"по порядку",desc:"Сухой грув на 72 BPM и его даб-версия руками: эхо на одном ударе, партии уходят и возвращаются.",order:["45","46","47","57"]},
+ {id:"g-ukg",genre:1,bpm:132,dur:"короткий трек",name:"UK garage / 2-step",span:"по порядку",desc:"Двухтактовый грув на 132 BPM, где короткой вокальной фразе отвечает бас.",order:["48","49","50"]},
+ {id:"g-min",genre:1,bpm:126,dur:"32 такта",name:"Минимал-техно",span:"по порядку",desc:"Один короткий мотив на 32 такта: подъём, пауза и возврат без новых звуков.",order:["51","52","53"]},
+ {id:"g-disco",genre:1,bpm:115,dur:"фраза на 4 такта",name:"Диско-фанк",span:"по порядку",desc:"Три варианта басового грува: как длина нот и затакт подводят к первой доле.",order:["54","55","56"]},
+ {id:"g-jungle",genre:1,bpm:170,dur:"три части",name:"Джангл",span:"по порядку",desc:"Вариации из одного барабанного брейка: срезы, перестановки и ответ во втором такте. Продолжение трека «Драм-н-бейс».",order:["58","59","60"]},
+ {id:"g-trap",genre:1,bpm:140,dur:"4 такта",name:"Трэп / халфтайм",span:"по порядку",desc:"Медленный пульс поверх быстрых хэтов на 140 BPM: саб-бас и дроби хэта.",order:["61","62","63"]},
+ {id:"g-french",genre:1,bpm:122,dur:"короткий трек",name:"French touch",span:"по порядку",desc:"Своя аккордовая фраза становится хаус-хуком: нарезка, повтор среза и вступление через фильтр.",order:["64","65","66"]},
+ {id:"g-electro",genre:1,bpm:126,dur:"сцена на 2 такта",name:"Электро",span:"по порядку",desc:"Диалог ломаной бочки, короткого баса и голоса в двухтактовой сцене.",order:["67","68","69"]},
+ {id:"g-ind",genre:1,bpm:110,dur:"переход",name:"Индастриал",span:"по порядку",desc:"Ключи, защёлка и кружка становятся сухим грувом, а искажённый такт — кульминацией трека.",order:["70","71","72"]},
+ {id:"comp",name:"Компьютер и порядок",span:"в любом порядке",desc:"Импорт, MIDI, Ableton и как не запутаться в 48 сэмплах.",order:["14","20","21","22","27"]}];
 const PARTS={"23":[4],"02":[5],"04":[6],"06":[5],"08":[6],"09":[4],"10":[3],"11":[3],"12":[6],"13":[6],"14":[4],"15":[2,5],"16":[4],"19":[4],"20":[4],"07":[6],"08":[4],"24":[5],"25":[6],"26":[5],"27":[5]};
 const SES={"00":"≈ 15 минут","21":"≈ 20 минут"};
 const GL={"23":"Какой пак собрать под жанр","04":"Как бит строится в лоу-фае и драм-н-бейсе","06":"Сабстепы и вероятность в драм-н-бейсе","11":"Нарезка брейка для драм-н-бейса","12":"Гранулы в эмбиенте","13":"Эффекты для лоу-фая и эмбиента","T2":"Аккорды для каждого жанра","16":"Синт-пэд для эмбиента"};
@@ -816,7 +834,7 @@ GENRE_LESSONS.push(
  "Запиши 5–10 секунд знакомого места: комнату с холодильником, двор, дождь за окном (урок 09). Или возьми готовую текстуру B-5 или B-6.",
  "Включи [LOOP] и [GATE] выключи: пэд играет по кругу, пока не нажмёшь его снова. Ручками [START] и [END] выбери кусок без резких событий — ни хлопка, ни голоса.",
  "Послушай стык: если на каждом обороте слышен щелчок или скачок громкости, сдвинь [END] чуть-чуть, пока стык не растворится.",
- "Пустой паттерн 4-01 (банк 4 занят другой веткой — сделай бэкап паттернов, урок 00, или возьми 4-09…4-16). Темп 70, длина 32 шага: [SHIFT] + [D♯ · LAST] → 32 → [C · EXIT]. Поставь фон на шаг 1.",
+ "Пустой паттерн 4-01 (банк 4 занят другим жанром — сделай бэкап паттернов, урок 00, или возьми 4-09…4-16). Темп 70, длина 32 шага: [SHIFT] + [D♯ · LAST] → 32 → [C · EXIT]. Поставь фон на шаг 1.",
  "Сохрани фон в 4-01: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]."],
  check:"Фон звучит минуту подряд, и ты не слышишь, где петля начинается заново.",
  task:"Запиши тот же угол в другое время дня и сравни: какой фон спокойнее?",
@@ -884,7 +902,7 @@ GENRE_LESSONS.push(
   do:"Шаги этого урока.",ear:"Пример замедлен до 120 BPM. В «После» между громкими ударами слышны тихие снейры — бит становится плотнее, но счёт тот же.",
   A:[DB.sn,DB.kick],B:[DB.snG,DB.kick],hl:[8,15],hlr:0},
  steps:[
- "Пустой паттерн 4-01 (банк 4 занят другой веткой — сделай бэкап паттернов, урок 00, или возьми 4-09…4-16). Для разбора поставь темп 120, финал сыграешь на 172.",
+ "Пустой паттерн 4-01 (банк 4 занят другим жанром — сделай бэкап паттернов, урок 00, или возьми 4-09…4-16). Для разбора поставь темп 120, финал сыграешь на 172.",
  "Пэды из заводского банка A: бочка A-1, снейр A-2. Бочка на шагах 1 и 11, снейр на 5 и 13. Послушай: это двухшаговый бит.",
  "Тихие снейры: поставь снейр ещё на шаги 8 и 15 и сделай их тише — держи шаг и нажимай пэд снейра до ⟨WEAK⟩.",
  "Сравни обе версии на слух: основные удары должны остаться главными, а тихие — заполнять промежутки.",
@@ -951,14 +969,14 @@ GENRE_LESSONS.push(
  stages:[{id:"hs-cmp",track:"cmp",also:["48"],bpm:124,to:"сравнение",role:"Хаус или 2-step",add:"Тот же темп, клэп и хэт, меняется только бочка: на каждой доле или на 1 и 11",
   do:"Повтори обе сетки на P-6 в двух ячейках (например, 4-09 и 4-10) и переключай их на ходу.",ear:"«Хаус» — ровный шаг бочки на 1, 5, 9, 13. «2-step» — бочка на 1 и 11, остальное то же: бит начинает «прихрамывать». Переключай кнопками и смотри сетку выбранной версии.",V:[{lbl:"Хаус",rows:[HS.hat,HS.clap,HS.kick],hl:[1,5,9,13],hlr:2},{lbl:"2-step",rows:[HS.hat,HS.clap,UK.kick],hl:[1,11],hlr:2}]}],
  steps:[
- "Пустой паттерн 4-01 (банк 4 занят другой веткой — сделай бэкап паттернов, урок 00, или возьми 4-09…4-16). Темп 124.",
+ "Пустой паттерн 4-01 (банк 4 занят другим жанром — сделай бэкап паттернов, урок 00, или возьми 4-09…4-16). Темп 124.",
  "Банк F: бочка F-1 на шагах 1, 5, 9, 13. Послушай одну бочку.",
  "Хэт F-2 на шагах 3, 7, 11, 15 — между ударами бочки. Послушай чередование «бум-ц».",
  "Клэп или снейр F-4 на шагах 5 и 13.",
  "Вариант с открытым и закрытым хэтом — упражнение «Хэт закрывает хэт» в уроке 04.",
  "Сохрани в 4-01: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER]."],
  check:"Бочка ровно отбивает каждую долю, а хэт заполняет промежутки.",
- task:"Задание «Хаус с качем» во вкладке «Задания» — следующий шаг после этой ветки."},
+ task:"Задание «Хаус с качем» во вкладке «Задания» — следующий шаг после этого трека."},
 {n:"43",lv:"L4",t:"Хаус: бас и аккорд",time:"30 мин",page:"112348555114054795",
  goal:"Найти место для баса — вместе с бочкой или между её ударами — и добавить короткий аккорд.",
  stage:{id:"hs2",track:"house",bpm:124,start:1,bank:"банк F",bankHow:"Банк F: нажми [B/F] дважды (кнопка мигает), [KYBD] не горит.",from:"4-01",to:"4-02",role:"Грув с басом",add:"Бас между ударами бочки и короткий аккорд на шаге 10",
@@ -1076,7 +1094,7 @@ GENRE_LESSONS.push(
  check:"В записи слышно вступление, диалог и вариацию, а вопрос и ответ различимы без подсказки.",
  task:"Сделай вариацию, где на месте баса отвечает голос, нарезанный по-другому."},
 {n:"51",lv:"L4",t:"Минимал-техно: мотив",
- stages:[{id:"mt-cmp",track:"cmp",first:1,bpm:126,role:"Три версии одного такта",add:"Основа, вариация с высоким последним ударом и пауза перед возвратом бочки — к ним ведёт ветка",
+ stages:[{id:"mt-cmp",track:"cmp",first:1,bpm:126,role:"Три версии одного такта",add:"Основа, вариация с высоким последним ударом и пауза перед возвратом бочки — к ним ведут уроки",
   ear:"Переключай по очереди: в «Вариации» последний металлический удар выше, в «Паузе» ещё и бочка на шаге 13 молчит.",
   V:[{lbl:"Основа",rows:[MT.metal,MT.kick]},{lbl:"Вариация",rows:[MT.metalUp,MT.kick],hl:[11],hlr:0},{lbl:"Пауза",rows:[MT.metalUp,MT.kickPause],hl:[13],hlr:1}]}],time:"25 мин",page:"112172811114051723",
  goal:"Сделать основу из бочки и короткого металлического мотива.",
@@ -1171,7 +1189,7 @@ GENRE_LESSONS.push(
  "Запиши обе версии на телефон под нейтральными названиями A и B.",
  "Дай послушать другому человеку: пусть назовёт жанр, отметит момент, где узнал, и объяснит выбор через слышимый признак. Потом покажи разбор — сетки обеих версий."],
  check:"У тебя две записи из одного набора, и слушатель различает их по слышимым признакам: бочке, темпу, эху.",
- task:"Сделай третью версию из того же набора в любом другом жанре ветки."});
+ task:"Сделай третью версию из того же набора в любом другом жанре."});
 const JG={orig:[{n:"Брейк: бочка",pad:"",k:"kick",s:[1,9,11,17,25,27]},{n:"Брейк: снейр",pad:"",k:"snare",s:[5,13,21,29],v:{}},{n:"Брейк: хэт",pad:"",k:"hat",s:RX([1,3,5,7,9,11,13,15],2),v:Object.fromEntries(RX([3,7,11,15],2).map(x=>[x,.6]))}],
  vari:[{n:"Брейк: бочка",pad:"",k:"kick",s:[1,9,11,17,25,27]},{n:"Брейк: снейр",pad:"",k:"snare",s:[5,13,21,29,30,31,32],v:{30:.5,31:.8,32:.6},sub:{31:2}},{n:"Брейк: хэт",pad:"",k:"hat",s:RX([1,3,5,7,9,11,13,15],2).filter(x=>x<29),v:Object.fromEntries(RX([3,7,11,15],2).map(x=>[x,.6]))}],
  bass:{n:"Бас",pad:"",k:"tone",vol:1,bars:[[[1,8,45,"A"],[11,6,41,"F"],[17,8,45,"A"],[27,6,41,"F"]]]}};
@@ -1223,7 +1241,7 @@ GENRE_LESSONS.push(
  "Впиши один и тот же бас в 4-01 и 4-02: A на шаге 1 (лиги до 8), F на 11 (лиги до 16), так же во втором такте — как в уроке 40.",
  "Темп 170. Сыграй три части: 4-01 два прохода, 4-02 два прохода, 4-01 два прохода. Следующую выбирай во время последнего прохода.",
  "Запиши и отметь на слух момент перестановки.",
- "Подробнее про бас и дроп — в ветке «Драм-н-бейс»."],
+ "Подробнее про бас и дроп — в треке «Драм-н-бейс»."],
  check:"На записи слышно, где начинается вариация, а концовку ты можешь повторить с клавиш.",
  task:"Сыграй концовку вживую на клавишах поверх 4-01 (урок 05)."},
 {n:"61",lv:"L4",t:"Трэп: медленный пульс",time:"30 мин",page:"112172811114051723",
@@ -2449,7 +2467,7 @@ ${complete?doneHTML(l):nextHTML(l)}
 function secOf(n){return SECTIONS.find(x=>x.order.includes(n))}
 function nextHTML(l){const sec=secOf(l.n);const nx=sec?sec.order[sec.order.indexOf(l.n)+1]:null;
  if(nx){const L=lessonByN(nx);return `<p class="nextles"><a class="btn" href="#${lessonHash(nx)}" data-open="${nx}">Следующий урок: ${lbl(nx)} · ${esc(L.t)} <span aria-hidden="true">→</span></a></p>`}
- return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери ветку <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Ветка закончена: другие ветки <span aria-hidden="true">↓</span></a></p>`}
+ return sec&&sec.id==="base"?`<p class="nextles"><a class="btn" href="#lessons" data-scroll="forkBox">База пройдена: выбери навык или трек <span aria-hidden="true">↓</span></a></p>`:`<p class="nextles"><a class="btn" href="#branch-${sec?sec.id:""}" data-scroll="branchOther">Раздел пройден: что дальше <span aria-hidden="true">↓</span></a></p>`}
 function doneHTML(l){return `<div class="donecard"><span class="lcd" aria-hidden="true">donE</span><div><b>Урок ${lbl(l.n)} пройден</b><p>Все шаги отмечены в гайде. Паттерн на самом приборе сохраняй через ${fmt("[SHIFT] + [TIE · WRITE]")}.</p></div>${nextHTML(l).replace('class="btn"','class="btn primary"')}</div>`}
 function announce(t){const a=document.getElementById("announce");if(a){a.textContent="";setTimeout(()=>{a.textContent=t},60)}}
 function resumePoint(){const last=store.get("p6last",null);const first=l=>act(l).find(k=>!done[l.n+"-"+k]);
@@ -2473,32 +2491,42 @@ function secStats(sec){const ls=sec.order.map(lessonByN).filter(Boolean);
  const steps=ls.reduce((a,l)=>a+act(l).length,0),sd=ls.reduce((a,l)=>a+doneCnt(l),0);
  const ses=ls.reduce((a,l)=>a+(SES[l.n]?1:(PARTS[l.n]||[]).length+1),0);return {ls,dn,steps,sd,ses}}
 function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c)}
+function curBase(){const b=SECTIONS[0];const ls=b.order.map(lessonByN);const last=store.get("p6last","");const isDone=l=>doneCnt(l)===act(l).length;
+ if(last&&b.order.includes(last)&&!isDone(lessonByN(last)))return lessonByN(last);return ls.find(l=>!isDone(l))||null}
+function pathHTML(){const b=SECTIONS[0],ls=b.order.map(lessonByN),cur=curBase();const isDone=l=>doneCnt(l)===act(l).length;
+ return `<section class="card pathcard" aria-labelledby="pathH"><h2 id="pathH">Путь</h2><ol class="pathline" style="--n:${ls.length}">${ls.map(l=>{const d=isDone(l),c=cur&&cur.n===l.n;return `<li class="${d?"done":""}${c?" cur":""}"><a href="#l-${l.n}" aria-label="Урок ${lbl(l.n)} · ${esc(l.t)}${d?", пройден":c?", ты здесь":""}"${c?' aria-current="step"':""}>${lbl(l.n)}</a><span class="pl" aria-hidden="true">${esc(l.t.split(/[:,]/)[0])}</span></li>`}).join("")}</ol>
+ ${cur?`<p class="pathnow"><span>Ты здесь: <a href="#l-${cur.n}"><b>${lbl(cur.n)} · ${esc(cur.t)}</b></a></span></p>`:`<p class="pathnow"><b>База пройдена.</b> Выбирай навык или собери трек ниже.</p>`}</section>`}
+function skillTile(sec){const st=secStats(sec);return `<a class="skill${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bt">${esc(sec.name)}</span><span class="sd">${esc(relabel(sec.desc))}</span><span class="small muted">${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги раздела ${esc(sec.name)}" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span></a>`}
+function trackTile(sec){const st=secStats(sec),id="prev_"+sec.id;const stg=TRACK.filter(t=>t.track!=="cmp"&&sec.order.includes(t.n)&&(t.V||t.B));const last=stg[stg.length-1];
+ if(last&&!gridState[id]){const v=last.V?last.V[last.V.length-1]:{rows:last.B,len:last.lenB,swing:last.swingB};gridState[id]={t:sec.name,bpm:v.bpm||last.bpm||sec.bpm||96,rows:v.rows,len:v.len,swing:v.swing||0,loop:4}}
+ return `<div class="trackc${st.dn===st.ls.length?" complete":""}"><a class="tt" href="#branch-${sec.id}">${esc(sec.name)}</a><span class="tm">${sec.bpm} BPM · ${esc(sec.dur)} · ${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")}</span><span class="ta">${last?`<button type="button" class="btn" data-play="${id}" aria-pressed="false" aria-label="Слушать: ${esc(sec.name)}">▶ Слушать</button>`:""}<a class="btn" href="#branch-${sec.id}" aria-label="Открыть: ${esc(sec.name)}">Открыть <span aria-hidden="true">→</span></a></span><span class="bar" role="progressbar" aria-label="Шаги трека ${esc(sec.name)}" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span></div>`}
+function forkHTML(){const sk=SECTIONS.slice(1).filter(x=>!x.genre);return `<div class="levelhead" style="margin-top:28px"><h2>Навыки</h2></div><p class="secdesc">Отдельные темы, в любом порядке. Теорию можно пройти до базы.</p><div class="skills" id="forkMain">${sk.map(skillTile).join("")}</div>
+ <div class="levelhead" style="margin-top:28px"><h2>Собери трек</h2></div><p class="secdesc">Трек в одном жанре по слоям, от первого грува до записи. Лучше после базы. Нажми «Слушать», чтобы услышать, к чему придёшь.</p><div class="tracks" id="forkGenre">${SECTIONS.filter(x=>x.genre).map(trackTile).join("")}</div>`}
 function branchTile(sec,showList){const st=secStats(sec);
  return `<a class="branch${st.dn===st.ls.length?" complete":""}" href="#branch-${sec.id}"><span class="bname"><span class="bt">${esc(sec.name.replace(/^(Ветка|Жанр) · /,""))}</span><span class="go">Открыть <span aria-hidden="true">→</span></span></span>
  <span class="bdesc">${esc(relabel(sec.desc))}</span>
  ${showList?`<span class="bles">${st.ls.map(l=>`${lbl(l.n)} · ${esc(l.t)}`).join("<br>")}</span>`:""}
- <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
+ <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги раздела" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>${st.dn} из ${st.ls.length}</span></span></a>`}
 function bindDetails(box){box.querySelectorAll("details").forEach(d=>{d.addEventListener("toggle",saveOpen);if(focus[d.dataset.n]!=null)placeFocus(d.dataset.n)})}
 function saveOpen(){const o=new Set(store.get("p6open",[]));document.querySelectorAll("details.lesson").forEach(d=>{if(d.open)o.add(d.dataset.n);else o.delete(d.dataset.n)});store.set("p6open",[...o])}
 function renderLessons(){
   const box=document.getElementById("lessonList");
   const open=store.get("p6open",[]);
   const base=SECTIONS[0],st=secStats(base);
-  const th=SECTIONS.find(x=>x.id==="theory");let html=th?`<div class="levelhead"><h2>Теория</h2></div><div class="fork" id="forkTheory" style="margin-bottom:24px">${branchTile(th,true)}</div>`:"";
+  let html=pathHTML();
   html+=`<div class="levelhead"><h2>${base.name}</h2><span id="baseStat">${base.span} · пройдено уроков ${st.dn} из ${st.ls.length}</span></div><p class="secdesc">${esc(base.desc)}</p>`;
   st.ls.forEach(l=>{html+=lessonHTML(l,open.includes(l.n))});
   box.innerHTML=html;bindDetails(box);
-  document.getElementById("forkBox").innerHTML=`<div class="forkhead"><span class="node"></span><h2>Ветки</h2></div><p class="secdesc" style="margin:4px 0 0 24px">После базы выбирай любую ветку, порядок не важен. Каждая открывается отдельной страницей.</p>
-  <div class="fork" id="forkMain">${SECTIONS.slice(1).filter(x=>!x.genre&&x.id!=="theory").map(sec=>branchTile(sec,true)).join("")}</div>${SECTIONS.some(x=>x.genre)?`<div class="forkhead" style="margin-top:28px"><span class="node"></span><h2>Жанровые ветки</h2></div><p class="secdesc" style="margin:4px 0 0 24px">Один трек в жанре по слоям: от первого грува до записи на 1–2 минуты. Лучше после базы.</p><div class="fork" id="forkGenre">${SECTIONS.filter(x=>x.genre).map(sec=>branchTile(sec,false)).join("")}</div>`:""}`;
+  document.getElementById("forkBox").innerHTML=forkHTML();
   if(curBranch)renderBranch(curBranch);
   updateProgress();
 }
 let curBranch=null;
 function renderBranch(id){const sec=SECTIONS.find(x=>x.id===id);if(!sec)return;curBranch=id;const st=secStats(sec);const open=store.get("p6open",[]);
- document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.${sec.recipe?` Рецепт жанра с сеткой — во вкладке <a href="#recipes">«Рецепты»</a>.`:""}</p>
- <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
+ document.getElementById("branchHead").innerHTML=`<div class="bhead"><a class="crumb" href="#lessons"><span aria-hidden="true">←</span> Все уроки</a><span class="kicker small muted">${sec.genre?"Собери трек":sec.id==="base"?"":"Навык"}</span><h2>${esc(sec.name)}</h2><p class="secdesc">${esc(relabel(sec.desc))} Уроки ${sec.span}.${sec.recipe?` Рецепт жанра с сеткой — во вкладке <a href="#recipes">«Рецепты»</a>.`:""}</p>
+ <span class="bmeta"><span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги раздела" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span></span></div>`;
  const box=document.getElementById("branchList");box.innerHTML=st.ls.map(l=>lessonHTML(l,open.includes(l.n))).join("");bindDetails(box);
- document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>Другие ветки</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id&&!!x.genre===!!sec.genre).map(x=>branchTile(x,false)).join("")}</div>`}
+ document.getElementById("branchOther").innerHTML=`<div class="levelhead" style="margin:32px 0 12px"><h2>${sec.genre?"Другие треки":"Другие навыки"}</h2></div><div class="othergrid">${SECTIONS.slice(1).filter(x=>x.id!==id&&!!x.genre===!!sec.genre).map(x=>branchTile(x,false)).join("")}</div>`}
 function setStep(k,on){if(on)done[k]=1;else delete done[k];store.set("p6done",done);store.set("p6last",k.slice(0,k.lastIndexOf("-")))}
 function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);
  const cnt=doneCnt(l),tot=act(l).length,was=det.classList.contains("complete");det.querySelector(".lcount").textContent=cnt+" / "+tot;det.classList.toggle("complete",cnt===tot);
@@ -2506,8 +2534,8 @@ function refreshLesson(n){const det=document.querySelector(`details[data-n="${n}
  else if(cnt<tot&&was){const dc=det.querySelector(".donecard");if(dc)dc.outerHTML=nextHTML(l)}
  updateProgress();refreshTiles()}
 function refreshTiles(){const bs=document.getElementById("baseStat");if(bs){const b=SECTIONS[0],t=secStats(b);bs.textContent=`${b.span} · пройдено уроков ${t.dn} из ${t.ls.length}`}
- const bo=document.querySelector("#branchOther .othergrid");if(bo&&curBranch){const cs=SECTIONS.find(x=>x.id===curBranch);bo.innerHTML=SECTIONS.slice(1).filter(x=>x.id!==curBranch&&!!x.genre===!!(cs&&cs.genre)).map(x=>branchTile(x,false)).join("")}const fb=document.getElementById("forkMain");if(fb)fb.innerHTML=SECTIONS.slice(1).filter(x=>!x.genre&&x.id!=="theory").map(sec=>branchTile(sec,true)).join("");const ft=document.getElementById("forkTheory");if(ft)ft.innerHTML=branchTile(SECTIONS.find(x=>x.id==="theory"),true);const fg=document.getElementById("forkGenre");if(fg)fg.innerHTML=SECTIONS.filter(x=>x.genre).map(sec=>branchTile(sec,false)).join("");
- if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги ветки" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
+ const bo=document.querySelector("#branchOther .othergrid");if(bo&&curBranch){const cs=SECTIONS.find(x=>x.id===curBranch);bo.innerHTML=SECTIONS.slice(1).filter(x=>x.id!==curBranch&&!!x.genre===!!(cs&&cs.genre)).map(x=>branchTile(x,false)).join("")}const fb=document.getElementById("forkMain");if(fb)fb.innerHTML=SECTIONS.slice(1).filter(x=>!x.genre).map(skillTile).join("");const fg=document.getElementById("forkGenre");if(fg&&!(seqPlaying||"").startsWith("prev_"))fg.innerHTML=SECTIONS.filter(x=>x.genre).map(trackTile).join("");const pc=document.querySelector("#lessonList .pathcard");if(pc)pc.outerHTML=pathHTML();
+ if(curBranch&&!document.getElementById("v-branch").hidden){const sec=SECTIONS.find(x=>x.id===curBranch),st=secStats(sec);const m=document.querySelector("#branchHead .bmeta");if(m)m.innerHTML=`<span>${st.ls.length} ${plural(st.ls.length,"урок","урока","уроков")} · ≈ ${st.ses} ${plural(st.ses,"занятие","занятия","занятий")}</span><span class="bar" role="progressbar" aria-label="Шаги раздела" aria-valuemin="0" aria-valuemax="${st.steps}" aria-valuenow="${st.sd}"><i style="width:${st.steps?100*st.sd/st.steps:0}%"></i></span><span>пройдено ${st.dn} из ${st.ls.length}</span>`}}
 function placeFocus(n,scroll){const det=document.querySelector(`details[data-n="${n}"]`);if(!det)return;const l=lessonByN(n);const a=act(l);let i=focus[n];
  if(!a.includes(i)){i=a.find(k=>k>=i);if(i==null)i=a[0];focus[n]=i;saveFocus()}
  det.querySelectorAll("li.cur,li.curtip").forEach(x=>x.classList.remove("cur","curtip"));const li=det.querySelector(`li[data-si="${i}"]`);if(li)li.classList.add("cur");
@@ -2794,7 +2822,7 @@ const vidGroups=[
 const allVids=vidGroups.flatMap(g=>g.items);
 document.getElementById("vidList").innerHTML=vidGroups.map(g=>`<h2 style="grid-column:1/-1;margin-top:6px">${esc(g.name)}</h2>`+g.items.map(v=>`<div class="card vid"><a href="${v[1]}" target="_blank" rel="noopener">${esc(v[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(v[2]))}${v[3].length?" К урокам: "+v[3].map(n=>`<a href="#${lessonHash(n)}" data-open="${n}">${lbl(n)}</a>`).join(", ")+".":""}</p></div>`).join("")).join("")+`<h2 style="grid-column:1/-1;margin-top:6px">Сайты и программы</h2>`+Object.values(LINKS).map(L=>`<div class="card vid"><a href="${L[1]}" target="_blank" rel="noopener">${esc(L[0])} <span aria-hidden="true">↗</span></a><p class="small muted">${esc(relabel(L[2]))}</p></div>`).join("");
 
-const plan=[["1. База","Уроки 00–08 по порядку. Теория (ритм, ноты и аккорды) — отдельной веткой в начале страницы уроков. Примерно 15 занятий."],["2. Ветки","Биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Рецепты","Рецепты лоу-фая, эмбиента и драм-н-бейса. Бери, когда пройдена база и хотя бы одна ветка."],["Всегда","Задания и кубики — когда хочется просто поиграть."]];
+const plan=[["1. База","Уроки 00–08 по порядку. Теория (ритм, ноты и аккорды) — в разделе «Навыки», её можно пройти до базы. Примерно 15 занятий."],["2. Навыки","Теория, биты, саунд-дизайн, живая игра, компьютер — в любом порядке, под настроение."],["3. Собери трек","13 жанров: трек по слоям от первого грува до записи."],["Рецепты","Короткие шпаргалки по жанрам с сеткой."],["Всегда","Задания и кубики — когда хочется просто поиграть."]];
 document.getElementById("plan").innerHTML=plan.map(p=>`<div class="wk"><b>${p[0]}</b><span>${p[1]}</span></div>`).join("");
 
 
@@ -2814,7 +2842,7 @@ const RECIPES=[
    {n:"Капли",pad:"KYBD",k:"tone",vol:.6,bars:[[[3,2,C4+16,"E",60],[7,2,C4+19,"G",40],[11,3,C4+21,"A",60],[15,2,C4+16,"E",30]]]},
    {n:"Пэд",pad:"GRANULAR",k:"pad",vol:.9,bars:[[[1,16,[C4-12+9,C4+0,C4+4],"Am"]],[[1,16,[C4-12+5,C4+0,C4+4,C4+9],"Fmaj7"]]]}]},
   pads:"Тянущиеся текстуры B-5, B-6 или своя запись: голос, улица, гул холодильника. Всё длинное — в гранулярный пэд.",
-  tips:[["Гранулярный пэд из секунды голоса: медленная головка, плотность выше, ⟨G.Ky.F⟩ → 0 для чистых аккордов.","12"],["Долгая атака и затухание: [SHIFT] + [G · VOICE] → ⟨tvA⟩ → ⟨On⟩, ручки [PITCH] и [LEVEL] вправо.","16"],["Реверб ⟨hAL2⟩ или ⟨Mod⟩ с долгим временем и посыл [SHIFT] + [A · MIXER] → [END] побольше.","13"],["Редкие ноты с вероятностью ⟨P. 30⟩–⟨P. 60⟩ — мелодия, которая никогда не повторяется.","06"],["Стык фоновой петли проверяй на слух: Forward или ⟨ALt⟩ (туда-обратно) — опыт «Где слышен стык?» в первом уроке ветки «Эмбиент».","34"]],
+  tips:[["Гранулярный пэд из секунды голоса: медленная головка, плотность выше, ⟨G.Ky.F⟩ → 0 для чистых аккордов.","12"],["Долгая атака и затухание: [SHIFT] + [G · VOICE] → ⟨tvA⟩ → ⟨On⟩, ручки [PITCH] и [LEVEL] вправо.","16"],["Реверб ⟨hAL2⟩ или ⟨Mod⟩ с долгим временем и посыл [SHIFT] + [A · MIXER] → [END] побольше.","13"],["Редкие ноты с вероятностью ⟨P. 30⟩–⟨P. 60⟩ — мелодия, которая никогда не повторяется.","06"],["Стык фоновой петли проверяй на слух: Forward или ⟨ALt⟩ (туда-обратно) — опыт «Где слышен стык?» в первом уроке трека «Эмбиент».","34"]],
   task:"Звуковой пейзаж на 2 минуты: начни с одного гула, добавь пэд аккордом Am → Fmaj7, затем «капли», в конце убирай слои по одному."},
  {id:"dnb",t:"Драм-н-бейс",bpm:"170–175 BPM",mood:"Быстрые ломаные барабаны поверх медленного баса.",ex:"Заводские паттерны 1-01 и 1-02 (166 BPM): брейк на A-5 нарезан на 32 кусочка, бочка A-1, снейр A-2, саб-бас A-3. И 1-09 (175 BPM).",
   grid:{t:"Двухшаговый бит",bpm:172,note:"Бочка на 1 и 11, снейр на 5 и 13, тихие «призрачные» снейры и дробь хэта на шаге 16. Бас держит одну ноту на половину такта.",rows:[
@@ -2826,7 +2854,7 @@ const RECIPES=[
 ];
 function renderRecipes(){document.getElementById("recipeList").innerHTML=RECIPES.map((r,ri)=>{
  const id="rc_"+r.id;useGrid(id,r.grid);
- return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)} в жанре</span>${(SECTIONS.find(x=>x.recipe===r.id)||0).id?`<a href="#branch-${SECTIONS.find(x=>x.recipe===r.id).id}">Пройти как ветку <span aria-hidden="true">→</span></a>`:""}</div>
+ return `<div class="card recipe" id="recipe-${r.id}"><h2>${ri+1}. ${esc(r.t)}</h2><div class="meta"><span>${esc(r.bpm)} в жанре</span>${(SECTIONS.find(x=>x.recipe===r.id)||0).id?`<a href="#branch-${SECTIONS.find(x=>x.recipe===r.id).id}">Собрать трек по урокам <span aria-hidden="true">→</span></a>`:""}</div>
  <p>${esc(relabel(r.mood))}</p><p class="small"><b>Послушать на приборе:</b> ${esc(relabel(r.ex))}</p>
  ${gridHTML(gridState[id],id)}
  <div class="box"><h4>Какие пэды взять</h4><p class="small">${esc(relabel(r.pads))}</p></div>
@@ -3209,7 +3237,7 @@ function route(){
   const cur=document.querySelector('nav.tabs a[aria-current="page"]');if(cur){const w=cur.parentElement;w.scrollLeft=Math.max(0,cur.offsetLeft-(w.clientWidth-cur.offsetWidth)/2)}
   const lcd={start:"P-6",panel:"PAnL",lessons:"LESn",branch:{theory:"tEOr",beats:"bEAt",sound:"Snd",live:"LivE",comp:"PC"}[br]||"LESn",recipes:"GEnr",challenges:"PLAY",cheats:"HELP",about:"inFo",menus:"MEnU",videos:"vid"}[h];
   document.getElementById("lcdHero").textContent=lcd;
-  const TT={start:"Старт",panel:"Панель",lessons:"Уроки",branch:"Ветка",recipes:"Рецепты",challenges:"Задания",cheats:"Шпаргалка",menus:"Меню прибора",about:"О приборе",videos:"Видео"}[h];
+  const TT={start:"Старт",panel:"Панель",lessons:"Уроки",branch:"Раздел",recipes:"Рецепты",challenges:"Задания",cheats:"Шпаргалка",menus:"Меню прибора",about:"О приборе",videos:"Видео"}[h];
   document.title=(h==="start"?"":TT+" · ")+"Тренажёр Roland P-6";
   if(deep)setTimeout(()=>openDeep(deep),0);
 }
