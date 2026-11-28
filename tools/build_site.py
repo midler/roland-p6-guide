@@ -57,7 +57,7 @@ self.addEventListener("fetch", e => {
     caches.open(CACHE).then(async cache => {
       const hit = await cache.match(req, {ignoreSearch: sameOrigin});
       const net = fetch(req).then(res => {
-        if (res && (res.ok || res.type === "opaque")) cache.put(req, res.clone());
+        if (res && (res.status === 200 || res.type === "opaque")) cache.put(req, res.clone()).catch(() => {});
         return res;
       }).catch(() => hit || (req.mode === "navigate" ? cache.match("index.html") : undefined));
       return hit || net;
