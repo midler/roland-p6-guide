@@ -2201,8 +2201,8 @@ function playSeq(id){const c=ac();if(!c)return;if(c.state==="suspended")c.resume
 const TK={kick:{n:"Бочка",pad:"",p6:"[1]",k:"kick",s:[1,5,9,13]},sn:{n:"Снейр",pad:"",p6:"[4]",k:"snare",s:[5,13]},
  hat:{n:"Хэт",pad:"",p6:"[2]",k:"hat",s:R(1,15,2),v:{3:.5,7:.5,11:.5,15:.5}},
  bass:{n:"Бас",pad:"",k:"tone",bars:[[[1,2,45,"A"],[4,2,45,"A"],[7,2,48,"C"],[9,2,43,"G"],[11,2,40,"E"]]]},
- perc:{n:"Перкуссия",pad:"",k:"clap",s:[14,16],v:{14:.6,16:.8}}};
-TK.kick32=Object.assign({},TK.kick,{s:RX(TK.kick.s,2)});TK.sn32=Object.assign({},TK.sn,{s:RX(TK.sn.s,2)});TK.perc32=Object.assign({},TK.perc,{s:RX(TK.perc.s,2),v:{14:.6,16:.8,30:.6,32:.8}});
+ perc:{n:"Перкуссия",pad:"",p6:"[3], [5] или [6] — любой короткий звук на слух",k:"clap",s:[14,16]}};
+TK.kick32=Object.assign({},TK.kick,{s:RX(TK.kick.s,2)});TK.sn32=Object.assign({},TK.sn,{s:RX(TK.sn.s,2)});TK.perc32=Object.assign({},TK.perc,{s:RX(TK.perc.s,2)});
 TK.hatF32=Object.assign({},TK.hat,{s:RX(TK.hat.s,2).concat([32]),v:Object.fromEntries(RX([3,7,11,15],2).map(x=>[x,.5])),sub:{32:2}});
 const TKCOPY="Как копировать: останови [▶], [SHIFT] + [▶ · COPY] → ⟨Ptn⟩ → [C♯ · ENTER] → номер новой версии → [C♯ · ENTER]. Открой её: [PATTERN] → номер → [PATTERN].";
 const TKSAVE="Сохрани: [▶] стоп → [SHIFT] + [TIE · WRITE] → ⟨Ptn⟩ → [C♯ · ENTER].";
