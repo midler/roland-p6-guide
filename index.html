@@ -227,7 +227,7 @@ ol.steps li.parthead{display:block;border-top:1px solid var(--line);margin-top:4
 .focusmode ol.steps li.cur{display:grid;font-size:var(--fs-md);line-height:1.5;padding:14px;border:2px solid var(--accent);border-radius:10px;background:var(--surface)}
 .focusmode ol.steps li.cur input{width:26px;height:26px}
 .focusmode .hideinfocus{display:none!important}
-li.linked{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}.permalink{font-size:var(--fs-sm)}.focusbar .flink{font-size:var(--fs-sm)}
+li.linked{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}.permalink{font-size:var(--fs-sm)}.stepk{font-family:var(--f-mono);font-size:max(.85em,12px);color:var(--muted);white-space:nowrap}.focusbar .flink{font-size:var(--fs-sm)}
 .verify{display:none}.focusmode .verify{display:grid;gap:8px;padding:14px;border:2px solid var(--done);border-radius:10px;background:var(--surface)}.verify h4{margin:0}.focusmode.verifying ol.steps li{display:none!important}.focusmode.verifying .focusbar [data-fnext]{display:none}
 .focusbar .fpos{font-variant-numeric:tabular-nums;font-size:var(--fs-sm);color:var(--muted);margin-right:auto}
 .codebox{display:grid;gap:8px}
@@ -713,8 +713,11 @@ function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g
 const PREFIX={theory:"T",beats:"Б",sound:"С",live:"Ж",comp:"К","g-lofi":"ЛФ","g-amb":"ЭМ","g-dnb":"ДБ","g-house":"ХС","g-dub":"ДА","g-ukg":"UK","g-min":"МТ","g-disco":"ДФ","g-jungle":"ДЖ","g-trap":"ТР","g-french":"FT","g-electro":"ЭЛ","g-ind":"ИН"};let _LBL=null;
 function lbl(n){if(!_LBL){_LBL={};SECTIONS.forEach(sec=>{let t=0,b=0;sec.order.forEach((id,i)=>{_LBL[id]=sec.id==="base"?String(i).padStart(2,"0"):PREFIX[sec.id]+(i+1)})})}return _LBL[n]||n}
 function relabel(t){return t.replace(/([Уу]рок(?:а|у|е|ом|и|ов|ам|ах)?\s+)((?:\d\d|T\d)(?:\s*(?:[–-]|,|и)\s*(?:\d\d|T\d))*)/g,(m,pre,list)=>pre+list.replace(/\d\d|T\d/g,x=>lbl(x)))}
+const STEPK=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B","C","OCT−","OCT+","TIE"];
+function stepKey(n){return STEPK[(n-1)%16]}
+function stepNames(s){return s.replace(/([Шш]аг(?:и|ах|ам|е|у|ов|а)?(?:\s+(?:с|на|до|от))?\s+)(\d{1,2}(?:(?:,\s*|\s+и\s+|\s*[–-]\s*|\s*…\s*|,\s*…\s*)\d{1,2})*)(?![\d_]|\s*\(|\s*из\b|-\d)/g,(m,pre,list)=>pre+list.replace(/\d{1,2}/g,d=>{const n=+d;return n>=1&&n<=64?`${n}\u00a0<span class="stepk">(${stepKey(n)})</span>`:d}))}
 function fmt(s){s=relabel(s);
-  s=esc(s);
+  s=esc(s);s=stepNames(s);
   s=s.replace(/\[([^\]]+)\]/g,(m,k)=>{const p=k.split(" · ");const id=chipId(p[0],p[1]);return "<kbd"+(id?` data-ctl="${id}"`:"")+">"+p[0]+(p[1]?" <span class=\"fn\">"+p[1]+"</span>":"")+"</kbd>"});
   s=s.replace(/⟨([^⟩]+)⟩/g,(m,t)=>`<span class="lcd"${menuCode(t)?` data-menu="${t}"`:""}>${t}</span>`);
   s=s.replace(/ \+ /g,'<span class="plus">+</span>');
@@ -2247,8 +2250,8 @@ const TRACK=[
 function regStages(){lessons.forEach(l=>{[].concat(l.stage||[],l.stages||[]).forEach(st=>{if(!TRACK.some(x=>x.id===st.id))TRACK.push(Object.assign({n:l.n,nocopy:1},st))})})}
 regStages();
 function trkStart(t){const g=t.startRows?{bpm:t.bpm||96,rows:t.startRows,len:t.startLen}:(gridState[`trk_${t.id}_A`]||{bpm:t.bpm||96,rows:t.A||(t.V?t.V[0].rows:[]),len:t.V?t.V[0].len:t.lenA});const sk=t.startRows?"S":"A";if(t.startRows)useGrid(`trk_${t.id}_S`,{bpm:g.bpm,rows:g.rows,len:g.len,loop:16,noplay:1});const tones=g.rows.filter(r=>r.bars),rows=g.rows.filter(r=>r.s);
- const line=r=>{const weak=r.v?Object.keys(r.v).filter(i=>r.v[i]<1).map(Number):[];return [`${r.n} — пэд ${r.p6||""}`,r.s.join(", "),weak.length?`тише (⟨WEAK⟩): ${weak.join(", ")}`:"—"]};
- return `<div class="box start-card"><h4>Начать с этого урока</h4><p class="small">Нет сохранённой версии ${t.from} или пришёл сразу сюда? Собери основу по карточке: темп ${g.bpm} BPM, длина ${g.len||16} шагов${t.bank?", "+t.bank:", банк F"}.</p>
+ const line=r=>{const weak=r.v?Object.keys(r.v).filter(i=>r.v[i]<1).map(Number):[];const ks=a=>a.map(n=>`${n} (${stepKey(n)})`).join(", ");return [`${r.n} — пэд ${r.p6||""}`,ks(r.s),weak.length?`тише (⟨WEAK⟩): ${ks(weak)}`:"—"]};
+ return `<div class="box start-card"><h4>Начать с этого урока</h4><p class="small">Нет сохранённой версии ${t.from} или пришёл сразу сюда? Собери основу по карточке. В скобках — подпись на кнопке-шаге: темп ${g.bpm} BPM, длина ${g.len||16} шагов${t.bank?", "+t.bank:", банк F"}.</p>
  <p class="earrow"><button type="button" class="btn" data-earv="trk_${t.id}_${sk}" data-lbl="Послушать основу" data-toggle="1" aria-pressed="false">▶ Послушать основу</button></p>
  ${tableHTML({cap:"Основа",head:["Партия","Шаги","Акценты"],rows:rows.map(line).concat(tones.map(r=>[r.n,r.bars[0].map(x=>`${x[0]}: ${x[3]||""}${x[1]>1?` (${x[1]} шаг.)`:""}`).join(", "),"—"]))})}
  <ol class="drill"><li>${fmt(`Пустой паттерн ${t.startCell||t.to}: [PATTERN] → держи [PATTERN] и нажми шаг ${+(t.startCell||t.to).split("-")[0]} → отпусти → шаг ${+(t.startCell||t.to).split("-")[1].slice(0,2)} → [PATTERN]. Темп: крути [TEMPO/VALUE] до ${g.bpm}.`)}</li><li>${fmt(t.bankHow||"Банк F: нажми [B/F] дважды (кнопка мигает), [KYBD] не горит.")}</li><li>${fmt("Для каждой партии: выбери пэд без звука ([PATTERN] + пэд) и нажми шаги из таблицы. Акцент: держи шаг и нажимай пэд до ⟨WEAK⟩.")}</li><li>${fmt("Нажми [▶] и сверь с кнопкой «Послушать основу». Совпадает — переходи к басу.")}</li></ol></div>`}
@@ -2444,7 +2447,7 @@ function lessonHTML0(l,open){
 <summary><span class="lnum">${lbl(l.n)}</span><span><h3>${esc(l.t)}</h3><span class="lmeta">${sesLabel(l)}</span><span class="lcount">${cnt} / ${tot}</span></span></summary>
 <div class="lbody">
 <div class="lrow"><p class="goal" style="flex:1;min-width:0">${fmt(l.goal)}</p><button type="button" class="btn" data-focus="${l.n}" aria-pressed="${focus[l.n]!=null}">${focus[l.n]!=null?"Показать весь урок":"Режим по шагам"}</button><a class="btn quiet permalink" href="#l-${l.n}" aria-label="Ссылка на урок ${lbl(l.n)}">Ссылка на урок</a></div>
-${l.gloss?`<div class="hideinfocus">${relabel(GLOSS)}</div>`:""}${l.chords?chordsHTML(l.chords):""}
+${l.gloss?`<div class="hideinfocus">${stepNames(relabel(GLOSS))}</div>`:""}${l.chords?chordsHTML(l.chords):""}
 ${GRIDS[l.n]?`<div style="display:grid;gap:10px">${gridsFor(l.n)}</div>`:""}
 ${TRACK.filter(t=>t.n===l.n&&t.start).map(trkStart).join("")}<ol class="steps">${stepsHTML(l)}</ol>${l.table?tableHTML(l.table):""}
 <div class="focusbar"><span class="fpos" aria-live="polite"></span><a class="btn quiet flink" href="#l-${l.n}">Ссылка на шаг</a><button type="button" class="btn" data-fprev="${l.n}"><span aria-hidden="true">←</span> Назад</button><button type="button" class="btn primary" data-fnext="${l.n}">Готово <span aria-hidden="true">✓</span></button><button type="button" class="btn" data-focus="${l.n}">Весь урок</button><span class="khint" aria-hidden="true">Enter — готово, ← → — листать шаги</span></div>
