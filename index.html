@@ -2242,7 +2242,7 @@ const TRACK=[
  {id:"motion",n:"08",from:"2-04",to:"2-04",role:"Сбивка с затиханием",add:"Хэт к концу второго такта тише: [LEVEL] записан в шаги 29–32",
   do:"Открой 2-04 и выбери пэд хэта. Держи кнопку-шаг 29 и поверни [LEVEL] чуть влево; на шагах 31 и 32 — ещё тише. Держи шаг 1 и верни [LEVEL] на обычное значение, иначе тихим останется и следующий проход.",
   ear:"Сравни один и тот же второй такт: «После» хэт к концу затихает, а с нового прохода снова звучит в полную силу.",
-  A:[TK.perc32,TK.hatF32,TK.sn32,TK.kick32],B:[TK.perc32,Object.assign({},TK.hatF32,{v:Object.assign({},TK.hatF32.v,{29:.55,31:.35,32:.25})}),TK.sn32,TK.kick32],lenA:32,lenB:32,hl:[29,31,32],hlr:1}}];
+  A:[TK.perc32,TK.hatF32,TK.sn32,TK.kick32],B:[TK.perc32,Object.assign({},TK.hatF32,{v:Object.assign({},TK.hatF32.v,{29:.55,31:.35,32:.25})}),TK.sn32,TK.kick32],lenA:32,lenB:32,hl:[29,31,32],hlr:1}];
 
 function regStages(){lessons.forEach(l=>{[].concat(l.stage||[],l.stages||[]).forEach(st=>{if(!TRACK.some(x=>x.id===st.id))TRACK.push(Object.assign({n:l.n,nocopy:1},st))})})}
 regStages();
